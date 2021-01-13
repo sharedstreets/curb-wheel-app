@@ -41,10 +41,10 @@ class Points extends Table {
 class Features extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get projectId => integer()();
-  TextColumn get geometryType => text()();
-  TextColumn get color => text()();
-  TextColumn get label => text()();
-  TextColumn get value => text()();
+  TextColumn get geometryType => text()(); // 'point' or 'line'
+  TextColumn get color => text()(); // string of color hex code
+  TextColumn get label => text()(); // label to be displayed in app
+  TextColumn get value => text()(); // CurbLR feature type if using
 }
 
 @UseMoor(tables: [
