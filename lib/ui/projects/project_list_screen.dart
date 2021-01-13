@@ -83,10 +83,11 @@ class ProjectListScreenState extends State<ProjectListScreen> {
                       return Expanded(
                         child: Align(
                           alignment: Alignment.bottomCenter,
-                          child: snapshot.data.isEmpty
+                          child: 
+                          snapshot.hasData
                               ? Center(child: Text('No projects yet'))
                               : ListView.builder(
-                                  itemCount: snapshot.data.length,
+                                  itemCount: snapshot.hasData ? snapshot.data.length : 0,
                                   itemBuilder: (context, index) {
                                     return ProjectCard(
                                       project: snapshot.data[index],
