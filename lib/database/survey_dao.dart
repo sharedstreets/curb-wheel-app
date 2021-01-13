@@ -1,0 +1,19 @@
+import 'database.dart';
+import 'package:moor_flutter/moor_flutter.dart';
+
+part 'survey_dao.g.dart';
+
+@UseDao(tables: [Surveys])
+class SurveyDao extends DatabaseAccessor<CurbWheelDatabase> with _$SurveyDaoMixin {
+  SurveyDao(CurbWheelDatabase db) : super(db);
+
+  Future<List<Survey>> getAllSurveys() => select(surveys).get();
+
+  Stream<List<Survey>> watchAllSurveys() => select(surveys).watch();
+
+  Future insertSurvey(Survey survey) => into(surveys).insert(survey);
+
+  Future updateSurvey(Survey survey) => update(surveys).replace(survey);
+
+  Future deleteSurvey(Survey survey) => delete(surveys).delete(survey);
+}

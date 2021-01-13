@@ -346,40 +346,37 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   }
 }
 
-class Curb extends DataClass implements Insertable<Curb> {
+class Feature extends DataClass implements Insertable<Feature> {
   final int id;
-  final String name;
-  final String shStRefId;
-  final String side;
-  final double start;
-  final double stop;
-  final bool complete;
-  Curb(
+  final int projectId;
+  final String geometryType;
+  final String color;
+  final String label;
+  final String value;
+  Feature(
       {@required this.id,
-      @required this.name,
-      @required this.shStRefId,
-      @required this.side,
-      @required this.start,
-      @required this.stop,
-      @required this.complete});
-  factory Curb.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      @required this.projectId,
+      @required this.geometryType,
+      @required this.color,
+      @required this.label,
+      @required this.value});
+  factory Feature.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
-    final doubleType = db.typeSystem.forDartType<double>();
-    final boolType = db.typeSystem.forDartType<bool>();
-    return Curb(
+    return Feature(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
-      shStRefId: stringType
-          .mapFromDatabaseResponse(data['${effectivePrefix}sh_st_ref_id']),
-      side: stringType.mapFromDatabaseResponse(data['${effectivePrefix}side']),
-      start:
-          doubleType.mapFromDatabaseResponse(data['${effectivePrefix}start']),
-      stop: doubleType.mapFromDatabaseResponse(data['${effectivePrefix}stop']),
-      complete:
-          boolType.mapFromDatabaseResponse(data['${effectivePrefix}complete']),
+      projectId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}project_id']),
+      geometryType: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}geometry_type']),
+      color:
+          stringType.mapFromDatabaseResponse(data['${effectivePrefix}color']),
+      label:
+          stringType.mapFromDatabaseResponse(data['${effectivePrefix}label']),
+      value:
+          stringType.mapFromDatabaseResponse(data['${effectivePrefix}value']),
     );
   }
   @override
@@ -388,55 +385,52 @@ class Curb extends DataClass implements Insertable<Curb> {
     if (!nullToAbsent || id != null) {
       map['id'] = Variable<int>(id);
     }
-    if (!nullToAbsent || name != null) {
-      map['name'] = Variable<String>(name);
+    if (!nullToAbsent || projectId != null) {
+      map['project_id'] = Variable<int>(projectId);
     }
-    if (!nullToAbsent || shStRefId != null) {
-      map['sh_st_ref_id'] = Variable<String>(shStRefId);
+    if (!nullToAbsent || geometryType != null) {
+      map['geometry_type'] = Variable<String>(geometryType);
     }
-    if (!nullToAbsent || side != null) {
-      map['side'] = Variable<String>(side);
+    if (!nullToAbsent || color != null) {
+      map['color'] = Variable<String>(color);
     }
-    if (!nullToAbsent || start != null) {
-      map['start'] = Variable<double>(start);
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
     }
-    if (!nullToAbsent || stop != null) {
-      map['stop'] = Variable<double>(stop);
-    }
-    if (!nullToAbsent || complete != null) {
-      map['complete'] = Variable<bool>(complete);
+    if (!nullToAbsent || value != null) {
+      map['value'] = Variable<String>(value);
     }
     return map;
   }
 
-  CurbsCompanion toCompanion(bool nullToAbsent) {
-    return CurbsCompanion(
+  FeaturesCompanion toCompanion(bool nullToAbsent) {
+    return FeaturesCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
-      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
-      shStRefId: shStRefId == null && nullToAbsent
+      projectId: projectId == null && nullToAbsent
           ? const Value.absent()
-          : Value(shStRefId),
-      side: side == null && nullToAbsent ? const Value.absent() : Value(side),
-      start:
-          start == null && nullToAbsent ? const Value.absent() : Value(start),
-      stop: stop == null && nullToAbsent ? const Value.absent() : Value(stop),
-      complete: complete == null && nullToAbsent
+          : Value(projectId),
+      geometryType: geometryType == null && nullToAbsent
           ? const Value.absent()
-          : Value(complete),
+          : Value(geometryType),
+      color:
+          color == null && nullToAbsent ? const Value.absent() : Value(color),
+      label:
+          label == null && nullToAbsent ? const Value.absent() : Value(label),
+      value:
+          value == null && nullToAbsent ? const Value.absent() : Value(value),
     );
   }
 
-  factory Curb.fromJson(Map<String, dynamic> json,
+  factory Feature.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
-    return Curb(
+    return Feature(
       id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      shStRefId: serializer.fromJson<String>(json['shStRefId']),
-      side: serializer.fromJson<String>(json['side']),
-      start: serializer.fromJson<double>(json['start']),
-      stop: serializer.fromJson<double>(json['stop']),
-      complete: serializer.fromJson<bool>(json['complete']),
+      projectId: serializer.fromJson<int>(json['projectId']),
+      geometryType: serializer.fromJson<String>(json['geometryType']),
+      color: serializer.fromJson<String>(json['color']),
+      label: serializer.fromJson<String>(json['label']),
+      value: serializer.fromJson<String>(json['value']),
     );
   }
   @override
@@ -444,42 +438,38 @@ class Curb extends DataClass implements Insertable<Curb> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'shStRefId': serializer.toJson<String>(shStRefId),
-      'side': serializer.toJson<String>(side),
-      'start': serializer.toJson<double>(start),
-      'stop': serializer.toJson<double>(stop),
-      'complete': serializer.toJson<bool>(complete),
+      'projectId': serializer.toJson<int>(projectId),
+      'geometryType': serializer.toJson<String>(geometryType),
+      'color': serializer.toJson<String>(color),
+      'label': serializer.toJson<String>(label),
+      'value': serializer.toJson<String>(value),
     };
   }
 
-  Curb copyWith(
+  Feature copyWith(
           {int id,
-          String name,
-          String shStRefId,
-          String side,
-          double start,
-          double stop,
-          bool complete}) =>
-      Curb(
+          int projectId,
+          String geometryType,
+          String color,
+          String label,
+          String value}) =>
+      Feature(
         id: id ?? this.id,
-        name: name ?? this.name,
-        shStRefId: shStRefId ?? this.shStRefId,
-        side: side ?? this.side,
-        start: start ?? this.start,
-        stop: stop ?? this.stop,
-        complete: complete ?? this.complete,
+        projectId: projectId ?? this.projectId,
+        geometryType: geometryType ?? this.geometryType,
+        color: color ?? this.color,
+        label: label ?? this.label,
+        value: value ?? this.value,
       );
   @override
   String toString() {
-    return (StringBuffer('Curb(')
+    return (StringBuffer('Feature(')
           ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('shStRefId: $shStRefId, ')
-          ..write('side: $side, ')
-          ..write('start: $start, ')
-          ..write('stop: $stop, ')
-          ..write('complete: $complete')
+          ..write('projectId: $projectId, ')
+          ..write('geometryType: $geometryType, ')
+          ..write('color: $color, ')
+          ..write('label: $label, ')
+          ..write('value: $value')
           ..write(')'))
         .toString();
   }
@@ -488,93 +478,80 @@ class Curb extends DataClass implements Insertable<Curb> {
   int get hashCode => $mrjf($mrjc(
       id.hashCode,
       $mrjc(
-          name.hashCode,
-          $mrjc(
-              shStRefId.hashCode,
-              $mrjc(
-                  side.hashCode,
-                  $mrjc(start.hashCode,
-                      $mrjc(stop.hashCode, complete.hashCode)))))));
+          projectId.hashCode,
+          $mrjc(geometryType.hashCode,
+              $mrjc(color.hashCode, $mrjc(label.hashCode, value.hashCode))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
-      (other is Curb &&
+      (other is Feature &&
           other.id == this.id &&
-          other.name == this.name &&
-          other.shStRefId == this.shStRefId &&
-          other.side == this.side &&
-          other.start == this.start &&
-          other.stop == this.stop &&
-          other.complete == this.complete);
+          other.projectId == this.projectId &&
+          other.geometryType == this.geometryType &&
+          other.color == this.color &&
+          other.label == this.label &&
+          other.value == this.value);
 }
 
-class CurbsCompanion extends UpdateCompanion<Curb> {
+class FeaturesCompanion extends UpdateCompanion<Feature> {
   final Value<int> id;
-  final Value<String> name;
-  final Value<String> shStRefId;
-  final Value<String> side;
-  final Value<double> start;
-  final Value<double> stop;
-  final Value<bool> complete;
-  const CurbsCompanion({
+  final Value<int> projectId;
+  final Value<String> geometryType;
+  final Value<String> color;
+  final Value<String> label;
+  final Value<String> value;
+  const FeaturesCompanion({
     this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.shStRefId = const Value.absent(),
-    this.side = const Value.absent(),
-    this.start = const Value.absent(),
-    this.stop = const Value.absent(),
-    this.complete = const Value.absent(),
+    this.projectId = const Value.absent(),
+    this.geometryType = const Value.absent(),
+    this.color = const Value.absent(),
+    this.label = const Value.absent(),
+    this.value = const Value.absent(),
   });
-  CurbsCompanion.insert({
+  FeaturesCompanion.insert({
     this.id = const Value.absent(),
-    @required String name,
-    @required String shStRefId,
-    @required String side,
-    @required double start,
-    @required double stop,
-    @required bool complete,
-  })  : name = Value(name),
-        shStRefId = Value(shStRefId),
-        side = Value(side),
-        start = Value(start),
-        stop = Value(stop),
-        complete = Value(complete);
-  static Insertable<Curb> custom({
+    @required int projectId,
+    @required String geometryType,
+    @required String color,
+    @required String label,
+    @required String value,
+  })  : projectId = Value(projectId),
+        geometryType = Value(geometryType),
+        color = Value(color),
+        label = Value(label),
+        value = Value(value);
+  static Insertable<Feature> custom({
     Expression<int> id,
-    Expression<String> name,
-    Expression<String> shStRefId,
-    Expression<String> side,
-    Expression<double> start,
-    Expression<double> stop,
-    Expression<bool> complete,
+    Expression<int> projectId,
+    Expression<String> geometryType,
+    Expression<String> color,
+    Expression<String> label,
+    Expression<String> value,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (shStRefId != null) 'sh_st_ref_id': shStRefId,
-      if (side != null) 'side': side,
-      if (start != null) 'start': start,
-      if (stop != null) 'stop': stop,
-      if (complete != null) 'complete': complete,
+      if (projectId != null) 'project_id': projectId,
+      if (geometryType != null) 'geometry_type': geometryType,
+      if (color != null) 'color': color,
+      if (label != null) 'label': label,
+      if (value != null) 'value': value,
     });
   }
 
-  CurbsCompanion copyWith(
+  FeaturesCompanion copyWith(
       {Value<int> id,
-      Value<String> name,
-      Value<String> shStRefId,
-      Value<String> side,
-      Value<double> start,
-      Value<double> stop,
-      Value<bool> complete}) {
-    return CurbsCompanion(
+      Value<int> projectId,
+      Value<String> geometryType,
+      Value<String> color,
+      Value<String> label,
+      Value<String> value}) {
+    return FeaturesCompanion(
       id: id ?? this.id,
-      name: name ?? this.name,
-      shStRefId: shStRefId ?? this.shStRefId,
-      side: side ?? this.side,
-      start: start ?? this.start,
-      stop: stop ?? this.stop,
-      complete: complete ?? this.complete,
+      projectId: projectId ?? this.projectId,
+      geometryType: geometryType ?? this.geometryType,
+      color: color ?? this.color,
+      label: label ?? this.label,
+      value: value ?? this.value,
     );
   }
 
@@ -584,46 +561,42 @@ class CurbsCompanion extends UpdateCompanion<Curb> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
+    if (projectId.present) {
+      map['project_id'] = Variable<int>(projectId.value);
     }
-    if (shStRefId.present) {
-      map['sh_st_ref_id'] = Variable<String>(shStRefId.value);
+    if (geometryType.present) {
+      map['geometry_type'] = Variable<String>(geometryType.value);
     }
-    if (side.present) {
-      map['side'] = Variable<String>(side.value);
+    if (color.present) {
+      map['color'] = Variable<String>(color.value);
     }
-    if (start.present) {
-      map['start'] = Variable<double>(start.value);
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
     }
-    if (stop.present) {
-      map['stop'] = Variable<double>(stop.value);
-    }
-    if (complete.present) {
-      map['complete'] = Variable<bool>(complete.value);
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
     }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('CurbsCompanion(')
+    return (StringBuffer('FeaturesCompanion(')
           ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('shStRefId: $shStRefId, ')
-          ..write('side: $side, ')
-          ..write('start: $start, ')
-          ..write('stop: $stop, ')
-          ..write('complete: $complete')
+          ..write('projectId: $projectId, ')
+          ..write('geometryType: $geometryType, ')
+          ..write('color: $color, ')
+          ..write('label: $label, ')
+          ..write('value: $value')
           ..write(')'))
         .toString();
   }
 }
 
-class $CurbsTable extends Curbs with TableInfo<$CurbsTable, Curb> {
+class $FeaturesTable extends Features with TableInfo<$FeaturesTable, Feature> {
   final GeneratedDatabase _db;
   final String _alias;
-  $CurbsTable(this._db, [this._alias]);
+  $FeaturesTable(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedIntColumn _id;
   @override
@@ -633,16 +606,295 @@ class $CurbsTable extends Curbs with TableInfo<$CurbsTable, Curb> {
         hasAutoIncrement: true, declaredAsPrimaryKey: true);
   }
 
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
-  GeneratedTextColumn _name;
+  final VerificationMeta _projectIdMeta = const VerificationMeta('projectId');
+  GeneratedIntColumn _projectId;
   @override
-  GeneratedTextColumn get name => _name ??= _constructName();
-  GeneratedTextColumn _constructName() {
-    return GeneratedTextColumn(
-      'name',
+  GeneratedIntColumn get projectId => _projectId ??= _constructProjectId();
+  GeneratedIntColumn _constructProjectId() {
+    return GeneratedIntColumn(
+      'project_id',
       $tableName,
       false,
     );
+  }
+
+  final VerificationMeta _geometryTypeMeta =
+      const VerificationMeta('geometryType');
+  GeneratedTextColumn _geometryType;
+  @override
+  GeneratedTextColumn get geometryType =>
+      _geometryType ??= _constructGeometryType();
+  GeneratedTextColumn _constructGeometryType() {
+    return GeneratedTextColumn(
+      'geometry_type',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _colorMeta = const VerificationMeta('color');
+  GeneratedTextColumn _color;
+  @override
+  GeneratedTextColumn get color => _color ??= _constructColor();
+  GeneratedTextColumn _constructColor() {
+    return GeneratedTextColumn(
+      'color',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _labelMeta = const VerificationMeta('label');
+  GeneratedTextColumn _label;
+  @override
+  GeneratedTextColumn get label => _label ??= _constructLabel();
+  GeneratedTextColumn _constructLabel() {
+    return GeneratedTextColumn(
+      'label',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _valueMeta = const VerificationMeta('value');
+  GeneratedTextColumn _value;
+  @override
+  GeneratedTextColumn get value => _value ??= _constructValue();
+  GeneratedTextColumn _constructValue() {
+    return GeneratedTextColumn(
+      'value',
+      $tableName,
+      false,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, projectId, geometryType, color, label, value];
+  @override
+  $FeaturesTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'features';
+  @override
+  final String actualTableName = 'features';
+  @override
+  VerificationContext validateIntegrity(Insertable<Feature> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    }
+    if (data.containsKey('project_id')) {
+      context.handle(_projectIdMeta,
+          projectId.isAcceptableOrUnknown(data['project_id'], _projectIdMeta));
+    } else if (isInserting) {
+      context.missing(_projectIdMeta);
+    }
+    if (data.containsKey('geometry_type')) {
+      context.handle(
+          _geometryTypeMeta,
+          geometryType.isAcceptableOrUnknown(
+              data['geometry_type'], _geometryTypeMeta));
+    } else if (isInserting) {
+      context.missing(_geometryTypeMeta);
+    }
+    if (data.containsKey('color')) {
+      context.handle(
+          _colorMeta, color.isAcceptableOrUnknown(data['color'], _colorMeta));
+    } else if (isInserting) {
+      context.missing(_colorMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+          _labelMeta, label.isAcceptableOrUnknown(data['label'], _labelMeta));
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+          _valueMeta, value.isAcceptableOrUnknown(data['value'], _valueMeta));
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Feature map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return Feature.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  $FeaturesTable createAlias(String alias) {
+    return $FeaturesTable(_db, alias);
+  }
+}
+
+class Survey extends DataClass implements Insertable<Survey> {
+  final int id;
+  final String shStRefId;
+  final String side;
+  Survey({@required this.id, @required this.shStRefId, @required this.side});
+  factory Survey.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final stringType = db.typeSystem.forDartType<String>();
+    return Survey(
+      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      shStRefId: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}sh_st_ref_id']),
+      side: stringType.mapFromDatabaseResponse(data['${effectivePrefix}side']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
+    if (!nullToAbsent || shStRefId != null) {
+      map['sh_st_ref_id'] = Variable<String>(shStRefId);
+    }
+    if (!nullToAbsent || side != null) {
+      map['side'] = Variable<String>(side);
+    }
+    return map;
+  }
+
+  SurveysCompanion toCompanion(bool nullToAbsent) {
+    return SurveysCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      shStRefId: shStRefId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shStRefId),
+      side: side == null && nullToAbsent ? const Value.absent() : Value(side),
+    );
+  }
+
+  factory Survey.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return Survey(
+      id: serializer.fromJson<int>(json['id']),
+      shStRefId: serializer.fromJson<String>(json['shStRefId']),
+      side: serializer.fromJson<String>(json['side']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'shStRefId': serializer.toJson<String>(shStRefId),
+      'side': serializer.toJson<String>(side),
+    };
+  }
+
+  Survey copyWith({int id, String shStRefId, String side}) => Survey(
+        id: id ?? this.id,
+        shStRefId: shStRefId ?? this.shStRefId,
+        side: side ?? this.side,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Survey(')
+          ..write('id: $id, ')
+          ..write('shStRefId: $shStRefId, ')
+          ..write('side: $side')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      $mrjf($mrjc(id.hashCode, $mrjc(shStRefId.hashCode, side.hashCode)));
+  @override
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      (other is Survey &&
+          other.id == this.id &&
+          other.shStRefId == this.shStRefId &&
+          other.side == this.side);
+}
+
+class SurveysCompanion extends UpdateCompanion<Survey> {
+  final Value<int> id;
+  final Value<String> shStRefId;
+  final Value<String> side;
+  const SurveysCompanion({
+    this.id = const Value.absent(),
+    this.shStRefId = const Value.absent(),
+    this.side = const Value.absent(),
+  });
+  SurveysCompanion.insert({
+    this.id = const Value.absent(),
+    @required String shStRefId,
+    @required String side,
+  })  : shStRefId = Value(shStRefId),
+        side = Value(side);
+  static Insertable<Survey> custom({
+    Expression<int> id,
+    Expression<String> shStRefId,
+    Expression<String> side,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (shStRefId != null) 'sh_st_ref_id': shStRefId,
+      if (side != null) 'side': side,
+    });
+  }
+
+  SurveysCompanion copyWith(
+      {Value<int> id, Value<String> shStRefId, Value<String> side}) {
+    return SurveysCompanion(
+      id: id ?? this.id,
+      shStRefId: shStRefId ?? this.shStRefId,
+      side: side ?? this.side,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (shStRefId.present) {
+      map['sh_st_ref_id'] = Variable<String>(shStRefId.value);
+    }
+    if (side.present) {
+      map['side'] = Variable<String>(side.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SurveysCompanion(')
+          ..write('id: $id, ')
+          ..write('shStRefId: $shStRefId, ')
+          ..write('side: $side')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $SurveysTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  GeneratedIntColumn _id;
+  @override
+  GeneratedIntColumn get id => _id ??= _constructId();
+  GeneratedIntColumn _constructId() {
+    return GeneratedIntColumn('id', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
   }
 
   final VerificationMeta _shStRefIdMeta = const VerificationMeta('shStRefId');
@@ -664,6 +916,376 @@ class $CurbsTable extends Curbs with TableInfo<$CurbsTable, Curb> {
   GeneratedTextColumn _constructSide() {
     return GeneratedTextColumn(
       'side',
+      $tableName,
+      false,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, shStRefId, side];
+  @override
+  $SurveysTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'surveys';
+  @override
+  final String actualTableName = 'surveys';
+  @override
+  VerificationContext validateIntegrity(Insertable<Survey> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    }
+    if (data.containsKey('sh_st_ref_id')) {
+      context.handle(
+          _shStRefIdMeta,
+          shStRefId.isAcceptableOrUnknown(
+              data['sh_st_ref_id'], _shStRefIdMeta));
+    } else if (isInserting) {
+      context.missing(_shStRefIdMeta);
+    }
+    if (data.containsKey('side')) {
+      context.handle(
+          _sideMeta, side.isAcceptableOrUnknown(data['side'], _sideMeta));
+    } else if (isInserting) {
+      context.missing(_sideMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Survey map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return Survey.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  $SurveysTable createAlias(String alias) {
+    return $SurveysTable(_db, alias);
+  }
+}
+
+class Span extends DataClass implements Insertable<Span> {
+  final int id;
+  final int surveyId;
+  final String name;
+  final String type;
+  final double start;
+  final double stop;
+  final bool complete;
+  Span(
+      {@required this.id,
+      @required this.surveyId,
+      @required this.name,
+      @required this.type,
+      @required this.start,
+      @required this.stop,
+      @required this.complete});
+  factory Span.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final stringType = db.typeSystem.forDartType<String>();
+    final doubleType = db.typeSystem.forDartType<double>();
+    final boolType = db.typeSystem.forDartType<bool>();
+    return Span(
+      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      surveyId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}survey_id']),
+      name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
+      type: stringType.mapFromDatabaseResponse(data['${effectivePrefix}type']),
+      start:
+          doubleType.mapFromDatabaseResponse(data['${effectivePrefix}start']),
+      stop: doubleType.mapFromDatabaseResponse(data['${effectivePrefix}stop']),
+      complete:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}complete']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
+    if (!nullToAbsent || surveyId != null) {
+      map['survey_id'] = Variable<int>(surveyId);
+    }
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String>(name);
+    }
+    if (!nullToAbsent || type != null) {
+      map['type'] = Variable<String>(type);
+    }
+    if (!nullToAbsent || start != null) {
+      map['start'] = Variable<double>(start);
+    }
+    if (!nullToAbsent || stop != null) {
+      map['stop'] = Variable<double>(stop);
+    }
+    if (!nullToAbsent || complete != null) {
+      map['complete'] = Variable<bool>(complete);
+    }
+    return map;
+  }
+
+  SpansCompanion toCompanion(bool nullToAbsent) {
+    return SpansCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      surveyId: surveyId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(surveyId),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      type: type == null && nullToAbsent ? const Value.absent() : Value(type),
+      start:
+          start == null && nullToAbsent ? const Value.absent() : Value(start),
+      stop: stop == null && nullToAbsent ? const Value.absent() : Value(stop),
+      complete: complete == null && nullToAbsent
+          ? const Value.absent()
+          : Value(complete),
+    );
+  }
+
+  factory Span.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return Span(
+      id: serializer.fromJson<int>(json['id']),
+      surveyId: serializer.fromJson<int>(json['surveyId']),
+      name: serializer.fromJson<String>(json['name']),
+      type: serializer.fromJson<String>(json['type']),
+      start: serializer.fromJson<double>(json['start']),
+      stop: serializer.fromJson<double>(json['stop']),
+      complete: serializer.fromJson<bool>(json['complete']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'surveyId': serializer.toJson<int>(surveyId),
+      'name': serializer.toJson<String>(name),
+      'type': serializer.toJson<String>(type),
+      'start': serializer.toJson<double>(start),
+      'stop': serializer.toJson<double>(stop),
+      'complete': serializer.toJson<bool>(complete),
+    };
+  }
+
+  Span copyWith(
+          {int id,
+          int surveyId,
+          String name,
+          String type,
+          double start,
+          double stop,
+          bool complete}) =>
+      Span(
+        id: id ?? this.id,
+        surveyId: surveyId ?? this.surveyId,
+        name: name ?? this.name,
+        type: type ?? this.type,
+        start: start ?? this.start,
+        stop: stop ?? this.stop,
+        complete: complete ?? this.complete,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Span(')
+          ..write('id: $id, ')
+          ..write('surveyId: $surveyId, ')
+          ..write('name: $name, ')
+          ..write('type: $type, ')
+          ..write('start: $start, ')
+          ..write('stop: $stop, ')
+          ..write('complete: $complete')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(
+      id.hashCode,
+      $mrjc(
+          surveyId.hashCode,
+          $mrjc(
+              name.hashCode,
+              $mrjc(
+                  type.hashCode,
+                  $mrjc(start.hashCode,
+                      $mrjc(stop.hashCode, complete.hashCode)))))));
+  @override
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      (other is Span &&
+          other.id == this.id &&
+          other.surveyId == this.surveyId &&
+          other.name == this.name &&
+          other.type == this.type &&
+          other.start == this.start &&
+          other.stop == this.stop &&
+          other.complete == this.complete);
+}
+
+class SpansCompanion extends UpdateCompanion<Span> {
+  final Value<int> id;
+  final Value<int> surveyId;
+  final Value<String> name;
+  final Value<String> type;
+  final Value<double> start;
+  final Value<double> stop;
+  final Value<bool> complete;
+  const SpansCompanion({
+    this.id = const Value.absent(),
+    this.surveyId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.type = const Value.absent(),
+    this.start = const Value.absent(),
+    this.stop = const Value.absent(),
+    this.complete = const Value.absent(),
+  });
+  SpansCompanion.insert({
+    this.id = const Value.absent(),
+    @required int surveyId,
+    @required String name,
+    @required String type,
+    @required double start,
+    @required double stop,
+    @required bool complete,
+  })  : surveyId = Value(surveyId),
+        name = Value(name),
+        type = Value(type),
+        start = Value(start),
+        stop = Value(stop),
+        complete = Value(complete);
+  static Insertable<Span> custom({
+    Expression<int> id,
+    Expression<int> surveyId,
+    Expression<String> name,
+    Expression<String> type,
+    Expression<double> start,
+    Expression<double> stop,
+    Expression<bool> complete,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (surveyId != null) 'survey_id': surveyId,
+      if (name != null) 'name': name,
+      if (type != null) 'type': type,
+      if (start != null) 'start': start,
+      if (stop != null) 'stop': stop,
+      if (complete != null) 'complete': complete,
+    });
+  }
+
+  SpansCompanion copyWith(
+      {Value<int> id,
+      Value<int> surveyId,
+      Value<String> name,
+      Value<String> type,
+      Value<double> start,
+      Value<double> stop,
+      Value<bool> complete}) {
+    return SpansCompanion(
+      id: id ?? this.id,
+      surveyId: surveyId ?? this.surveyId,
+      name: name ?? this.name,
+      type: type ?? this.type,
+      start: start ?? this.start,
+      stop: stop ?? this.stop,
+      complete: complete ?? this.complete,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (surveyId.present) {
+      map['survey_id'] = Variable<int>(surveyId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (start.present) {
+      map['start'] = Variable<double>(start.value);
+    }
+    if (stop.present) {
+      map['stop'] = Variable<double>(stop.value);
+    }
+    if (complete.present) {
+      map['complete'] = Variable<bool>(complete.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SpansCompanion(')
+          ..write('id: $id, ')
+          ..write('surveyId: $surveyId, ')
+          ..write('name: $name, ')
+          ..write('type: $type, ')
+          ..write('start: $start, ')
+          ..write('stop: $stop, ')
+          ..write('complete: $complete')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SpansTable extends Spans with TableInfo<$SpansTable, Span> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $SpansTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  GeneratedIntColumn _id;
+  @override
+  GeneratedIntColumn get id => _id ??= _constructId();
+  GeneratedIntColumn _constructId() {
+    return GeneratedIntColumn('id', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _surveyIdMeta = const VerificationMeta('surveyId');
+  GeneratedIntColumn _surveyId;
+  @override
+  GeneratedIntColumn get surveyId => _surveyId ??= _constructSurveyId();
+  GeneratedIntColumn _constructSurveyId() {
+    return GeneratedIntColumn(
+      'survey_id',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _nameMeta = const VerificationMeta('name');
+  GeneratedTextColumn _name;
+  @override
+  GeneratedTextColumn get name => _name ??= _constructName();
+  GeneratedTextColumn _constructName() {
+    return GeneratedTextColumn(
+      'name',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _typeMeta = const VerificationMeta('type');
+  GeneratedTextColumn _type;
+  @override
+  GeneratedTextColumn get type => _type ??= _constructType();
+  GeneratedTextColumn _constructType() {
+    return GeneratedTextColumn(
+      'type',
       $tableName,
       false,
     );
@@ -707,20 +1329,26 @@ class $CurbsTable extends Curbs with TableInfo<$CurbsTable, Curb> {
 
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, shStRefId, side, start, stop, complete];
+      [id, surveyId, name, type, start, stop, complete];
   @override
-  $CurbsTable get asDslTable => this;
+  $SpansTable get asDslTable => this;
   @override
-  String get $tableName => _alias ?? 'curbs';
+  String get $tableName => _alias ?? 'spans';
   @override
-  final String actualTableName = 'curbs';
+  final String actualTableName = 'spans';
   @override
-  VerificationContext validateIntegrity(Insertable<Curb> instance,
+  VerificationContext validateIntegrity(Insertable<Span> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    }
+    if (data.containsKey('survey_id')) {
+      context.handle(_surveyIdMeta,
+          surveyId.isAcceptableOrUnknown(data['survey_id'], _surveyIdMeta));
+    } else if (isInserting) {
+      context.missing(_surveyIdMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -728,19 +1356,11 @@ class $CurbsTable extends Curbs with TableInfo<$CurbsTable, Curb> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('sh_st_ref_id')) {
+    if (data.containsKey('type')) {
       context.handle(
-          _shStRefIdMeta,
-          shStRefId.isAcceptableOrUnknown(
-              data['sh_st_ref_id'], _shStRefIdMeta));
+          _typeMeta, type.isAcceptableOrUnknown(data['type'], _typeMeta));
     } else if (isInserting) {
-      context.missing(_shStRefIdMeta);
-    }
-    if (data.containsKey('side')) {
-      context.handle(
-          _sideMeta, side.isAcceptableOrUnknown(data['side'], _sideMeta));
-    } else if (isInserting) {
-      context.missing(_sideMeta);
+      context.missing(_typeMeta);
     }
     if (data.containsKey('start')) {
       context.handle(
@@ -766,14 +1386,297 @@ class $CurbsTable extends Curbs with TableInfo<$CurbsTable, Curb> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Curb map(Map<String, dynamic> data, {String tablePrefix}) {
+  Span map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Curb.fromData(data, _db, prefix: effectivePrefix);
+    return Span.fromData(data, _db, prefix: effectivePrefix);
   }
 
   @override
-  $CurbsTable createAlias(String alias) {
-    return $CurbsTable(_db, alias);
+  $SpansTable createAlias(String alias) {
+    return $SpansTable(_db, alias);
+  }
+}
+
+class Point extends DataClass implements Insertable<Point> {
+  final int id;
+  final int photoId;
+  final String type;
+  final double position;
+  Point(
+      {@required this.id,
+      @required this.photoId,
+      @required this.type,
+      @required this.position});
+  factory Point.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final stringType = db.typeSystem.forDartType<String>();
+    final doubleType = db.typeSystem.forDartType<double>();
+    return Point(
+      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      photoId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}photo_id']),
+      type: stringType.mapFromDatabaseResponse(data['${effectivePrefix}type']),
+      position: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}position']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
+    if (!nullToAbsent || photoId != null) {
+      map['photo_id'] = Variable<int>(photoId);
+    }
+    if (!nullToAbsent || type != null) {
+      map['type'] = Variable<String>(type);
+    }
+    if (!nullToAbsent || position != null) {
+      map['position'] = Variable<double>(position);
+    }
+    return map;
+  }
+
+  PointsCompanion toCompanion(bool nullToAbsent) {
+    return PointsCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      photoId: photoId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(photoId),
+      type: type == null && nullToAbsent ? const Value.absent() : Value(type),
+      position: position == null && nullToAbsent
+          ? const Value.absent()
+          : Value(position),
+    );
+  }
+
+  factory Point.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return Point(
+      id: serializer.fromJson<int>(json['id']),
+      photoId: serializer.fromJson<int>(json['photoId']),
+      type: serializer.fromJson<String>(json['type']),
+      position: serializer.fromJson<double>(json['position']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'photoId': serializer.toJson<int>(photoId),
+      'type': serializer.toJson<String>(type),
+      'position': serializer.toJson<double>(position),
+    };
+  }
+
+  Point copyWith({int id, int photoId, String type, double position}) => Point(
+        id: id ?? this.id,
+        photoId: photoId ?? this.photoId,
+        type: type ?? this.type,
+        position: position ?? this.position,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Point(')
+          ..write('id: $id, ')
+          ..write('photoId: $photoId, ')
+          ..write('type: $type, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(id.hashCode,
+      $mrjc(photoId.hashCode, $mrjc(type.hashCode, position.hashCode))));
+  @override
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      (other is Point &&
+          other.id == this.id &&
+          other.photoId == this.photoId &&
+          other.type == this.type &&
+          other.position == this.position);
+}
+
+class PointsCompanion extends UpdateCompanion<Point> {
+  final Value<int> id;
+  final Value<int> photoId;
+  final Value<String> type;
+  final Value<double> position;
+  const PointsCompanion({
+    this.id = const Value.absent(),
+    this.photoId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.position = const Value.absent(),
+  });
+  PointsCompanion.insert({
+    this.id = const Value.absent(),
+    @required int photoId,
+    @required String type,
+    @required double position,
+  })  : photoId = Value(photoId),
+        type = Value(type),
+        position = Value(position);
+  static Insertable<Point> custom({
+    Expression<int> id,
+    Expression<int> photoId,
+    Expression<String> type,
+    Expression<double> position,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (photoId != null) 'photo_id': photoId,
+      if (type != null) 'type': type,
+      if (position != null) 'position': position,
+    });
+  }
+
+  PointsCompanion copyWith(
+      {Value<int> id,
+      Value<int> photoId,
+      Value<String> type,
+      Value<double> position}) {
+    return PointsCompanion(
+      id: id ?? this.id,
+      photoId: photoId ?? this.photoId,
+      type: type ?? this.type,
+      position: position ?? this.position,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (photoId.present) {
+      map['photo_id'] = Variable<int>(photoId.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<double>(position.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PointsCompanion(')
+          ..write('id: $id, ')
+          ..write('photoId: $photoId, ')
+          ..write('type: $type, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PointsTable extends Points with TableInfo<$PointsTable, Point> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $PointsTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  GeneratedIntColumn _id;
+  @override
+  GeneratedIntColumn get id => _id ??= _constructId();
+  GeneratedIntColumn _constructId() {
+    return GeneratedIntColumn('id', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _photoIdMeta = const VerificationMeta('photoId');
+  GeneratedIntColumn _photoId;
+  @override
+  GeneratedIntColumn get photoId => _photoId ??= _constructPhotoId();
+  GeneratedIntColumn _constructPhotoId() {
+    return GeneratedIntColumn(
+      'photo_id',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _typeMeta = const VerificationMeta('type');
+  GeneratedTextColumn _type;
+  @override
+  GeneratedTextColumn get type => _type ??= _constructType();
+  GeneratedTextColumn _constructType() {
+    return GeneratedTextColumn(
+      'type',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _positionMeta = const VerificationMeta('position');
+  GeneratedRealColumn _position;
+  @override
+  GeneratedRealColumn get position => _position ??= _constructPosition();
+  GeneratedRealColumn _constructPosition() {
+    return GeneratedRealColumn(
+      'position',
+      $tableName,
+      false,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, photoId, type, position];
+  @override
+  $PointsTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'points';
+  @override
+  final String actualTableName = 'points';
+  @override
+  VerificationContext validateIntegrity(Insertable<Point> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    }
+    if (data.containsKey('photo_id')) {
+      context.handle(_photoIdMeta,
+          photoId.isAcceptableOrUnknown(data['photo_id'], _photoIdMeta));
+    } else if (isInserting) {
+      context.missing(_photoIdMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+          _typeMeta, type.isAcceptableOrUnknown(data['type'], _typeMeta));
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(_positionMeta,
+          position.isAcceptableOrUnknown(data['position'], _positionMeta));
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Point map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return Point.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  $PointsTable createAlias(String alias) {
+    return $PointsTable(_db, alias);
   }
 }
 
@@ -782,15 +1685,30 @@ abstract class _$CurbWheelDatabase extends GeneratedDatabase {
       : super(SqlTypeSystem.defaultInstance, e);
   $ProjectsTable _projects;
   $ProjectsTable get projects => _projects ??= $ProjectsTable(this);
-  $CurbsTable _curbs;
-  $CurbsTable get curbs => _curbs ??= $CurbsTable(this);
+  $FeaturesTable _features;
+  $FeaturesTable get features => _features ??= $FeaturesTable(this);
+  $SurveysTable _surveys;
+  $SurveysTable get surveys => _surveys ??= $SurveysTable(this);
+  $SpansTable _spans;
+  $SpansTable get spans => _spans ??= $SpansTable(this);
+  $PointsTable _points;
+  $PointsTable get points => _points ??= $PointsTable(this);
   ProjectDao _projectDao;
   ProjectDao get projectDao =>
       _projectDao ??= ProjectDao(this as CurbWheelDatabase);
-  CurbDao _curbDao;
-  CurbDao get curbDao => _curbDao ??= CurbDao(this as CurbWheelDatabase);
+  FeatureDao _featureDao;
+  FeatureDao get featureDao =>
+      _featureDao ??= FeatureDao(this as CurbWheelDatabase);
+  SurveyDao _surveyDao;
+  SurveyDao get surveyDao =>
+      _surveyDao ??= SurveyDao(this as CurbWheelDatabase);
+  SpanDao _spanDao;
+  SpanDao get spanDao => _spanDao ??= SpanDao(this as CurbWheelDatabase);
+  PointDao _pointDao;
+  PointDao get pointDao => _pointDao ??= PointDao(this as CurbWheelDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [projects, curbs];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [projects, features, surveys, spans, points];
 }

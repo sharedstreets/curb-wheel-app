@@ -15,7 +15,7 @@ class _$ConfigService extends ConfigService {
   final definitionType = ConfigService;
 
   Future<Response> getConfig(String url) {
-    final $url = '$url';
+    final $url = '${url}';
     final $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }

@@ -3,7 +3,7 @@ import 'package:curbwheel/ui/projects/add_project_form.dart';
 import 'package:curbwheel/utils/write_file.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 
-import '../../database/database.dart';
+import 'package:curbwheel/database/database.dart';
 import 'project_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
