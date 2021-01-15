@@ -70,7 +70,7 @@ packages:
       name: build_daemon
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.5"
+    version: "2.1.6"
   build_resolvers:
     dependency: transitive
     description:
@@ -84,7 +84,7 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.10.12"
+    version: "1.10.13"
   build_runner_core:
     dependency: transitive
     description:
@@ -147,7 +147,7 @@ packages:
       name: cli_util
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.4"
+    version: "0.2.0"
   clock:
     dependency: transitive
     description:
@@ -368,7 +368,7 @@ packages:
       name: moor_generator
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.4.0"
+    version: "3.4.1"
   nested:
     dependency: transitive
     description:
@@ -405,7 +405,7 @@ packages:
     source: hosted
     version: "1.9.3"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       url: "https://pub.dartlang.org"
@@ -487,7 +487,7 @@ packages:
       name: provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.3.2+3"
+    version: "4.3.2+4"
   pub_semver:
     dependency: transitive
     description:
@@ -731,6 +731,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.1+3"
+  turf:
+    dependency: "direct main"
+    description:
+      name: turf
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2+3"
   typed_data:
     dependency: transitive
     description:

@@ -37,9 +37,15 @@ class _QrScannerState extends State<QrScanner> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Scan project QR Code',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+        ),
         body: Column(children: <Widget>[
-      Expanded(flex: 4, child: _buildQrView(context)),
-    ]));
+          Expanded(flex: 4, child: _buildQrView(context)),
+        ]));
   }
 
   Widget _buildQrView(BuildContext context) {

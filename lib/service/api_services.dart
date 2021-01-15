@@ -1,5 +1,6 @@
 import "dart:async";
 import 'package:chopper/chopper.dart';
+import 'package:turf/turf.dart';
 
 part 'api_services.chopper.dart';
 
@@ -10,7 +11,8 @@ class Config {
   final String mapData;
   final String organization;
 
-  Config(this.projectId, this.projectName, this.email, this.mapData, this.organization);
+  Config(this.projectId, this.projectName, this.email, this.mapData,
+      this.organization);
 
   Config.fromJson(Map<String, dynamic> json)
       : projectId = json['projectId'],
@@ -20,11 +22,19 @@ class Config {
         organization = json['organization'];
 }
 
+class MapData {
+  final FeatureCollection featureCollection;
+
+  MapData(this.featureCollection);
+
+  MapData.fromJson(Map<String, dynamic> json)
+      : featureCollection = FeatureCollection.fromJson(json);
+}
+
 @ChopperApi()
-abstract class ConfigService extends ChopperService {
-  static ConfigService create([ChopperClient client]) =>
-      _$ConfigService(client);
+abstract class JsonService extends ChopperService {
+  static JsonService create([ChopperClient client]) => _$JsonService(client);
 
   @Get(path: '{url}')
-  Future<Response> getConfig(@Path('url') String url);
+  Future<Response> getJson(@Path('url') String url);
 }

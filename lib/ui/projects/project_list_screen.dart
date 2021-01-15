@@ -37,13 +37,21 @@ class ProjectListScreenState extends State<ProjectListScreen> {
                   onPressed: () {
                     Navigator.pop(context, Action.qrcode);
                   },
-                  child: const Text('Scan QR Code'),
+                  child: Row(children: <Widget>[
+                    Icon(Icons.qr_code_scanner),
+                    Text('  Scan QR Code',
+                        style: TextStyle(fontWeight: FontWeight.bold))
+                  ]),
                 ),
                 SimpleDialogOption(
                   onPressed: () {
                     Navigator.pop(context, Action.form);
                   },
-                  child: const Text('Manually add'),
+                  child: Row(children: <Widget>[
+                    Icon(Icons.link),
+                    Text('  Enter URL',
+                        style: TextStyle(fontWeight: FontWeight.bold))
+                  ]),
                 ),
               ],
             );
@@ -51,17 +59,22 @@ class ProjectListScreenState extends State<ProjectListScreen> {
         case Action.qrcode:
           var projectUrl = await Navigator.push(
               context, MaterialPageRoute(builder: (context) => QrScanner()));
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  AddProjectFormScreen(initalProjectUrl: projectUrl),
-            ),
-          );
+          if (projectUrl != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    AddProjectFormScreen(initalProjectUrl: projectUrl),
+              ),
+            );
+          }
           break;
         case Action.form:
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => AddProjectFormScreen()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      AddProjectFormScreen(initalProjectUrl: null)));
           break;
       }
     }
@@ -93,7 +106,7 @@ class ProjectListScreenState extends State<ProjectListScreen> {
       ),
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(40.0),
+          padding: EdgeInsets.all(10.0),
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

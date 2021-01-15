@@ -1,31 +1,34 @@
 import 'package:chopper/chopper.dart';
 import '../service/api_services.dart';
+import 'package:turf/turf.dart';
 
 class ConfigClient {
   final ChopperClient chopper;
-
   ConfigClient()
       : chopper = ChopperClient(
-            services: [ConfigService.create()],
+            services: [JsonService.create()],
             interceptors: [HttpLoggingInterceptor()],
             converter: JsonConverter());
 
+  _getJson(String url) async {
+    final jsonService = chopper.getService<JsonService>();
+    final response = await jsonService.getJson(url);
+
+    if (response.isSuccessful) {
+      // successful request
+      final body = response.body;
+      return body;
+    } else
+      throw Exception("Failed to load json data.");
+  }
+
   getConfig(String url) async {
-    final configService = chopper.getService<ConfigService>();
+    final configJson = await _getJson(url);
+    return Config.fromJson(configJson);
+  }
 
-    /// then call your function
-    final response = await configService.getConfig(url);
-
-    //if (response.isSuccessful) {
-    // successful request
-    final body = response.body;
-    print(body);
-    print("foo");
-    //Map data = jsonDecode(body);
-    print("foo");
-    //print(data);
-    var config = Config.fromJson(body);
-    return config;
-    //}
+  getMapData(Config config) async {
+    final mapDataJson = await _getJson(config.mapData);
+    return MapData.fromJson(mapDataJson);
   }
 }

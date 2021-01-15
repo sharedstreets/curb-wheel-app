@@ -9,12 +9,14 @@ part of 'database.dart';
 // ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
 class Project extends DataClass implements Insertable<Project> {
   final int id;
+  final String projectConfigUrl;
   final String projectId;
   final String name;
   final String email;
   final String organization;
   Project(
       {@required this.id,
+      @required this.projectConfigUrl,
       @required this.projectId,
       @required this.name,
       @required this.email,
@@ -26,6 +28,8 @@ class Project extends DataClass implements Insertable<Project> {
     final stringType = db.typeSystem.forDartType<String>();
     return Project(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      projectConfigUrl: stringType.mapFromDatabaseResponse(
+          data['${effectivePrefix}project_config_url']),
       projectId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}project_id']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
@@ -40,6 +44,9 @@ class Project extends DataClass implements Insertable<Project> {
     final map = <String, Expression>{};
     if (!nullToAbsent || id != null) {
       map['id'] = Variable<int>(id);
+    }
+    if (!nullToAbsent || projectConfigUrl != null) {
+      map['project_config_url'] = Variable<String>(projectConfigUrl);
     }
     if (!nullToAbsent || projectId != null) {
       map['project_id'] = Variable<String>(projectId);
@@ -59,6 +66,9 @@ class Project extends DataClass implements Insertable<Project> {
   ProjectsCompanion toCompanion(bool nullToAbsent) {
     return ProjectsCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      projectConfigUrl: projectConfigUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(projectConfigUrl),
       projectId: projectId == null && nullToAbsent
           ? const Value.absent()
           : Value(projectId),
@@ -76,6 +86,7 @@ class Project extends DataClass implements Insertable<Project> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Project(
       id: serializer.fromJson<int>(json['id']),
+      projectConfigUrl: serializer.fromJson<String>(json['projectConfigUrl']),
       projectId: serializer.fromJson<String>(json['projectId']),
       name: serializer.fromJson<String>(json['name']),
       email: serializer.fromJson<String>(json['email']),
@@ -87,6 +98,7 @@ class Project extends DataClass implements Insertable<Project> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'projectConfigUrl': serializer.toJson<String>(projectConfigUrl),
       'projectId': serializer.toJson<String>(projectId),
       'name': serializer.toJson<String>(name),
       'email': serializer.toJson<String>(email),
@@ -96,12 +108,14 @@ class Project extends DataClass implements Insertable<Project> {
 
   Project copyWith(
           {int id,
+          String projectConfigUrl,
           String projectId,
           String name,
           String email,
           String organization}) =>
       Project(
         id: id ?? this.id,
+        projectConfigUrl: projectConfigUrl ?? this.projectConfigUrl,
         projectId: projectId ?? this.projectId,
         name: name ?? this.name,
         email: email ?? this.email,
@@ -111,6 +125,7 @@ class Project extends DataClass implements Insertable<Project> {
   String toString() {
     return (StringBuffer('Project(')
           ..write('id: $id, ')
+          ..write('projectConfigUrl: $projectConfigUrl, ')
           ..write('projectId: $projectId, ')
           ..write('name: $name, ')
           ..write('email: $email, ')
@@ -122,13 +137,18 @@ class Project extends DataClass implements Insertable<Project> {
   @override
   int get hashCode => $mrjf($mrjc(
       id.hashCode,
-      $mrjc(projectId.hashCode,
-          $mrjc(name.hashCode, $mrjc(email.hashCode, organization.hashCode)))));
+      $mrjc(
+          projectConfigUrl.hashCode,
+          $mrjc(
+              projectId.hashCode,
+              $mrjc(name.hashCode,
+                  $mrjc(email.hashCode, organization.hashCode))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Project &&
           other.id == this.id &&
+          other.projectConfigUrl == this.projectConfigUrl &&
           other.projectId == this.projectId &&
           other.name == this.name &&
           other.email == this.email &&
@@ -137,12 +157,14 @@ class Project extends DataClass implements Insertable<Project> {
 
 class ProjectsCompanion extends UpdateCompanion<Project> {
   final Value<int> id;
+  final Value<String> projectConfigUrl;
   final Value<String> projectId;
   final Value<String> name;
   final Value<String> email;
   final Value<String> organization;
   const ProjectsCompanion({
     this.id = const Value.absent(),
+    this.projectConfigUrl = const Value.absent(),
     this.projectId = const Value.absent(),
     this.name = const Value.absent(),
     this.email = const Value.absent(),
@@ -150,16 +172,19 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   });
   ProjectsCompanion.insert({
     this.id = const Value.absent(),
+    @required String projectConfigUrl,
     @required String projectId,
     @required String name,
     @required String email,
     @required String organization,
-  })  : projectId = Value(projectId),
+  })  : projectConfigUrl = Value(projectConfigUrl),
+        projectId = Value(projectId),
         name = Value(name),
         email = Value(email),
         organization = Value(organization);
   static Insertable<Project> custom({
     Expression<int> id,
+    Expression<String> projectConfigUrl,
     Expression<String> projectId,
     Expression<String> name,
     Expression<String> email,
@@ -167,6 +192,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (projectConfigUrl != null) 'project_config_url': projectConfigUrl,
       if (projectId != null) 'project_id': projectId,
       if (name != null) 'name': name,
       if (email != null) 'email': email,
@@ -176,12 +202,14 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
 
   ProjectsCompanion copyWith(
       {Value<int> id,
+      Value<String> projectConfigUrl,
       Value<String> projectId,
       Value<String> name,
       Value<String> email,
       Value<String> organization}) {
     return ProjectsCompanion(
       id: id ?? this.id,
+      projectConfigUrl: projectConfigUrl ?? this.projectConfigUrl,
       projectId: projectId ?? this.projectId,
       name: name ?? this.name,
       email: email ?? this.email,
@@ -194,6 +222,9 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (projectConfigUrl.present) {
+      map['project_config_url'] = Variable<String>(projectConfigUrl.value);
     }
     if (projectId.present) {
       map['project_id'] = Variable<String>(projectId.value);
@@ -214,6 +245,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   String toString() {
     return (StringBuffer('ProjectsCompanion(')
           ..write('id: $id, ')
+          ..write('projectConfigUrl: $projectConfigUrl, ')
           ..write('projectId: $projectId, ')
           ..write('name: $name, ')
           ..write('email: $email, ')
@@ -234,6 +266,20 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   GeneratedIntColumn _constructId() {
     return GeneratedIntColumn('id', $tableName, false,
         hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _projectConfigUrlMeta =
+      const VerificationMeta('projectConfigUrl');
+  GeneratedTextColumn _projectConfigUrl;
+  @override
+  GeneratedTextColumn get projectConfigUrl =>
+      _projectConfigUrl ??= _constructProjectConfigUrl();
+  GeneratedTextColumn _constructProjectConfigUrl() {
+    return GeneratedTextColumn(
+      'project_config_url',
+      $tableName,
+      false,
+    );
   }
 
   final VerificationMeta _projectIdMeta = const VerificationMeta('projectId');
@@ -288,7 +334,7 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
 
   @override
   List<GeneratedColumn> get $columns =>
-      [id, projectId, name, email, organization];
+      [id, projectConfigUrl, projectId, name, email, organization];
   @override
   $ProjectsTable get asDslTable => this;
   @override
@@ -302,6 +348,14 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    }
+    if (data.containsKey('project_config_url')) {
+      context.handle(
+          _projectConfigUrlMeta,
+          projectConfigUrl.isAcceptableOrUnknown(
+              data['project_config_url'], _projectConfigUrlMeta));
+    } else if (isInserting) {
+      context.missing(_projectConfigUrlMeta);
     }
     if (data.containsKey('project_id')) {
       context.handle(_projectIdMeta,

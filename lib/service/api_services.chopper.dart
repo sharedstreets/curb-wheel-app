@@ -6,15 +6,15 @@ part of 'api_services.dart';
 // ChopperGenerator
 // **************************************************************************
 
-class _$ConfigService extends ConfigService {
-  _$ConfigService([ChopperClient client]) {
+class _$JsonService extends JsonService {
+  _$JsonService([ChopperClient client]) {
     if (client == null) return;
     this.client = client;
   }
 
-  final definitionType = ConfigService;
+  final definitionType = JsonService;
 
-  Future<Response> getConfig(String url) {
+  Future<Response> getJson(String url) {
     final $url = '${url}';
     final $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);

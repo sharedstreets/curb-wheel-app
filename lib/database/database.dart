@@ -9,6 +9,7 @@ part 'database.g.dart';
 
 class Projects extends Table {
   IntColumn get id => integer().autoIncrement()();
+  TextColumn get projectConfigUrl => text()();
   TextColumn get projectId => text()();
   TextColumn get name => text()();
   TextColumn get email => text()();
@@ -67,4 +68,9 @@ class CurbWheelDatabase extends _$CurbWheelDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  Future<List<Project>> findProjectById(String projectId) {
+    return (select(projects)..where((p) => p.projectId.equals(projectId)))
+        .get();
+  }
 }

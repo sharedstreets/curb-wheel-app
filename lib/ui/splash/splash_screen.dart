@@ -71,7 +71,7 @@ class _MyPainterState extends State<SplashScreen>
               Duration(seconds: 2),
               () => {
                     controller.stop(),
-                    Navigator.push(
+                    Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => ProjectListScreen()))
