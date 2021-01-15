@@ -1,4 +1,5 @@
 import 'package:curbwheel/client/config_client.dart';
+import 'package:curbwheel/ui/preferences.dart/preferences_screen.dart';
 import 'package:curbwheel/ui/projects/add_project_form.dart';
 import 'package:curbwheel/ui/projects/qr_scanner.dart';
 import 'package:curbwheel/utils/write_file.dart';
@@ -72,6 +73,16 @@ class ProjectListScreenState extends State<ProjectListScreen> {
           'Projects',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'preferences',
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => PreferencesScreen()));
+            },
+          )
+        ]
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -92,10 +103,11 @@ class ProjectListScreenState extends State<ProjectListScreen> {
                       return Expanded(
                         child: Align(
                           alignment: Alignment.bottomCenter,
-                          child: snapshot.data.isEmpty
+                          child: 
+                          snapshot.hasData
                               ? Center(child: Text('No projects yet'))
                               : ListView.builder(
-                                  itemCount: snapshot.data.length,
+                                  itemCount: snapshot.hasData ? snapshot.data.length : 0,
                                   itemBuilder: (context, index) {
                                     return ProjectCard(
                                       project: snapshot.data[index],
