@@ -1,4 +1,5 @@
 import 'package:curbwheel/client/config_client.dart';
+import 'package:curbwheel/ui/preferences.dart/preferences_screen.dart';
 import 'package:curbwheel/ui/projects/add_project_form.dart';
 import 'package:curbwheel/utils/write_file.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
@@ -63,6 +64,16 @@ class ProjectListScreenState extends State<ProjectListScreen> {
           'Projects',
           style: TextStyle(color: Colors.white),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'preferences',
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => PreferencesScreen()));
+            },
+          )
+        ]
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
