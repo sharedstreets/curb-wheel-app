@@ -1,8 +1,10 @@
 import 'package:curbwheel/client/config_client.dart';
 import 'package:curbwheel/ui/preferences.dart/preferences_screen.dart';
 import 'package:curbwheel/ui/projects/add_project_form.dart';
+import 'package:curbwheel/ui/projects/qr_scanner.dart';
 import 'package:curbwheel/utils/write_file.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import 'package:curbwheel/database/database.dart';
 import 'project_card.dart';
@@ -47,12 +49,19 @@ class ProjectListScreenState extends State<ProjectListScreen> {
             );
           })) {
         case Action.qrcode:
-          // Let's go.
-          // ...
+          var projectUrl = await Navigator.push(
+              context, MaterialPageRoute(builder: (context) => QrScanner()));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  AddProjectFormScreen(initalProjectUrl: projectUrl),
+            ),
+          );
           break;
         case Action.form:
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => AddProjectFormScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => AddProjectFormScreen()));
           break;
       }
     }
@@ -62,7 +71,7 @@ class ProjectListScreenState extends State<ProjectListScreen> {
       appBar: AppBar(
         title: Text(
           'Projects',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         actions: [
           IconButton(

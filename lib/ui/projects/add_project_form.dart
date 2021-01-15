@@ -6,13 +6,24 @@ import 'package:moor/moor.dart' as moor;
 import 'package:provider/provider.dart';
 
 class AddProjectFormScreen extends StatefulWidget {
+  final String initalProjectUrl;
+
+//requiring the list of todos
+  AddProjectFormScreen({Key key, @required this.initalProjectUrl})
+      : super(key: key);
+
   @override
-  State<StatefulWidget> createState() => _AddProjectFormScreenState();
+  State<StatefulWidget> createState() =>
+      _AddProjectFormScreenState(this.initalProjectUrl);
 }
 
 class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
   CurbWheelDatabase _database;
   final textFieldController = TextEditingController();
+
+  _AddProjectFormScreenState(intialProjectUrl) {
+    textFieldController.text = intialProjectUrl;
+  }
 
   @override
   void initState() {
@@ -43,28 +54,24 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            appBar: AppBar(
-        title: Text(
-          'Projects',
-          style: TextStyle(color: Colors.white),
+        appBar: AppBar(
+          title: Text(
+            'Projects',
+            style: TextStyle(color: Colors.blue),
+          ),
         ),
-      ),
-      body:
-        Column(
-      children: <Widget>[
-        Center(child:         TextFormField(
-          controller: textFieldController,
-          decoration: InputDecoration(labelText: 'configuration URL'),
-        ),),
-
-
-        TextButton(
-          
-          child: Text("Download"),
-          onPressed: () => print(textFieldController.value.text)
-        )
-        
-      ],
-    ));
+        body: Column(
+          children: <Widget>[
+            Center(
+              child: TextFormField(
+                controller: textFieldController,
+                decoration: InputDecoration(labelText: 'configuration URL'),
+              ),
+            ),
+            TextButton(
+                child: Text("Download"),
+                onPressed: () => print(textFieldController.value.text))
+          ],
+        ));
   }
 }

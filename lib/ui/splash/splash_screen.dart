@@ -35,11 +35,10 @@ class _MyPainterState extends State<SplashScreen>
 
     Tween<double> _rotationTween = Tween(begin: -math.pi, end: 4 * math.pi);
 
-    animation = _rotationTween.animate(
-        CurvedAnimation(
-    parent: controller,
-    curve:  Curves.easeIn,
-  ))
+    animation = _rotationTween.animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.easeIn,
+    ))
       ..addListener(() {
         setState(() {});
       })
@@ -62,7 +61,6 @@ class _MyPainterState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: GestureDetector(
         key: Key('gestureDetector'),
