@@ -79,24 +79,45 @@ class ProjectListScreenState extends State<ProjectListScreen> {
       }
     }
 
+    Widget _showProjectList(snapshot) {
+      if (snapshot.hasData) {
+        if (snapshot.data.length > 0) {
+          return ListView.builder(
+            itemCount: snapshot.hasData
+                ? snapshot.data.length
+                : 0,
+            itemBuilder: (context, index) {
+              return ProjectCard(
+                project: snapshot.data[index],
+              );
+            });
+        } else {
+          return Center(child: Text('No projects yet'));
+        }
+      } else {
+        return Center(child: Text('Loading projects...'));
+      }
+    }
+
     Stream<List<Project>> _projects = _database.projectDao.watchAllProjects();
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Projects',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: 'preferences',
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => PreferencesScreen()));
-            },
-          )
-        ]
-      ),
+          title: Text(
+            'Projects',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings),
+              tooltip: 'preferences',
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PreferencesScreen()));
+              },
+            )
+          ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _addProjectOption();
@@ -116,16 +137,7 @@ class ProjectListScreenState extends State<ProjectListScreen> {
                       return Expanded(
                         child: Align(
                           alignment: Alignment.bottomCenter,
-                          child: 
-                          snapshot.hasData
-                              ? Center(child: Text('No projects yet'))
-                              : ListView.builder(
-                                  itemCount: snapshot.hasData ? snapshot.data.length : 0,
-                                  itemBuilder: (context, index) {
-                                    return ProjectCard(
-                                      project: snapshot.data[index],
-                                    );
-                                  }),
+                          child: _showProjectList(snapshot)
                         ),
                       );
                     })
