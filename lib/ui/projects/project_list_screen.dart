@@ -79,6 +79,24 @@ class ProjectListScreenState extends State<ProjectListScreen> {
       }
     }
 
+    Widget _showProjectList(snapshot) {
+      if (snapshot.hasData) {
+        if (snapshot.data.length > 0) {
+          return ListView.builder(
+              itemCount: snapshot.hasData ? snapshot.data.length : 0,
+              itemBuilder: (context, index) {
+                return ProjectCard(
+                  project: snapshot.data[index],
+                );
+              });
+        } else {
+          return Center(child: Text('No projects yet'));
+        }
+      } else {
+        return Center(child: Text('Loading projects...'));
+      }
+    }
+
     Stream<List<Project>> _projects = _database.projectDao.watchAllProjects();
     return Scaffold(
       appBar: AppBar(
@@ -116,19 +134,8 @@ class ProjectListScreenState extends State<ProjectListScreen> {
                     builder: (_, AsyncSnapshot<List<Project>> snapshot) {
                       return Expanded(
                         child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: snapshot.hasData
-                              ? ListView.builder(
-                                  itemCount: snapshot.hasData
-                                      ? snapshot.data.length
-                                      : 0,
-                                  itemBuilder: (context, index) {
-                                    return ProjectCard(
-                                      project: snapshot.data[index],
-                                    );
-                                  })
-                              : Center(child: Text('No projects yet')),
-                        ),
+                            alignment: Alignment.bottomCenter,
+                            child: _showProjectList(snapshot)),
                       );
                     })
               ]),
