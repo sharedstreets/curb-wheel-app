@@ -1,4 +1,8 @@
+import 'package:curbwheel/ui/features/features_screen.dart';
+import 'package:curbwheel/ui/map/map_screen.dart';
+import 'package:curbwheel/ui/projects/project_list_screen.dart';
 import 'package:curbwheel/ui/splash/splash_screen.dart';
+import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +25,13 @@ class CurbWheel extends StatelessWidget {
             bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
           ),
         ),
-        home: SplashScreen(),
+        routes: {
+          SplashScreen.routeName: (context) => SplashScreen(),
+          ProjectListScreen.routeName: (context) => ProjectListScreen(),
+          MapScreen.routeName: (context) => MapScreen(),
+          WheelScreen.routeName: (context) => WheelScreen(),
+          FeatureSelectScreen.routeName: (context) => FeatureSelectScreen(),
+        },
       ),
     );
   }

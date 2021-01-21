@@ -16,10 +16,9 @@ class ProjectCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.white.withAlpha(100),
         onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => MapScreen(project: project)));
+          Navigator.pushNamed(context, MapScreen.routeName,
+              arguments: MapScreenArguments(project)
+          );
         },
         child: Column(
           mainAxisSize: MainAxisSize.min,

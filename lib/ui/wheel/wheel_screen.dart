@@ -4,11 +4,16 @@ import 'package:curbwheel/ui/map/map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class WheelScreen extends StatefulWidget {
+class WheelScreenArguments {
   final Project project;
-  final Street street;
+  final Survey survey;
+  final List<SpansCompanion> incompleteSpans;
 
-  WheelScreen(this.project, this.street);
+  WheelScreenArguments(this.project, this.survey, this.incompleteSpans);
+}
+
+class WheelScreen extends StatefulWidget {
+  static const routeName = '/wheel';
 
   @override
   _WheelScreenState createState() => _WheelScreenState();
@@ -16,11 +21,16 @@ class WheelScreen extends StatefulWidget {
 
 class _WheelScreenState extends State<WheelScreen> {
   CurbWheelDatabase _database;
-  List<Span> incompleteSpans;
   List<Span> completeSpans;
 
   @override
   Widget build(BuildContext context) {
+    final WheelScreenArguments args = ModalRoute.of(context).settings.arguments;
+    final Project project = args.project;
+    final Survey survey = args.survey;
+    final List<SpansCompanion> incompleteSpans = args.incompleteSpans;
+
+    print(survey);
 
     _database = Provider.of<CurbWheelDatabase>(context);
     return Scaffold(
@@ -39,10 +49,9 @@ class _WheelScreenState extends State<WheelScreen> {
         child: Icon(Icons.add),
         backgroundColor: Colors.black,
         onPressed: () => {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => FeatureSelectScreen(widget.project, widget.street, 0.0, [])))
+          Navigator.pushNamed(context, FeatureSelectScreen.routeName,
+              arguments:
+                  FeatureSelectScreenArguments(project, survey, 0.0, incompleteSpans))
         },
       ),
     );
@@ -76,8 +85,7 @@ class _WheelHeaderState extends State<WheelHeader> {
               ],
             )
           ],
-        )
-      );
+        ));
   }
 }
 
@@ -110,17 +118,16 @@ class _SpanCardState extends State<SpanCard> {
   Widget build(BuildContext context) {
     return Card(
         child: Column(
-        children: [
-          Row(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(icon: Icon(Icons.more_horiz), onPressed: null),
-              IconButton(icon: Icon(Icons.camera_alt), onPressed: null),
-            ],
-          )
-        ],
-      )
-    );
+      children: [
+        Row(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(icon: Icon(Icons.more_horiz), onPressed: null),
+            IconButton(icon: Icon(Icons.camera_alt), onPressed: null),
+          ],
+        )
+      ],
+    ));
   }
 }

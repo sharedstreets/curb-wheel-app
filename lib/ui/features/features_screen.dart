@@ -1,17 +1,22 @@
 import 'package:curbwheel/database/database.dart';
-import 'package:curbwheel/ui/map/map_screen.dart';
 import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
+import 'package:provider/provider.dart';
 
-class FeatureSelectScreen extends StatefulWidget {
+class FeatureSelectScreenArguments {
   final Project project;
-  final Street street;
+  final Survey survey;
   final double position;
   final List<SpansCompanion> spans;
 
-  FeatureSelectScreen(this.project, this.street, this.position, this.spans);
+  FeatureSelectScreenArguments(
+      this.project, this.survey, this.position, this.spans);
+}
+
+class FeatureSelectScreen extends StatefulWidget {
+  static const routeName = '/feature-select';
 
   @override
   _FeatureSelectScreenState createState() => _FeatureSelectScreenState();
@@ -28,7 +33,7 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
         value: "curb_cut",
         projectId: 1234),
     Feature(
-        id: 1,
+        id: 2,
         color: "b80d00",
         label: "curb cut",
         geometryType: "line",
@@ -36,28 +41,16 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
         projectId: 1234)
   ];
 
-  SpansCompanion createSpan(Feature feature) {
-    return SpansCompanion(
-        start: moor.Value(widget.position),
-        type: moor.Value(feature.value),
-        complete: moor.Value(false));
-  }
-
-  onPressFeatureCard(Feature feature) {
-    var span = createSpan(feature);
-    widget.spans.add(span);
-    Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                WheelScreen(widget.project, widget.street)));
-
-  }
-
   @override
   Widget build(BuildContext context) {
+    _database = Provider.of<CurbWheelDatabase>(context);
+    final FeatureSelectScreenArguments args =
+        ModalRoute.of(context).settings.arguments;
+    final Project project = args.project;
+    final Survey survey = args.survey;
+    final double position = args.position;
+    final List<SpansCompanion> spans = args.spans;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Select a feature type"),
@@ -67,8 +60,7 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
         child: ListView.builder(
             itemCount: features.length,
             itemBuilder: (context, index) {
-              return FeatureCard(
-                  features[index], onPressFeatureCard(features[index]));
+              return FeatureCard(features[index], project, survey, position, spans);
             }),
       ),
     );
@@ -77,12 +69,27 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
 
 class FeatureCard extends StatelessWidget {
   final Feature feature;
-  final Function callback;
+  final Project project;
+  final Survey survey;
+  final double position;
+  final List<SpansCompanion> spans;
 
-  FeatureCard(this.feature, this.callback);
+  FeatureCard(this.feature, this.project, this.survey, this.position, this.spans);
 
   @override
   Widget build(BuildContext context) {
+    onPressFeatureCard() {
+      var span = SpansCompanion(
+          start: moor.Value(position),
+          type: moor.Value(feature.value),
+          complete: moor.Value(false));
+      spans.add(span);
+
+      Navigator.pushNamedAndRemoveUntil(
+          context, WheelScreen.routeName, ModalRoute.withName('/map'),
+          arguments: WheelScreenArguments(project, survey, spans));
+    }
+
     final String assetName = feature.geometryType == 'line'
         ? 'assets/vector-line.svg'
         : 'assets/map-marker.svg';
@@ -92,7 +99,7 @@ class FeatureCard extends StatelessWidget {
         color: Colors.black, semanticsLabel: semanticsLabel);
     return GestureDetector(
         onTap: () {
-          this.callback();
+          onPressFeatureCard();
         },
         child: new Container(
           height: 56,
