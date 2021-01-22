@@ -115,6 +115,8 @@ class BleWheel {
 
   disconnect() {
     _device.disconnect();
+    _forwardCharacteristic = null;
+    _revereseCharacteristic = null;
   }
 
   void subscribeForwardCounter() async {
@@ -198,6 +200,9 @@ class BleConnection extends ChangeNotifier {
           wheel._stateStreamController.stream
               .listen((WheelStatus status) async {
             if (status == WheelStatus.CONNECTED) {
+              if (_currentWheel != null && _currentWheel != wheel)
+                _currentWheel.disconnect();
+
               _currentWheel = wheel;
               SharedPreferences prefs = await SharedPreferences.getInstance();
               _previousWheelId = wheel.getId();
