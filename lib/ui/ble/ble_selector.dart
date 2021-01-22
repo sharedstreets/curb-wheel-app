@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:curbwheel/service/bluetooth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
 import 'package:provider/provider.dart';
 
 class BleStatusButton extends StatelessWidget {
@@ -17,8 +14,8 @@ class BleStatusButton extends StatelessWidget {
                     Provider.of<BleConnection>(context, listen: false)
                         .currentWheel()
                         .isConnected()
-                ? Colors.green
-                : Colors.red,
+                ? Colors.blue
+                : Colors.orange,
         tooltip: 'Bluetooth',
         onPressed: () {
           Navigator.push(context,
@@ -81,7 +78,7 @@ class _BleDeviceList extends State<BleListDisplay> {
                     .isCurrentDevice(connection.getVisibleWheels()[index])) {
                   if (connection.currentWheel().isConnected()) {
                     _pendingWheel = null;
-                    color = Colors.green[400];
+                    color = Colors.blue[800];
 
                     child.children.add(new Consumer<WheelCounter>(
                         builder: (context, counter, child) {
@@ -98,7 +95,7 @@ class _BleDeviceList extends State<BleListDisplay> {
                       );
                     }));
                   } else if (connection.currentWheel().isConnecting()) {
-                    color = Colors.orange[400];
+                    color = Colors.blue[500];
                   } else if (connection.currentWheel().connectionFailed()) {
                     _pendingWheel = null;
                     WidgetsBinding.instance.addPostFrameCallback((_) =>
@@ -107,7 +104,7 @@ class _BleDeviceList extends State<BleListDisplay> {
                                 connection
                                     .getVisibleWheels()[index]
                                     .getName()));
-                    color = Colors.blue[200];
+                    color = Colors.orange[400];
                   } else
                     color = Colors.blue[200];
 
