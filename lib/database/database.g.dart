@@ -791,17 +791,41 @@ class $FeaturesTable extends Features with TableInfo<$FeaturesTable, Feature> {
 class Survey extends DataClass implements Insertable<Survey> {
   final int id;
   final String shStRefId;
+  final String streetName;
+  final double length;
+  final String startStreetName;
+  final String endStreetName;
+  final String direction;
   final String side;
-  Survey({@required this.id, @required this.shStRefId, @required this.side});
+  Survey(
+      {@required this.id,
+      @required this.shStRefId,
+      @required this.streetName,
+      @required this.length,
+      @required this.startStreetName,
+      @required this.endStreetName,
+      @required this.direction,
+      @required this.side});
   factory Survey.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
+    final doubleType = db.typeSystem.forDartType<double>();
     return Survey(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       shStRefId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}sh_st_ref_id']),
+      streetName: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}street_name']),
+      length:
+          doubleType.mapFromDatabaseResponse(data['${effectivePrefix}length']),
+      startStreetName: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}start_street_name']),
+      endStreetName: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}end_street_name']),
+      direction: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}direction']),
       side: stringType.mapFromDatabaseResponse(data['${effectivePrefix}side']),
     );
   }
@@ -813,6 +837,21 @@ class Survey extends DataClass implements Insertable<Survey> {
     }
     if (!nullToAbsent || shStRefId != null) {
       map['sh_st_ref_id'] = Variable<String>(shStRefId);
+    }
+    if (!nullToAbsent || streetName != null) {
+      map['street_name'] = Variable<String>(streetName);
+    }
+    if (!nullToAbsent || length != null) {
+      map['length'] = Variable<double>(length);
+    }
+    if (!nullToAbsent || startStreetName != null) {
+      map['start_street_name'] = Variable<String>(startStreetName);
+    }
+    if (!nullToAbsent || endStreetName != null) {
+      map['end_street_name'] = Variable<String>(endStreetName);
+    }
+    if (!nullToAbsent || direction != null) {
+      map['direction'] = Variable<String>(direction);
     }
     if (!nullToAbsent || side != null) {
       map['side'] = Variable<String>(side);
@@ -826,6 +865,20 @@ class Survey extends DataClass implements Insertable<Survey> {
       shStRefId: shStRefId == null && nullToAbsent
           ? const Value.absent()
           : Value(shStRefId),
+      streetName: streetName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(streetName),
+      length:
+          length == null && nullToAbsent ? const Value.absent() : Value(length),
+      startStreetName: startStreetName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startStreetName),
+      endStreetName: endStreetName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endStreetName),
+      direction: direction == null && nullToAbsent
+          ? const Value.absent()
+          : Value(direction),
       side: side == null && nullToAbsent ? const Value.absent() : Value(side),
     );
   }
@@ -836,6 +889,11 @@ class Survey extends DataClass implements Insertable<Survey> {
     return Survey(
       id: serializer.fromJson<int>(json['id']),
       shStRefId: serializer.fromJson<String>(json['shStRefId']),
+      streetName: serializer.fromJson<String>(json['streetName']),
+      length: serializer.fromJson<double>(json['length']),
+      startStreetName: serializer.fromJson<String>(json['startStreetName']),
+      endStreetName: serializer.fromJson<String>(json['endStreetName']),
+      direction: serializer.fromJson<String>(json['direction']),
       side: serializer.fromJson<String>(json['side']),
     );
   }
@@ -845,13 +903,32 @@ class Survey extends DataClass implements Insertable<Survey> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'shStRefId': serializer.toJson<String>(shStRefId),
+      'streetName': serializer.toJson<String>(streetName),
+      'length': serializer.toJson<double>(length),
+      'startStreetName': serializer.toJson<String>(startStreetName),
+      'endStreetName': serializer.toJson<String>(endStreetName),
+      'direction': serializer.toJson<String>(direction),
       'side': serializer.toJson<String>(side),
     };
   }
 
-  Survey copyWith({int id, String shStRefId, String side}) => Survey(
+  Survey copyWith(
+          {int id,
+          String shStRefId,
+          String streetName,
+          double length,
+          String startStreetName,
+          String endStreetName,
+          String direction,
+          String side}) =>
+      Survey(
         id: id ?? this.id,
         shStRefId: shStRefId ?? this.shStRefId,
+        streetName: streetName ?? this.streetName,
+        length: length ?? this.length,
+        startStreetName: startStreetName ?? this.startStreetName,
+        endStreetName: endStreetName ?? this.endStreetName,
+        direction: direction ?? this.direction,
         side: side ?? this.side,
       );
   @override
@@ -859,55 +936,117 @@ class Survey extends DataClass implements Insertable<Survey> {
     return (StringBuffer('Survey(')
           ..write('id: $id, ')
           ..write('shStRefId: $shStRefId, ')
+          ..write('streetName: $streetName, ')
+          ..write('length: $length, ')
+          ..write('startStreetName: $startStreetName, ')
+          ..write('endStreetName: $endStreetName, ')
+          ..write('direction: $direction, ')
           ..write('side: $side')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(shStRefId.hashCode, side.hashCode)));
+  int get hashCode => $mrjf($mrjc(
+      id.hashCode,
+      $mrjc(
+          shStRefId.hashCode,
+          $mrjc(
+              streetName.hashCode,
+              $mrjc(
+                  length.hashCode,
+                  $mrjc(
+                      startStreetName.hashCode,
+                      $mrjc(endStreetName.hashCode,
+                          $mrjc(direction.hashCode, side.hashCode))))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Survey &&
           other.id == this.id &&
           other.shStRefId == this.shStRefId &&
+          other.streetName == this.streetName &&
+          other.length == this.length &&
+          other.startStreetName == this.startStreetName &&
+          other.endStreetName == this.endStreetName &&
+          other.direction == this.direction &&
           other.side == this.side);
 }
 
 class SurveysCompanion extends UpdateCompanion<Survey> {
   final Value<int> id;
   final Value<String> shStRefId;
+  final Value<String> streetName;
+  final Value<double> length;
+  final Value<String> startStreetName;
+  final Value<String> endStreetName;
+  final Value<String> direction;
   final Value<String> side;
   const SurveysCompanion({
     this.id = const Value.absent(),
     this.shStRefId = const Value.absent(),
+    this.streetName = const Value.absent(),
+    this.length = const Value.absent(),
+    this.startStreetName = const Value.absent(),
+    this.endStreetName = const Value.absent(),
+    this.direction = const Value.absent(),
     this.side = const Value.absent(),
   });
   SurveysCompanion.insert({
     this.id = const Value.absent(),
     @required String shStRefId,
+    @required String streetName,
+    @required double length,
+    @required String startStreetName,
+    @required String endStreetName,
+    @required String direction,
     @required String side,
   })  : shStRefId = Value(shStRefId),
+        streetName = Value(streetName),
+        length = Value(length),
+        startStreetName = Value(startStreetName),
+        endStreetName = Value(endStreetName),
+        direction = Value(direction),
         side = Value(side);
   static Insertable<Survey> custom({
     Expression<int> id,
     Expression<String> shStRefId,
+    Expression<String> streetName,
+    Expression<double> length,
+    Expression<String> startStreetName,
+    Expression<String> endStreetName,
+    Expression<String> direction,
     Expression<String> side,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (shStRefId != null) 'sh_st_ref_id': shStRefId,
+      if (streetName != null) 'street_name': streetName,
+      if (length != null) 'length': length,
+      if (startStreetName != null) 'start_street_name': startStreetName,
+      if (endStreetName != null) 'end_street_name': endStreetName,
+      if (direction != null) 'direction': direction,
       if (side != null) 'side': side,
     });
   }
 
   SurveysCompanion copyWith(
-      {Value<int> id, Value<String> shStRefId, Value<String> side}) {
+      {Value<int> id,
+      Value<String> shStRefId,
+      Value<String> streetName,
+      Value<double> length,
+      Value<String> startStreetName,
+      Value<String> endStreetName,
+      Value<String> direction,
+      Value<String> side}) {
     return SurveysCompanion(
       id: id ?? this.id,
       shStRefId: shStRefId ?? this.shStRefId,
+      streetName: streetName ?? this.streetName,
+      length: length ?? this.length,
+      startStreetName: startStreetName ?? this.startStreetName,
+      endStreetName: endStreetName ?? this.endStreetName,
+      direction: direction ?? this.direction,
       side: side ?? this.side,
     );
   }
@@ -921,6 +1060,21 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     if (shStRefId.present) {
       map['sh_st_ref_id'] = Variable<String>(shStRefId.value);
     }
+    if (streetName.present) {
+      map['street_name'] = Variable<String>(streetName.value);
+    }
+    if (length.present) {
+      map['length'] = Variable<double>(length.value);
+    }
+    if (startStreetName.present) {
+      map['start_street_name'] = Variable<String>(startStreetName.value);
+    }
+    if (endStreetName.present) {
+      map['end_street_name'] = Variable<String>(endStreetName.value);
+    }
+    if (direction.present) {
+      map['direction'] = Variable<String>(direction.value);
+    }
     if (side.present) {
       map['side'] = Variable<String>(side.value);
     }
@@ -932,6 +1086,11 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     return (StringBuffer('SurveysCompanion(')
           ..write('id: $id, ')
           ..write('shStRefId: $shStRefId, ')
+          ..write('streetName: $streetName, ')
+          ..write('length: $length, ')
+          ..write('startStreetName: $startStreetName, ')
+          ..write('endStreetName: $endStreetName, ')
+          ..write('direction: $direction, ')
           ..write('side: $side')
           ..write(')'))
         .toString();
@@ -963,6 +1122,70 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
     );
   }
 
+  final VerificationMeta _streetNameMeta = const VerificationMeta('streetName');
+  GeneratedTextColumn _streetName;
+  @override
+  GeneratedTextColumn get streetName => _streetName ??= _constructStreetName();
+  GeneratedTextColumn _constructStreetName() {
+    return GeneratedTextColumn(
+      'street_name',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _lengthMeta = const VerificationMeta('length');
+  GeneratedRealColumn _length;
+  @override
+  GeneratedRealColumn get length => _length ??= _constructLength();
+  GeneratedRealColumn _constructLength() {
+    return GeneratedRealColumn(
+      'length',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _startStreetNameMeta =
+      const VerificationMeta('startStreetName');
+  GeneratedTextColumn _startStreetName;
+  @override
+  GeneratedTextColumn get startStreetName =>
+      _startStreetName ??= _constructStartStreetName();
+  GeneratedTextColumn _constructStartStreetName() {
+    return GeneratedTextColumn(
+      'start_street_name',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _endStreetNameMeta =
+      const VerificationMeta('endStreetName');
+  GeneratedTextColumn _endStreetName;
+  @override
+  GeneratedTextColumn get endStreetName =>
+      _endStreetName ??= _constructEndStreetName();
+  GeneratedTextColumn _constructEndStreetName() {
+    return GeneratedTextColumn(
+      'end_street_name',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _directionMeta = const VerificationMeta('direction');
+  GeneratedTextColumn _direction;
+  @override
+  GeneratedTextColumn get direction => _direction ??= _constructDirection();
+  GeneratedTextColumn _constructDirection() {
+    return GeneratedTextColumn(
+      'direction',
+      $tableName,
+      false,
+    );
+  }
+
   final VerificationMeta _sideMeta = const VerificationMeta('side');
   GeneratedTextColumn _side;
   @override
@@ -976,7 +1199,16 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
   }
 
   @override
-  List<GeneratedColumn> get $columns => [id, shStRefId, side];
+  List<GeneratedColumn> get $columns => [
+        id,
+        shStRefId,
+        streetName,
+        length,
+        startStreetName,
+        endStreetName,
+        direction,
+        side
+      ];
   @override
   $SurveysTable get asDslTable => this;
   @override
@@ -998,6 +1230,42 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
               data['sh_st_ref_id'], _shStRefIdMeta));
     } else if (isInserting) {
       context.missing(_shStRefIdMeta);
+    }
+    if (data.containsKey('street_name')) {
+      context.handle(
+          _streetNameMeta,
+          streetName.isAcceptableOrUnknown(
+              data['street_name'], _streetNameMeta));
+    } else if (isInserting) {
+      context.missing(_streetNameMeta);
+    }
+    if (data.containsKey('length')) {
+      context.handle(_lengthMeta,
+          length.isAcceptableOrUnknown(data['length'], _lengthMeta));
+    } else if (isInserting) {
+      context.missing(_lengthMeta);
+    }
+    if (data.containsKey('start_street_name')) {
+      context.handle(
+          _startStreetNameMeta,
+          startStreetName.isAcceptableOrUnknown(
+              data['start_street_name'], _startStreetNameMeta));
+    } else if (isInserting) {
+      context.missing(_startStreetNameMeta);
+    }
+    if (data.containsKey('end_street_name')) {
+      context.handle(
+          _endStreetNameMeta,
+          endStreetName.isAcceptableOrUnknown(
+              data['end_street_name'], _endStreetNameMeta));
+    } else if (isInserting) {
+      context.missing(_endStreetNameMeta);
+    }
+    if (data.containsKey('direction')) {
+      context.handle(_directionMeta,
+          direction.isAcceptableOrUnknown(data['direction'], _directionMeta));
+    } else if (isInserting) {
+      context.missing(_directionMeta);
     }
     if (data.containsKey('side')) {
       context.handle(

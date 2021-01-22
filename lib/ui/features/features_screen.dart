@@ -1,4 +1,6 @@
 import 'package:curbwheel/database/database.dart';
+import 'package:curbwheel/ui/shared/utils.dart';
+import 'package:curbwheel/ui/wheel/incomplete_spans.dart';
 import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,7 +11,7 @@ class FeatureSelectScreenArguments {
   final Project project;
   final Survey survey;
   final double position;
-  final List<SpansCompanion> spans;
+  final List<SpanContainer> spans;
 
   FeatureSelectScreenArguments(
       this.project, this.survey, this.position, this.spans);
@@ -49,7 +51,7 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
     final Project project = args.project;
     final Survey survey = args.survey;
     final double position = args.position;
-    final List<SpansCompanion> spans = args.spans;
+    final List<SpanContainer> spans = args.spans;
 
     return Scaffold(
       appBar: AppBar(
@@ -72,17 +74,23 @@ class FeatureCard extends StatelessWidget {
   final Project project;
   final Survey survey;
   final double position;
-  final List<SpansCompanion> spans;
+  final List<SpanContainer> spans;
 
   FeatureCard(this.feature, this.project, this.survey, this.position, this.spans);
 
   @override
   Widget build(BuildContext context) {
     onPressFeatureCard() {
-      var span = SpansCompanion(
-          start: moor.Value(position),
-          type: moor.Value(feature.value),
-          complete: moor.Value(false));
+      var span = SpanContainer(
+        survey.id,
+        feature.label,
+        feature.geometryType,
+        position,
+        position,
+        feature.color,
+        false,
+        []
+      );
       spans.add(span);
 
       Navigator.pushNamedAndRemoveUntil(
@@ -147,12 +155,3 @@ class FeatureCard extends StatelessWidget {
   }
 }
 
-Color colorConvert(String color) {
-  color = color.replaceAll("#", "");
-  if (color.length == 6) {
-    return Color(int.parse("0xFF" + color));
-  } else if (color.length == 8) {
-    return Color(int.parse("0x" + color));
-  }
-  return Color(0xFFFFFFFF);
-}

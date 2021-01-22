@@ -19,6 +19,11 @@ class Projects extends Table {
 class Surveys extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get shStRefId => text()();
+  TextColumn get streetName => text()();
+  RealColumn get length => real()();
+  TextColumn get startStreetName => text()();
+  TextColumn get endStreetName => text()();
+  TextColumn get direction => text()();
   TextColumn get side => text()();
 }
 
@@ -69,8 +74,4 @@ class CurbWheelDatabase extends _$CurbWheelDatabase {
   @override
   int get schemaVersion => 1;
 
-  Future<List<Project>> findProjectById(String projectId) {
-    return (select(projects)..where((p) => p.projectId.equals(projectId)))
-        .get();
-  }
 }

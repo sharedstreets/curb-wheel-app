@@ -51,7 +51,7 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
   Future<bool> _checkIfNewProject() async {
     try {
       List<Project> projectList =
-          await _database.findProjectById(_config.projectId);
+          await _database.projectDao.findProjectById(_config.projectId);
 
       if (projectList.length > 0)
         return false;
