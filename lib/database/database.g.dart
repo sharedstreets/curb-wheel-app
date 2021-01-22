@@ -790,6 +790,7 @@ class $FeaturesTable extends Features with TableInfo<$FeaturesTable, Feature> {
 
 class Survey extends DataClass implements Insertable<Survey> {
   final int id;
+  final int projectId;
   final String shStRefId;
   final String streetName;
   final double length;
@@ -799,6 +800,7 @@ class Survey extends DataClass implements Insertable<Survey> {
   final String side;
   Survey(
       {@required this.id,
+      @required this.projectId,
       @required this.shStRefId,
       @required this.streetName,
       @required this.length,
@@ -814,6 +816,8 @@ class Survey extends DataClass implements Insertable<Survey> {
     final doubleType = db.typeSystem.forDartType<double>();
     return Survey(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      projectId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}project_id']),
       shStRefId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}sh_st_ref_id']),
       streetName: stringType
@@ -834,6 +838,9 @@ class Survey extends DataClass implements Insertable<Survey> {
     final map = <String, Expression>{};
     if (!nullToAbsent || id != null) {
       map['id'] = Variable<int>(id);
+    }
+    if (!nullToAbsent || projectId != null) {
+      map['project_id'] = Variable<int>(projectId);
     }
     if (!nullToAbsent || shStRefId != null) {
       map['sh_st_ref_id'] = Variable<String>(shStRefId);
@@ -862,6 +869,9 @@ class Survey extends DataClass implements Insertable<Survey> {
   SurveysCompanion toCompanion(bool nullToAbsent) {
     return SurveysCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      projectId: projectId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(projectId),
       shStRefId: shStRefId == null && nullToAbsent
           ? const Value.absent()
           : Value(shStRefId),
@@ -888,6 +898,7 @@ class Survey extends DataClass implements Insertable<Survey> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Survey(
       id: serializer.fromJson<int>(json['id']),
+      projectId: serializer.fromJson<int>(json['projectId']),
       shStRefId: serializer.fromJson<String>(json['shStRefId']),
       streetName: serializer.fromJson<String>(json['streetName']),
       length: serializer.fromJson<double>(json['length']),
@@ -902,6 +913,7 @@ class Survey extends DataClass implements Insertable<Survey> {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'projectId': serializer.toJson<int>(projectId),
       'shStRefId': serializer.toJson<String>(shStRefId),
       'streetName': serializer.toJson<String>(streetName),
       'length': serializer.toJson<double>(length),
@@ -914,6 +926,7 @@ class Survey extends DataClass implements Insertable<Survey> {
 
   Survey copyWith(
           {int id,
+          int projectId,
           String shStRefId,
           String streetName,
           double length,
@@ -923,6 +936,7 @@ class Survey extends DataClass implements Insertable<Survey> {
           String side}) =>
       Survey(
         id: id ?? this.id,
+        projectId: projectId ?? this.projectId,
         shStRefId: shStRefId ?? this.shStRefId,
         streetName: streetName ?? this.streetName,
         length: length ?? this.length,
@@ -935,6 +949,7 @@ class Survey extends DataClass implements Insertable<Survey> {
   String toString() {
     return (StringBuffer('Survey(')
           ..write('id: $id, ')
+          ..write('projectId: $projectId, ')
           ..write('shStRefId: $shStRefId, ')
           ..write('streetName: $streetName, ')
           ..write('length: $length, ')
@@ -950,20 +965,23 @@ class Survey extends DataClass implements Insertable<Survey> {
   int get hashCode => $mrjf($mrjc(
       id.hashCode,
       $mrjc(
-          shStRefId.hashCode,
+          projectId.hashCode,
           $mrjc(
-              streetName.hashCode,
+              shStRefId.hashCode,
               $mrjc(
-                  length.hashCode,
+                  streetName.hashCode,
                   $mrjc(
-                      startStreetName.hashCode,
-                      $mrjc(endStreetName.hashCode,
-                          $mrjc(direction.hashCode, side.hashCode))))))));
+                      length.hashCode,
+                      $mrjc(
+                          startStreetName.hashCode,
+                          $mrjc(endStreetName.hashCode,
+                              $mrjc(direction.hashCode, side.hashCode)))))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Survey &&
           other.id == this.id &&
+          other.projectId == this.projectId &&
           other.shStRefId == this.shStRefId &&
           other.streetName == this.streetName &&
           other.length == this.length &&
@@ -975,6 +993,7 @@ class Survey extends DataClass implements Insertable<Survey> {
 
 class SurveysCompanion extends UpdateCompanion<Survey> {
   final Value<int> id;
+  final Value<int> projectId;
   final Value<String> shStRefId;
   final Value<String> streetName;
   final Value<double> length;
@@ -984,6 +1003,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
   final Value<String> side;
   const SurveysCompanion({
     this.id = const Value.absent(),
+    this.projectId = const Value.absent(),
     this.shStRefId = const Value.absent(),
     this.streetName = const Value.absent(),
     this.length = const Value.absent(),
@@ -994,6 +1014,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
   });
   SurveysCompanion.insert({
     this.id = const Value.absent(),
+    @required int projectId,
     @required String shStRefId,
     @required String streetName,
     @required double length,
@@ -1001,7 +1022,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     @required String endStreetName,
     @required String direction,
     @required String side,
-  })  : shStRefId = Value(shStRefId),
+  })  : projectId = Value(projectId),
+        shStRefId = Value(shStRefId),
         streetName = Value(streetName),
         length = Value(length),
         startStreetName = Value(startStreetName),
@@ -1010,6 +1032,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
         side = Value(side);
   static Insertable<Survey> custom({
     Expression<int> id,
+    Expression<int> projectId,
     Expression<String> shStRefId,
     Expression<String> streetName,
     Expression<double> length,
@@ -1020,6 +1043,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (projectId != null) 'project_id': projectId,
       if (shStRefId != null) 'sh_st_ref_id': shStRefId,
       if (streetName != null) 'street_name': streetName,
       if (length != null) 'length': length,
@@ -1032,6 +1056,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
 
   SurveysCompanion copyWith(
       {Value<int> id,
+      Value<int> projectId,
       Value<String> shStRefId,
       Value<String> streetName,
       Value<double> length,
@@ -1041,6 +1066,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
       Value<String> side}) {
     return SurveysCompanion(
       id: id ?? this.id,
+      projectId: projectId ?? this.projectId,
       shStRefId: shStRefId ?? this.shStRefId,
       streetName: streetName ?? this.streetName,
       length: length ?? this.length,
@@ -1056,6 +1082,9 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (projectId.present) {
+      map['project_id'] = Variable<int>(projectId.value);
     }
     if (shStRefId.present) {
       map['sh_st_ref_id'] = Variable<String>(shStRefId.value);
@@ -1085,6 +1114,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
   String toString() {
     return (StringBuffer('SurveysCompanion(')
           ..write('id: $id, ')
+          ..write('projectId: $projectId, ')
           ..write('shStRefId: $shStRefId, ')
           ..write('streetName: $streetName, ')
           ..write('length: $length, ')
@@ -1108,6 +1138,18 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
   GeneratedIntColumn _constructId() {
     return GeneratedIntColumn('id', $tableName, false,
         hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _projectIdMeta = const VerificationMeta('projectId');
+  GeneratedIntColumn _projectId;
+  @override
+  GeneratedIntColumn get projectId => _projectId ??= _constructProjectId();
+  GeneratedIntColumn _constructProjectId() {
+    return GeneratedIntColumn(
+      'project_id',
+      $tableName,
+      false,
+    );
   }
 
   final VerificationMeta _shStRefIdMeta = const VerificationMeta('shStRefId');
@@ -1201,6 +1243,7 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
   @override
   List<GeneratedColumn> get $columns => [
         id,
+        projectId,
         shStRefId,
         streetName,
         length,
@@ -1222,6 +1265,12 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    }
+    if (data.containsKey('project_id')) {
+      context.handle(_projectIdMeta,
+          projectId.isAcceptableOrUnknown(data['project_id'], _projectIdMeta));
+    } else if (isInserting) {
+      context.missing(_projectIdMeta);
     }
     if (data.containsKey('sh_st_ref_id')) {
       context.handle(

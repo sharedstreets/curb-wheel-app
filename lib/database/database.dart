@@ -18,6 +18,7 @@ class Projects extends Table {
 
 class Surveys extends Table {
   IntColumn get id => integer().autoIncrement()();
+  IntColumn get projectId => integer()();
   TextColumn get shStRefId => text()();
   TextColumn get streetName => text()();
   RealColumn get length => real()();

@@ -29,17 +29,17 @@ class SpanContainer {
   }
 }
 
-class IncompleteSpans extends StatefulWidget {
+class IncompleteList extends StatefulWidget {
   final List<SpanContainer> spans;
   final double progress;
 
-  IncompleteSpans(this.spans, this.progress);
+  IncompleteList(this.spans, this.progress);
 
   @override
-  _IncompleteSpansState createState() => _IncompleteSpansState();
+  _IncompleteListState createState() => _IncompleteListState();
 }
 
-class _IncompleteSpansState extends State<IncompleteSpans> {
+class _IncompleteListState extends State<IncompleteList> {
   @override
   Widget build(BuildContext context) {
     return Container(

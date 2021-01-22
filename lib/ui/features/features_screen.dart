@@ -1,6 +1,6 @@
 import 'package:curbwheel/database/database.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
-import 'package:curbwheel/ui/wheel/incomplete_spans.dart';
+import 'package:curbwheel/ui/wheel/incomplete_list.dart';
 import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

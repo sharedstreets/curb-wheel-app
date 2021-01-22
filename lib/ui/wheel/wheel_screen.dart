@@ -4,7 +4,8 @@ import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'incomplete_spans.dart';
+import 'complete_list.dart';
+import 'incomplete_list.dart';
 
 class WheelScreenArguments {
   final Project project;
@@ -42,7 +43,8 @@ class _WheelScreenState extends State<WheelScreen> {
         child: Column(
           children: [
             WheelHeader(0.5, survey),
-            Expanded(child: IncompleteSpans(incompleteSpans, 0.2))
+            Expanded(child: IncompleteList(incompleteSpans, 0.2)),
+            Expanded(child: CompleteList(survey))
           ],
         ),
       ),

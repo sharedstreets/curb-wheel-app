@@ -1,5 +1,5 @@
 import 'package:curbwheel/database/survey_dao.dart';
-import 'package:curbwheel/ui/wheel/incomplete_spans.dart';
+import 'package:curbwheel/ui/wheel/incomplete_list.dart';
 import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
@@ -80,6 +80,7 @@ class MapScreen extends StatelessWidget {
                   shStRefId: moor.Value(street.shStRefId),
                   streetName: moor.Value(street.name),
                   length: moor.Value(42),
+                  projectId: moor.Value(project.id),
                   startStreetName: moor.Value("Campus Blvd."),
                   endStreetName: moor.Value("Richmond Pl."),
                   direction: moor.Value("up"),
