@@ -26,22 +26,6 @@ class FeatureSelectScreen extends StatefulWidget {
 
 class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
   CurbWheelDatabase _database;
-  List<Feature> features = [
-    Feature(
-        id: 1,
-        color: "0054aa",
-        label: "curb cut",
-        geometryType: "line",
-        value: "curb_cut",
-        projectId: 1234),
-    Feature(
-        id: 2,
-        color: "b80d00",
-        label: "curb cut",
-        geometryType: "line",
-        value: "curb_cut",
-        projectId: 1234)
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -52,20 +36,31 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
     final Survey survey = args.survey;
     final double position = args.position;
     final List<SpanContainer> spans = args.spans;
+    Future<List<Feature>> features =
+        _database.featureDao.getAllFeaturesByProject(survey.projectId);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Select a feature type"),
-      ),
-      body: Container(
-        padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-        child: ListView.builder(
-            itemCount: features.length,
-            itemBuilder: (context, index) {
-              return FeatureCard(features[index], project, survey, position, spans);
-            }),
-      ),
-    );
+    return FutureBuilder<List<Feature>>(
+        future: features,
+        builder: (BuildContext context, AsyncSnapshot<List<Feature>> snapshot) {
+          if (snapshot.hasData) {
+            var features = snapshot.data;
+            print(features);
+            return Scaffold(
+              appBar: AppBar(
+                title: Text("Select a feature type"),
+              ),
+              body: Container(
+                padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                child: ListView.builder(
+                    itemCount: features.length,
+                    itemBuilder: (context, index) {
+                      return FeatureCard(
+                          features[index], project, survey, position, spans);
+                    }),
+              ),
+            );
+          }
+        });
   }
 }
 
@@ -76,21 +71,14 @@ class FeatureCard extends StatelessWidget {
   final double position;
   final List<SpanContainer> spans;
 
-  FeatureCard(this.feature, this.project, this.survey, this.position, this.spans);
+  FeatureCard(
+      this.feature, this.project, this.survey, this.position, this.spans);
 
   @override
   Widget build(BuildContext context) {
     onPressFeatureCard() {
-      var span = SpanContainer(
-        survey.id,
-        feature.label,
-        feature.geometryType,
-        position,
-        position,
-        feature.color,
-        false,
-        []
-      );
+      var span = SpanContainer(survey.id, feature.label, feature.geometryType,
+          position, position, feature.color, false, []);
       spans.add(span);
 
       Navigator.pushNamedAndRemoveUntil(
@@ -154,4 +142,3 @@ class FeatureCard extends StatelessWidget {
         ));
   }
 }
-

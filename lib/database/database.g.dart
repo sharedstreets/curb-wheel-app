@@ -1339,6 +1339,287 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
   }
 }
 
+class SurveyItem extends DataClass implements Insertable<SurveyItem> {
+  final int id;
+  final int surveyId;
+  final int childId;
+  final String type;
+  SurveyItem(
+      {@required this.id,
+      @required this.surveyId,
+      this.childId,
+      @required this.type});
+  factory SurveyItem.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final stringType = db.typeSystem.forDartType<String>();
+    return SurveyItem(
+      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      surveyId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}survey_id']),
+      childId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}child_id']),
+      type: stringType.mapFromDatabaseResponse(data['${effectivePrefix}type']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
+    if (!nullToAbsent || surveyId != null) {
+      map['survey_id'] = Variable<int>(surveyId);
+    }
+    if (!nullToAbsent || childId != null) {
+      map['child_id'] = Variable<int>(childId);
+    }
+    if (!nullToAbsent || type != null) {
+      map['type'] = Variable<String>(type);
+    }
+    return map;
+  }
+
+  SurveyItemsCompanion toCompanion(bool nullToAbsent) {
+    return SurveyItemsCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      surveyId: surveyId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(surveyId),
+      childId: childId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(childId),
+      type: type == null && nullToAbsent ? const Value.absent() : Value(type),
+    );
+  }
+
+  factory SurveyItem.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return SurveyItem(
+      id: serializer.fromJson<int>(json['id']),
+      surveyId: serializer.fromJson<int>(json['surveyId']),
+      childId: serializer.fromJson<int>(json['childId']),
+      type: serializer.fromJson<String>(json['type']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'surveyId': serializer.toJson<int>(surveyId),
+      'childId': serializer.toJson<int>(childId),
+      'type': serializer.toJson<String>(type),
+    };
+  }
+
+  SurveyItem copyWith({int id, int surveyId, int childId, String type}) =>
+      SurveyItem(
+        id: id ?? this.id,
+        surveyId: surveyId ?? this.surveyId,
+        childId: childId ?? this.childId,
+        type: type ?? this.type,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('SurveyItem(')
+          ..write('id: $id, ')
+          ..write('surveyId: $surveyId, ')
+          ..write('childId: $childId, ')
+          ..write('type: $type')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(id.hashCode,
+      $mrjc(surveyId.hashCode, $mrjc(childId.hashCode, type.hashCode))));
+  @override
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      (other is SurveyItem &&
+          other.id == this.id &&
+          other.surveyId == this.surveyId &&
+          other.childId == this.childId &&
+          other.type == this.type);
+}
+
+class SurveyItemsCompanion extends UpdateCompanion<SurveyItem> {
+  final Value<int> id;
+  final Value<int> surveyId;
+  final Value<int> childId;
+  final Value<String> type;
+  const SurveyItemsCompanion({
+    this.id = const Value.absent(),
+    this.surveyId = const Value.absent(),
+    this.childId = const Value.absent(),
+    this.type = const Value.absent(),
+  });
+  SurveyItemsCompanion.insert({
+    this.id = const Value.absent(),
+    @required int surveyId,
+    this.childId = const Value.absent(),
+    @required String type,
+  })  : surveyId = Value(surveyId),
+        type = Value(type);
+  static Insertable<SurveyItem> custom({
+    Expression<int> id,
+    Expression<int> surveyId,
+    Expression<int> childId,
+    Expression<String> type,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (surveyId != null) 'survey_id': surveyId,
+      if (childId != null) 'child_id': childId,
+      if (type != null) 'type': type,
+    });
+  }
+
+  SurveyItemsCompanion copyWith(
+      {Value<int> id,
+      Value<int> surveyId,
+      Value<int> childId,
+      Value<String> type}) {
+    return SurveyItemsCompanion(
+      id: id ?? this.id,
+      surveyId: surveyId ?? this.surveyId,
+      childId: childId ?? this.childId,
+      type: type ?? this.type,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (surveyId.present) {
+      map['survey_id'] = Variable<int>(surveyId.value);
+    }
+    if (childId.present) {
+      map['child_id'] = Variable<int>(childId.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SurveyItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('surveyId: $surveyId, ')
+          ..write('childId: $childId, ')
+          ..write('type: $type')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SurveyItemsTable extends SurveyItems
+    with TableInfo<$SurveyItemsTable, SurveyItem> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $SurveyItemsTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  GeneratedIntColumn _id;
+  @override
+  GeneratedIntColumn get id => _id ??= _constructId();
+  GeneratedIntColumn _constructId() {
+    return GeneratedIntColumn('id', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _surveyIdMeta = const VerificationMeta('surveyId');
+  GeneratedIntColumn _surveyId;
+  @override
+  GeneratedIntColumn get surveyId => _surveyId ??= _constructSurveyId();
+  GeneratedIntColumn _constructSurveyId() {
+    return GeneratedIntColumn(
+      'survey_id',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _childIdMeta = const VerificationMeta('childId');
+  GeneratedIntColumn _childId;
+  @override
+  GeneratedIntColumn get childId => _childId ??= _constructChildId();
+  GeneratedIntColumn _constructChildId() {
+    return GeneratedIntColumn(
+      'child_id',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _typeMeta = const VerificationMeta('type');
+  GeneratedTextColumn _type;
+  @override
+  GeneratedTextColumn get type => _type ??= _constructType();
+  GeneratedTextColumn _constructType() {
+    return GeneratedTextColumn(
+      'type',
+      $tableName,
+      false,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, surveyId, childId, type];
+  @override
+  $SurveyItemsTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'survey_items';
+  @override
+  final String actualTableName = 'survey_items';
+  @override
+  VerificationContext validateIntegrity(Insertable<SurveyItem> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    }
+    if (data.containsKey('survey_id')) {
+      context.handle(_surveyIdMeta,
+          surveyId.isAcceptableOrUnknown(data['survey_id'], _surveyIdMeta));
+    } else if (isInserting) {
+      context.missing(_surveyIdMeta);
+    }
+    if (data.containsKey('child_id')) {
+      context.handle(_childIdMeta,
+          childId.isAcceptableOrUnknown(data['child_id'], _childIdMeta));
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+          _typeMeta, type.isAcceptableOrUnknown(data['type'], _typeMeta));
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SurveyItem map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return SurveyItem.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  $SurveyItemsTable createAlias(String alias) {
+    return $SurveyItemsTable(_db, alias);
+  }
+}
+
 class Span extends DataClass implements Insertable<Span> {
   final int id;
   final int surveyId;
@@ -2060,6 +2341,8 @@ abstract class _$CurbWheelDatabase extends GeneratedDatabase {
   $FeaturesTable get features => _features ??= $FeaturesTable(this);
   $SurveysTable _surveys;
   $SurveysTable get surveys => _surveys ??= $SurveysTable(this);
+  $SurveyItemsTable _surveyItems;
+  $SurveyItemsTable get surveyItems => _surveyItems ??= $SurveyItemsTable(this);
   $SpansTable _spans;
   $SpansTable get spans => _spans ??= $SpansTable(this);
   $PointsTable _points;
@@ -2073,6 +2356,9 @@ abstract class _$CurbWheelDatabase extends GeneratedDatabase {
   SurveyDao _surveyDao;
   SurveyDao get surveyDao =>
       _surveyDao ??= SurveyDao(this as CurbWheelDatabase);
+  SurveyItemDao _surveyItemDao;
+  SurveyItemDao get surveyItemDao =>
+      _surveyItemDao ??= SurveyItemDao(this as CurbWheelDatabase);
   SpanDao _spanDao;
   SpanDao get spanDao => _spanDao ??= SpanDao(this as CurbWheelDatabase);
   PointDao _pointDao;
@@ -2081,5 +2367,5 @@ abstract class _$CurbWheelDatabase extends GeneratedDatabase {
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [projects, features, surveys, spans, points];
+      [projects, features, surveys, surveyItems, spans, points];
 }

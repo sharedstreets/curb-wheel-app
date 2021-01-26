@@ -4,6 +4,7 @@ import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
+import 'package:provider/provider.dart';
 
 class SpanContainer {
   final int surveyId;
@@ -40,8 +41,17 @@ class IncompleteList extends StatefulWidget {
 }
 
 class _IncompleteListState extends State<IncompleteList> {
+  CurbWheelDatabase _database;
+
+  void _completeSpan(SpanContainer span) {
+    print(span);
+    _database.spanDao.insertSpan(span.toCompanion());
+    setState(() => widget.spans.remove(span));
+  }
+
   @override
   Widget build(BuildContext context) {
+    _database = Provider.of<CurbWheelDatabase>(context);
     return Container(
       padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
       child: widget.spans.isEmpty
@@ -50,7 +60,8 @@ class _IncompleteListState extends State<IncompleteList> {
               shrinkWrap: true,
               itemCount: widget.spans.length,
               itemBuilder: (context, index) {
-                return ActiveSpanCard(widget.spans[index], widget.progress);
+                return ActiveSpanCard(
+                    widget.spans[index], widget.progress, _completeSpan);
               }),
     );
   }
@@ -59,8 +70,9 @@ class _IncompleteListState extends State<IncompleteList> {
 class ActiveSpanCard extends StatefulWidget {
   final SpanContainer span;
   final double progress;
+  final Function callback;
 
-  ActiveSpanCard(this.span, this.progress);
+  ActiveSpanCard(this.span, this.progress, this.callback);
 
   @override
   _ActiveSpanCardState createState() => _ActiveSpanCardState();
@@ -71,6 +83,7 @@ class _ActiveSpanCardState extends State<ActiveSpanCard> {
   Widget build(BuildContext context) {
     var _progress = widget.progress;
     var _span = widget.span;
+    var _callback = widget.callback;
 
     final String assetName = _span.type == 'line'
         ? 'assets/vector-line.svg'
@@ -95,7 +108,7 @@ class _ActiveSpanCardState extends State<ActiveSpanCard> {
                     Spacer(),
                     IconButton(
                       icon: Icon(Icons.check),
-                      onPressed: () => {},
+                      onPressed: () => _callback(_span),
                     )
                   ]),
                   Padding(

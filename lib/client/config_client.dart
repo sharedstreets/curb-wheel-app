@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:chopper/chopper.dart';
+import 'package:curbwheel/service/models.dart';
 import '../service/api_services.dart';
 import 'package:turf/turf.dart';
 
@@ -19,12 +22,13 @@ class ConfigClient {
       final body = response.body;
       return body;
     } else
-      throw Exception("Failed to load json data.");
+    throw Exception("Failed to load json data.");
   }
 
   getConfig(String url) async {
-    final configJson = await _getJson(url);
-    return Config.fromJson(configJson);
+    var configJson = await _getJson(url);
+      Config config = new Config.fromJson(configJson);
+      return config;
   }
 
   getMapData(Config config) async {

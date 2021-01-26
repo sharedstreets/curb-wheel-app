@@ -69,7 +69,17 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
         name: moor.Value(_config.projectName),
         email: moor.Value(_config.email),
         organization: moor.Value(_config.organization));
-    await _database.projectDao.insertProject(_project);
+    var projectId = await _database.projectDao.insertProject(_project);
+    for (var featureType in _config.featureTypes) {
+      var _feature = FeaturesCompanion(
+        projectId: moor.Value(projectId),
+        geometryType: moor.Value(featureType.geometryType),
+        color: moor.Value(featureType.color),
+        label: moor.Value(featureType.label),
+        value: moor.Value(featureType.value),
+      );
+      await _database.featureDao.insertFeature(_feature);
+    }
     await FileWriter()
         .writeFile(_config.projectId, 'map.json', _mapData.toString());
 
@@ -121,11 +131,14 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
                         if (_config != null && snapshot.data != null) {
                           if (snapshot.data) {
                             return RaisedButton(
+                              color: Colors.black,
+
                               onPressed: () {
                                 _addProject();
                               },
                               child: Text('Add Project',
-                                  style: TextStyle(fontSize: 20)),
+                            
+                                  style: TextStyle(color: Colors.white,fontSize: 20)),
                             );
                           } else
                             return Text("Project already imported.");
@@ -160,6 +173,7 @@ class _DownloadButtonState extends State<DownloadButton> {
 
   _fetch() async {
     final config = await ConfigClient().getConfig(urlConntroller.text);
+    print(config);
     final mapDataJson = await ConfigClient().getMapData(config);
     if (config != null && config.projectId != null) {
       setState(() {
@@ -181,6 +195,7 @@ class _DownloadButtonState extends State<DownloadButton> {
             try {
               await _fetch();
             } catch (e) {
+              print(e);
               final snackBar = SnackBar(
                 content: Text('Unable to retreive project configuration.'),
               );

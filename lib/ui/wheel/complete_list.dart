@@ -25,29 +25,35 @@ class _CompleteListState extends State<CompleteList> {
   Widget build(BuildContext context) {
     _database = Provider.of<CurbWheelDatabase>(context);
     _survey = widget.survey;
-    Future<List<Feature>> _features= _database.featureDao.getAllFeaturesByProject(_survey.projectId);
+    Future<List<Feature>> _features =
+        _database.featureDao.getAllFeaturesByProject(_survey.projectId);
 
     return FutureBuilder<List<Feature>>(
         future: _features,
         builder: (BuildContext context, AsyncSnapshot<List<Feature>> snapshot) {
           if (snapshot.hasData) {
             var features = snapshot.data;
+            print(features);
             return StreamBuilder(
-              stream: _database.spanDao.watchSpansBySurvey(_survey),
-              builder: (context, AsyncSnapshot<List<Span>> snapshot) {
-                return  ListView.builder(
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    var color = features.where((feature) => (feature.label == snapshot.data[index].type));
-                    return InactiveSpanCard(snapshot.data[index], color.elementAt(0).color);
-                  },
-                );
-              });
+                stream: _database.spanDao.watchSpansBySurvey(_survey),
+                builder: (context, AsyncSnapshot<List<Span>> snapshot) {
+                  return ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      print(snapshot.data[index]);
+                      var color = features.where((feature) =>
+                          (feature.label == snapshot.data[index].name));
+                      print("color");
+                      print(color);
+                      return InactiveSpanCard(
+                          snapshot.data[index], color.elementAt(0).color);
+                    },
+                  );
+                });
           } else {
             return Text("FOO");
           }
-        }
-      );
+        });
   }
 }
 
@@ -99,7 +105,7 @@ class _InactiveSpanCardState extends State<InactiveSpanCard> {
                           start: _span.start,
                           progress: _span.stop,
                           progressColor: colorConvert(_color),
-                          points: [])),//_span.points)),
+                          points: [])), //_span.points)),
                   Text(
                       "${_span.start * 40}m-${(_span.stop * 40).toStringAsFixed(1)}m"),
                   Row(
