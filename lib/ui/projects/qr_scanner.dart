@@ -31,7 +31,6 @@ class _QrScannerState extends State<QrScanner> {
   @override
   void initState() {
     super.initState();
-    //_database = Provider.of<CurbWheelDatabase>(context);
   }
 
   @override

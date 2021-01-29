@@ -1,6 +1,5 @@
 import "dart:async";
 import 'package:chopper/chopper.dart';
-import 'package:turf/turf.dart';
 
 part 'api_services.chopper.dart';
 
@@ -20,15 +19,6 @@ class Config {
         email = json['email'],
         mapData = json['mapData'],
         organization = json['organization'];
-}
-
-class MapData {
-  final FeatureCollection featureCollection;
-
-  MapData(this.featureCollection);
-
-  MapData.fromJson(Map<String, dynamic> json)
-      : featureCollection = FeatureCollection.fromJson(json);
 }
 
 @ChopperApi()

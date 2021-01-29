@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:curbwheel/client/config_client.dart';
 import 'package:curbwheel/database/database.dart';
 import 'package:curbwheel/ui/projects/project_config_card.dart';
-import 'package:curbwheel/utils/write_file.dart';
+import 'package:curbwheel/utils/file_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:moor/moor.dart' as moor;
 import 'package:provider/provider.dart';
@@ -70,8 +72,8 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
         email: moor.Value(_config.email),
         organization: moor.Value(_config.organization));
     await _database.projectDao.insertProject(_project);
-    await FileWriter()
-        .writeFile(_config.projectId, 'map.json', _mapData.toString());
+    await FileUtils.writeFile(
+        _config.projectId, 'map.json', jsonEncode(_mapData.featureCollection));
 
     Navigator.pop(context);
   }
