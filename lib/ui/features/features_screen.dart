@@ -1,20 +1,19 @@
 import 'package:curbwheel/database/database.dart';
+import 'package:curbwheel/database/models.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
-import 'package:curbwheel/ui/wheel/incomplete_list.dart';
 import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:provider/provider.dart';
 
 class FeatureSelectScreenArguments {
   final Project project;
   final Survey survey;
   final double position;
-  final List<SpanContainer> spans;
+  final List<ListItem> listItems;
 
   FeatureSelectScreenArguments(
-      this.project, this.survey, this.position, this.spans);
+      this.project, this.survey, this.position, this.listItems);
 }
 
 class FeatureSelectScreen extends StatefulWidget {
@@ -35,7 +34,7 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
     final Project project = args.project;
     final Survey survey = args.survey;
     final double position = args.position;
-    final List<SpanContainer> spans = args.spans;
+    final List<ListItem> listItems = args.listItems;
     Future<List<Feature>> features =
         _database.featureDao.getAllFeaturesByProject(survey.projectId);
 
@@ -44,7 +43,6 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
         builder: (BuildContext context, AsyncSnapshot<List<Feature>> snapshot) {
           if (snapshot.hasData) {
             var features = snapshot.data;
-            print(features);
             return Scaffold(
               appBar: AppBar(
                 title: Text("Select a feature type"),
@@ -54,11 +52,13 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
                 child: ListView.builder(
                     itemCount: features.length,
                     itemBuilder: (context, index) {
-                      return FeatureCard(
-                          features[index], project, survey, position, spans);
+                      return FeatureCard(features[index], project, survey,
+                          position, listItems);
                     }),
               ),
             );
+          } else {
+            return Text("Loading features");
           }
         });
   }
@@ -69,21 +69,30 @@ class FeatureCard extends StatelessWidget {
   final Project project;
   final Survey survey;
   final double position;
-  final List<SpanContainer> spans;
+  final List<ListItem> listItems;
 
   FeatureCard(
-      this.feature, this.project, this.survey, this.position, this.spans);
+      this.feature, this.project, this.survey, this.position, this.listItems);
 
   @override
   Widget build(BuildContext context) {
     onPressFeatureCard() {
-      var span = SpanContainer(survey.id, feature.label, feature.geometryType,
-          position, position, feature.color, false, []);
-      spans.add(span);
+      var listItem = ListItem(
+          surveyId: survey.id,
+          featureId: feature.id,
+          geometryType: feature.geometryType,
+          name: feature.name,
+          color: feature.color,
+          span: SpanContainer(
+            start: position,
+            stop: position
+          ),
+          points: []);
+      listItems.add(listItem);
 
       Navigator.pushNamedAndRemoveUntil(
           context, WheelScreen.routeName, ModalRoute.withName('/map'),
-          arguments: WheelScreenArguments(project, survey, spans));
+          arguments: WheelScreenArguments(project, survey, listItems));
     }
 
     final String assetName = feature.geometryType == 'line'
@@ -132,7 +141,7 @@ class FeatureCard extends StatelessWidget {
                     children: [
                       Padding(
                           padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
-                          child: Text(feature.label))
+                          child: Text(feature.name))
                     ],
                   )
                 ],

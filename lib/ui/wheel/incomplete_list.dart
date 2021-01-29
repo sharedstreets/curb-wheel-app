@@ -1,40 +1,16 @@
 import 'package:curbwheel/database/database.dart';
+import 'package:curbwheel/database/models.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
 import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:provider/provider.dart';
 
-class SpanContainer {
-  final int surveyId;
-  final String name;
-  final String type;
-  final double start;
-  final double stop;
-  final String color;
-  final bool complete;
-  final List<double> points;
-
-  SpanContainer(this.surveyId, this.name, this.type, this.start, this.stop,
-      this.color, this.complete, this.points);
-
-  SpansCompanion toCompanion() {
-    return SpansCompanion(
-        surveyId: moor.Value(this.surveyId),
-        name: moor.Value(this.name),
-        type: moor.Value(this.type),
-        start: moor.Value(this.start),
-        stop: moor.Value(this.stop),
-        complete: moor.Value(this.complete));
-  }
-}
-
 class IncompleteList extends StatefulWidget {
-  final List<SpanContainer> spans;
+  final List<ListItem> listItems;
   final double progress;
 
-  IncompleteList(this.spans, this.progress);
+  IncompleteList(this.listItems, this.progress);
 
   @override
   _IncompleteListState createState() => _IncompleteListState();
@@ -43,10 +19,21 @@ class IncompleteList extends StatefulWidget {
 class _IncompleteListState extends State<IncompleteList> {
   CurbWheelDatabase _database;
 
-  void _completeSpan(SpanContainer span) {
-    print(span);
-    _database.spanDao.insertSpan(span.toCompanion());
-    setState(() => widget.spans.remove(span));
+  void _completeItem(ListItem listItem) async {
+    List<PointsCompanion> pointsCompanions;
+    int surveyItemId = await _database.surveyItemDao
+        .insertSurveyItem(listItem.toSurveyItemsCompanion());
+    if (listItem.geometryType == 'line') {
+      int spanId =
+          await _database.spanDao.insertSpan(listItem.toSpansCompanion(surveyItemId));
+      pointsCompanions = listItem.toPointsCompanion(surveyItemId,spanId);
+    } else {
+      pointsCompanions = listItem.toPointsCompanion(surveyItemId, null);
+    }
+    for (var pointsCompanion in pointsCompanions) {
+      await _database.pointDao.insertPoint(pointsCompanion);
+    }
+    setState(() => widget.listItems.remove(listItem));
   }
 
   @override
@@ -54,42 +41,44 @@ class _IncompleteListState extends State<IncompleteList> {
     _database = Provider.of<CurbWheelDatabase>(context);
     return Container(
       padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-      child: widget.spans.isEmpty
-          ? Center(child: Text('No spans yet'))
+      child: widget.listItems.isEmpty
+          ? Center(child: Padding(
+            padding:EdgeInsets.all(20.0),
+            child: Text('No active items', style: TextStyle(color: Colors.black,fontSize: 20))))
           : ListView.builder(
               shrinkWrap: true,
-              itemCount: widget.spans.length,
+              itemCount: widget.listItems.length,
               itemBuilder: (context, index) {
-                return ActiveSpanCard(
-                    widget.spans[index], widget.progress, _completeSpan);
+                return ActiveCard(
+                    widget.listItems[index], widget.progress, _completeItem);
               }),
     );
   }
 }
 
-class ActiveSpanCard extends StatefulWidget {
-  final SpanContainer span;
+class ActiveCard extends StatefulWidget {
+  final ListItem listItem;
   final double progress;
   final Function callback;
 
-  ActiveSpanCard(this.span, this.progress, this.callback);
+  ActiveCard(this.listItem, this.progress, this.callback);
 
   @override
-  _ActiveSpanCardState createState() => _ActiveSpanCardState();
+  _ActiveCardState createState() => _ActiveCardState();
 }
 
-class _ActiveSpanCardState extends State<ActiveSpanCard> {
+class _ActiveCardState extends State<ActiveCard> {
   @override
   Widget build(BuildContext context) {
     var _progress = widget.progress;
-    var _span = widget.span;
+    var _listItem = widget.listItem;
     var _callback = widget.callback;
 
-    final String assetName = _span.type == 'line'
+    final String assetName = _listItem.geometryType == 'line'
         ? 'assets/vector-line.svg'
         : 'assets/map-marker.svg';
     final String semanticsLabel =
-        _span.type == 'line' ? 'line type' : 'point type';
+        _listItem.geometryType == 'line' ? 'line type' : 'point type';
     final Widget svgIcon = SvgPicture.asset(assetName,
         color: Colors.black, semanticsLabel: semanticsLabel);
 
@@ -104,22 +93,22 @@ class _ActiveSpanCardState extends State<ActiveSpanCard> {
                 children: <Widget>[
                   Row(children: [
                     svgIcon,
-                    Text(_span.name),
+                    Text(_listItem.name),
                     Spacer(),
                     IconButton(
                       icon: Icon(Icons.check),
-                      onPressed: () => _callback(_span),
+                      onPressed: () => _callback(_listItem),
                     )
                   ]),
                   Padding(
                       padding: EdgeInsets.all(2.0),
                       child: ProgressBar(
-                          start: _span.start,
+                          start: _listItem.span.start,
                           progress: _progress,
-                          progressColor: colorConvert(_span.color),
-                          points: _span.points)),
+                          progressColor: colorConvert(_listItem.color),
+                          points: _listItem.points.map((p)=> p.position).toList())),
                   Text(
-                      "${_span.start * 40}m-${(_progress * 40).toStringAsFixed(1)}m"),
+                      "${_listItem.span.start * 40}m-${(_progress * 40).toStringAsFixed(1)}m"),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -131,6 +120,8 @@ class _ActiveSpanCardState extends State<ActiveSpanCard> {
                   )
                 ],
               ),
-            )));
+            )
+          )
+        );
   }
 }

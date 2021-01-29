@@ -1,6 +1,5 @@
-import 'dart:async';
-
 import 'package:curbwheel/database/database.dart';
+import 'package:curbwheel/database/models.dart';
 import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:flutter/material.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
@@ -25,59 +24,64 @@ class _CompleteListState extends State<CompleteList> {
   Widget build(BuildContext context) {
     _database = Provider.of<CurbWheelDatabase>(context);
     _survey = widget.survey;
-    Future<List<Feature>> _features =
-        _database.featureDao.getAllFeaturesByProject(_survey.projectId);
-
-    return FutureBuilder<List<Feature>>(
-        future: _features,
-        builder: (BuildContext context, AsyncSnapshot<List<Feature>> snapshot) {
-          if (snapshot.hasData) {
-            var features = snapshot.data;
-            print(features);
-            return StreamBuilder(
-                stream: _database.spanDao.watchSpansBySurvey(_survey),
-                builder: (context, AsyncSnapshot<List<Span>> snapshot) {
-                  return ListView.builder(
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (context, index) {
-                      print(snapshot.data[index]);
-                      var color = features.where((feature) =>
-                          (feature.label == snapshot.data[index].name));
-                      print("color");
-                      print(color);
-                      return InactiveSpanCard(
-                          snapshot.data[index], color.elementAt(0).color);
-                    },
-                  );
-                });
-          } else {
-            return Text("FOO");
-          }
-        });
+    return Container(
+      child: Column(
+        children: [
+          CompletedListHeader(),
+          StreamBuilder(
+            stream: _database.getListItemBySurveyId(_survey.id),
+            builder: (context, AsyncSnapshot<List<ListItem>> snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) {
+                    return InactiveCard(snapshot.data[index]);
+                  },
+                );
+              } else {
+                return Text("No items");
+              }
+            })
+        ],
+      ),
+    );
   }
 }
 
-class InactiveSpanCard extends StatefulWidget {
-  final Span span;
-  final String color;
 
-  InactiveSpanCard(this.span, this.color);
-
-  @override
-  _InactiveSpanCardState createState() => _InactiveSpanCardState();
-}
-
-class _InactiveSpanCardState extends State<InactiveSpanCard> {
+class CompletedListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var _span = widget.span;
-    var _color = widget.color;
+    return Container(
+      child: Column(children: [
+        Text("Completed Items", style: TextStyle(color: Colors.black,fontSize: 20)),
+        Divider(color: Colors.grey)
+      ],)
+      
+    );
+  }
+}
 
-    final String assetName = _span.type == 'line'
+class InactiveCard extends StatefulWidget {
+  final ListItem listItem;
+
+  InactiveCard(this.listItem);
+
+  @override
+  _InactiveCardState createState() => _InactiveCardState();
+}
+
+class _InactiveCardState extends State<InactiveCard> {
+  @override
+  Widget build(BuildContext context) {
+    var _listItem = widget.listItem;
+
+    final String assetName = _listItem.geometryType == 'line'
         ? 'assets/vector-line.svg'
         : 'assets/map-marker.svg';
     final String semanticsLabel =
-        _span.type == 'line' ? 'line type' : 'point type';
+        _listItem.geometryType == 'line' ? 'line type' : 'point type';
     final Widget svgIcon = SvgPicture.asset(assetName,
         color: Colors.black, semanticsLabel: semanticsLabel);
 
@@ -90,33 +94,24 @@ class _InactiveSpanCardState extends State<InactiveSpanCard> {
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  Row(children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                    child: Row(
+                    children: [
                     svgIcon,
-                    Text(_span.name),
+                    Text(_listItem.name),
                     Spacer(),
-                    IconButton(
-                      icon: Icon(Icons.check),
-                      onPressed: () => {},
-                    )
                   ]),
+                  ),
                   Padding(
                       padding: EdgeInsets.all(2.0),
                       child: ProgressBar(
-                          start: _span.start,
-                          progress: _span.stop,
-                          progressColor: colorConvert(_color),
+                          start: _listItem.span.start,
+                          progress: _listItem.span.stop,
+                          progressColor: colorConvert(_listItem.color),
                           points: [])), //_span.points)),
                   Text(
-                      "${_span.start * 40}m-${(_span.stop * 40).toStringAsFixed(1)}m"),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                          icon: Icon(Icons.more_horiz), onPressed: () => {}),
-                      IconButton(
-                          icon: Icon(Icons.camera_alt), onPressed: () => {})
-                    ],
-                  )
+                      "${_listItem.span.start * 40}m-${(_listItem.span.stop * 40).toStringAsFixed(1)}m"),
                 ],
               ),
             )));
