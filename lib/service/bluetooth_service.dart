@@ -23,7 +23,7 @@ class BleWheel {
   StreamController<int> _revreseStreamController = new StreamController();
 
   BluetoothCharacteristic _forwardCharacteristic;
-  BluetoothCharacteristic _revereseCharacteristic;
+  BluetoothCharacteristic _reverseCharacteristic;
 
   bool _connectionFailed = false;
 
@@ -63,7 +63,7 @@ class BleWheel {
 
     _connectionFailed = false;
     _forwardCharacteristic = null;
-    _revereseCharacteristic = null;
+    _reverseCharacteristic = null;
 
     // fixing try/catch await bug in flutter_blue
     // per https://github.com/pauldemarco/flutter_blue/issues/299#issuecomment-521203753
@@ -90,24 +90,24 @@ class BleWheel {
             if (characteristic.uuid == FORWARD_UUID) {
               _forwardCharacteristic = characteristic;
             } else if (characteristic.uuid == REVERSE_UUID) {
-              _revereseCharacteristic = characteristic;
+              _reverseCharacteristic = characteristic;
             }
           }
         }
       }
 
-      if (_forwardCharacteristic == null) {
+      if (_reverseCharacteristic == null) {
         _connectionFailed = true;
         await _device.disconnect();
       }
 
-      if (_revereseCharacteristic == null) {
+      if (_reverseCharacteristic == null) {
         _connectionFailed = true;
         await _device.disconnect();
       }
 
-      subscribeForwardCounter();
-      subscribeRevreseCounter();
+      await subscribeForwardCounter();
+      await subscribeReverseCounter();
 
       _stateStreamController.add(WheelStatus.CONNECTED);
     }
@@ -116,10 +116,10 @@ class BleWheel {
   disconnect() {
     _device.disconnect();
     _forwardCharacteristic = null;
-    _revereseCharacteristic = null;
+    _reverseCharacteristic = null;
   }
 
-  void subscribeForwardCounter() async {
+  subscribeForwardCounter() async {
     await _forwardCharacteristic.setNotifyValue(true);
 
     _forwardCharacteristic.value.listen((value) {
@@ -131,10 +131,10 @@ class BleWheel {
     });
   }
 
-  void subscribeRevreseCounter() async {
-    await _revereseCharacteristic.setNotifyValue(true);
+  subscribeReverseCounter() async {
+    await _reverseCharacteristic.setNotifyValue(true);
 
-    _revereseCharacteristic.value.listen((value) {
+    _reverseCharacteristic.value.listen((value) {
       int intVal = Uint8List.fromList(value.reversed.toList())
           .buffer
           .asByteData()
@@ -148,7 +148,7 @@ class BleWheel {
         (_deviceState == BluetoothDeviceState.connecting ||
             (_deviceState == BluetoothDeviceState.connected &&
                 _forwardCharacteristic == null &&
-                _revereseCharacteristic == null)))
+                _reverseCharacteristic == null)))
       return true;
     else
       return false;
@@ -157,7 +157,7 @@ class BleWheel {
   bool isConnected() {
     if (_deviceState != null &&
         _forwardCharacteristic != null &&
-        _revereseCharacteristic != null &&
+        _reverseCharacteristic != null &&
         _deviceState == BluetoothDeviceState.connected)
       return true;
     else
@@ -307,7 +307,7 @@ class WheelCounter extends ChangeNotifier {
   int _reverseCounter = 0;
 
   int _forwardCounterOffset;
-  int _revereseCounterOffset;
+  int _reverseCounterOffset;
 
   updateConnection(BleConnection bleConnection) {
     if (bleConnection != null &&
@@ -317,7 +317,7 @@ class WheelCounter extends ChangeNotifier {
           .listen((BleWheel connnectedWheel) {
         if (_connectedWheel == null || _connectedWheel != connnectedWheel) {
           _forwardCounterOffset = null;
-          _revereseCounterOffset = null;
+          _reverseCounterOffset = null;
 
           connnectedWheel._forwardStreamController.stream
               .listen(updateForwardCounter);
@@ -340,10 +340,10 @@ class WheelCounter extends ChangeNotifier {
   }
 
   updateReverseCounter(int counterValue) {
-    if (_revereseCounterOffset == null) _revereseCounterOffset = counterValue;
+    if (_reverseCounterOffset == null) _reverseCounterOffset = counterValue;
 
-    _reverseCounter += counterValue - _revereseCounterOffset;
-    _revereseCounterOffset = counterValue;
+    _reverseCounter += counterValue - _reverseCounterOffset;
+    _reverseCounterOffset = counterValue;
 
     notifyListeners();
   }
