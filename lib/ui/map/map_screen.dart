@@ -2,6 +2,7 @@ import 'package:curbwheel/utils/spatial_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:provider/provider.dart';
 import 'package:turf/turf.dart';
 
 import '../../database/database.dart' as db;
@@ -53,35 +54,60 @@ class FullMap extends StatefulWidget {
 class _FullMapState extends State<FullMap> {
   MapboxMapController _mapController;
   MapboxMap _map;
-  ProjectMapDatastore _mapData;
+  ProjectMapDatastore _projectMapData;
+
+  LatLngBounds _lastBounds;
+
   final db.Project project;
 
   _FullMapState(this.project);
 
-  void _onMapClick(point, latlng) async {
-    LatLngBounds bounds = await _mapController.getVisibleRegion();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _projectMapData = Provider.of<ProjectMapDatastores>(context, listen: false)
+        .getDatastore(project);
+  }
 
-    // ick is this the rigfh way to handle async object initialization?
-    List<Feature<Geometry>> features =
-        (await _mapData.mapData).getGeomsByBounds(bounds);
+  void _onMapClick(point, latlng) async {}
 
-    _mapController.clearLines();
-    for (Feature f in features) {
-      List<LatLng> mapboxGeom = await (await _mapData.mapData)
-          .getMapboxGLGeomById(f.properties['id']);
-      _mapController.addLine(new LineOptions(
-        geometry: mapboxGeom,
-        lineColor: "#ff0000",
-        lineWidth: 14.0,
-        lineOpacity: 0.5,
-      ));
+  void _onMapChanged() async {
+    MapData data = await _projectMapData.mapData;
+
+    // not preformant on a iphone 6s below z15
+    // suggests importance of switching to geojson overlay
+    if (_mapController.isCameraMoving == false &&
+        _mapController.cameraPosition.zoom > 15.5) {
+      LatLngBounds bounds = await _mapController.getVisibleRegion();
+
+      // TOOD need to filter filter for box contains?
+      if (_lastBounds != null) {
+        if (contains(_lastBounds, bounds.northeast) &&
+            contains(_lastBounds, bounds.southwest)) return;
+      }
+
+      _lastBounds = bounds;
+
+      // ick is this the rigfh way to handle async object initialization?
+      List<Feature<Geometry>> features = data.getGeomsByBounds(bounds);
+
+      _mapController.clearLines();
+      for (Feature f in features) {
+        List<LatLng> mapboxGeom =
+            await data.getMapboxGLGeomById(f.properties['id']);
+        _mapController.addLine(new LineOptions(
+          geometry: mapboxGeom,
+          lineColor: "#000000",
+          lineWidth: 0.0,
+          lineOpacity: 0.0,
+        ));
+      }
     }
   }
 
   void _onMapCreated(MapboxMapController controller) async {
-    _mapData = new ProjectMapDatastore(project);
     _mapController = controller;
-
     // update map to user location if permissions allow
     final location = Location();
     final hasPermissions = await location.hasPermission();
@@ -91,7 +117,9 @@ class _FullMapState extends State<FullMap> {
           new LatLng(locationData.latitude, locationData.longitude);
       CameraUpdate cameraUpdate = CameraUpdate.newLatLngZoom(newLatLng, 12);
       _mapController.moveCamera(cameraUpdate);
+      _mapController.addListener(_onMapChanged);
     }
+
     // _mapController.onLineTapped;
     // _mapController.addLine(new LineOptions(
     //   geometry: ,
@@ -111,6 +139,7 @@ class _FullMapState extends State<FullMap> {
       compassEnabled: true,
       onMapCreated: _onMapCreated,
       onMapClick: _onMapClick,
+      trackCameraPosition: true,
       initialCameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
     );
 

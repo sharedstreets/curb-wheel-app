@@ -131,6 +131,21 @@ coordEach(geojson, callback, excludeWrapCoord) {
   }
 }
 
+contains(LatLngBounds lnglatBounds, LatLng lnglat) {
+  bool containsLatitude = lnglatBounds.southwest.latitude <= lnglat.latitude &&
+      lnglat.latitude <= lnglatBounds.northeast.latitude;
+  bool containsLongitude =
+      lnglatBounds.southwest.longitude <= lnglat.longitude &&
+          lnglat.longitude <= lnglatBounds.northeast.longitude;
+  if (lnglatBounds.southwest.longitude > lnglatBounds.northeast.longitude) {
+    // wrapped coordinates
+    containsLongitude = lnglatBounds.southwest.longitude >= lnglat.longitude &&
+        lnglat.longitude >= lnglatBounds.northeast.longitude;
+  }
+
+  return containsLatitude && containsLongitude;
+}
+
 // converting from @turf/bbox
 // https://github.com/Turfjs/turf/blob/2e9d3d51f765a814c2cad90e88ff86e27c9e066f/packages/turf-bbox/index.ts
 // modified to support 3d bbox lng1,lat1,alt1,lng2,lat2,alt2

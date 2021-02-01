@@ -42,7 +42,6 @@ class MapData {
 
   Map<String, Feature> _geomIndex;
   Map<String, String> _refIndex;
-
   RTree<Feature<Geometry>> _spatialIndex;
 
   MapData(this._featureCollection);
