@@ -70,7 +70,9 @@ class _FullMapState extends State<FullMap> {
         .getDatastore(project);
   }
 
-  void _onMapClick(point, latlng) async {}
+  void _onLineTapped(Line l) {
+    print(l.data["id"]);
+  }
 
   void _onMapChanged() async {
     MapData data = await _projectMapData.mapData;
@@ -92,16 +94,22 @@ class _FullMapState extends State<FullMap> {
       // ick is this the rigfh way to handle async object initialization?
       List<Feature<Geometry>> features = data.getGeomsByBounds(bounds);
 
+      _mapController.onLineTapped.add((Line l) {
+        print(l);
+      });
+
       _mapController.clearLines();
-      for (Feature f in features) {
+      for (Feature<Geometry> f in features) {
         List<LatLng> mapboxGeom =
             await data.getMapboxGLGeomById(f.properties['id']);
-        _mapController.addLine(new LineOptions(
-          geometry: mapboxGeom,
-          lineColor: "#000000",
-          lineWidth: 0.0,
-          lineOpacity: 0.0,
-        ));
+        Future<Line> l = _mapController.addLine(
+            new LineOptions(
+              geometry: mapboxGeom,
+              lineColor: "#000000",
+              lineWidth: 0.0,
+              lineOpacity: 0.0,
+            ),
+            {"id": f.properties['id']});
       }
     }
   }
@@ -118,15 +126,8 @@ class _FullMapState extends State<FullMap> {
       CameraUpdate cameraUpdate = CameraUpdate.newLatLngZoom(newLatLng, 12);
       _mapController.moveCamera(cameraUpdate);
       _mapController.addListener(_onMapChanged);
+      _mapController.onLineTapped.add(_onLineTapped);
     }
-
-    // _mapController.onLineTapped;
-    // _mapController.addLine(new LineOptions(
-    //   geometry: ,
-    //   lineColor: "#ff0000",
-    //   lineWidth: 14.0,
-    //   lineOpacity: 0.5,
-    // ));
   }
 
   @override
@@ -138,7 +139,6 @@ class _FullMapState extends State<FullMap> {
       myLocationTrackingMode: MyLocationTrackingMode.Tracking,
       compassEnabled: true,
       onMapCreated: _onMapCreated,
-      onMapClick: _onMapClick,
       trackCameraPosition: true,
       initialCameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
     );
