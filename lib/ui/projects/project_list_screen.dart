@@ -1,4 +1,5 @@
 import 'package:curbwheel/client/config_client.dart';
+import 'package:curbwheel/ui/ble/ble_selector.dart';
 import 'package:curbwheel/ui/preferences.dart/preferences_screen.dart';
 import 'package:curbwheel/ui/projects/add_project_form.dart';
 import 'package:curbwheel/ui/projects/qr_scanner.dart';
@@ -107,6 +108,7 @@ class ProjectListScreenState extends State<ProjectListScreen> {
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
           actions: [
+            BleStatusButton(),
             IconButton(
               icon: const Icon(Icons.settings),
               tooltip: 'preferences',
