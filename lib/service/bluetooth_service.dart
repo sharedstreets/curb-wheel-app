@@ -348,6 +348,14 @@ class WheelCounter extends ChangeNotifier {
     notifyListeners();
   }
 
+  resetForwardCounter() {
+    _forwardCounter = 0;
+  }
+
+  resetReverseCounter() {
+    _reverseCounter = 0;
+  }
+
   getForwardCounter() {
     return _forwardCounter;
   }
