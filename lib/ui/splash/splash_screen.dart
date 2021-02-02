@@ -15,12 +15,16 @@ class Spoke {
 }
 
 class SplashScreen extends StatefulWidget {
+  static const routeName = '/';
+
   @override
   _MyPainterState createState() => _MyPainterState();
 }
 
 class _MyPainterState extends State<SplashScreen>
     with TickerProviderStateMixin {
+  
+  
   Animation<double> animation;
   AnimationController controller;
 
@@ -49,8 +53,6 @@ class _MyPainterState extends State<SplashScreen>
           controller.forward();
         }
       });
-
-    //controller.forward();
   }
 
   @override
@@ -71,10 +73,9 @@ class _MyPainterState extends State<SplashScreen>
               Duration(seconds: 2),
               () => {
                     controller.stop(),
-                    Navigator.pushReplacement(
+                    Navigator.pushReplacementNamed(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => ProjectListScreen()))
+                        ProjectListScreen.routeName)
                   })
         },
         child: SafeArea(

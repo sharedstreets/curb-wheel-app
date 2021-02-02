@@ -1,38 +1,24 @@
+import 'package:curbwheel/database/models.dart';
+import 'package:curbwheel/database/survey_dao.dart';
 import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 import 'package:flutter/material.dart';
-//import 'package:provider/provider.dart';
+import 'package:moor_flutter/moor_flutter.dart' as moor;
+import 'package:provider/provider.dart';
 import '../../database/database.dart';
-/*
-class MapScreen extends StatefulWidget {
+
+class MapScreenArguments {
   final Project project;
 
-  const MapScreen({Key key, this.project}) : super(key: key);
-
-  @override
-  _MapScreenState createState() => _MapScreenState();
+  MapScreenArguments(this.project);
 }
-
-class _MapScreenState extends State<MapScreen> {
-  //CurbWheelDatabase _database;
-  @override
-  Widget build(BuildContext context) {
-    //_database = Provider.of<CurbWheelDatabase>(context);
-    //Stream<List<Project>> _projects = _database.projectDao.watc();
-    return Scaffold(appBar: AppBar(
-        title: Text(
-          widget.project.name,
-          //style: TextStyle(color: Colors.white),
-        ),
-    ));
-  }
-}
-*/
 
 class MapScreen extends StatelessWidget {
+  static const routeName = '/map';
   final Project project;
 
+
   final List<Street> items = [
-    Street("1234", "Street 1", "right"),
+    Street("1234", "Dartmouth Dr. NE", "right"),
     Street("9876", "Street 2", "left")
   ];
 
@@ -41,6 +27,14 @@ class MapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = "Select a street";
+
+    List<ListItem> listItems = [];
+
+    CurbWheelDatabase _database = Provider.of<CurbWheelDatabase>(context);
+    SurveyDao surveyDao = _database.surveyDao;
+
+    final MapScreenArguments args = ModalRoute.of(context).settings.arguments;
+    var project = args.project;
 
     return Scaffold(
       appBar: AppBar(
@@ -52,11 +46,20 @@ class MapScreen extends StatelessWidget {
           var street = items[index];
           return ListTile(
             title: Text('${street.name}'),
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => WheelScreen(project, street)));
+            onTap: () async {
+              var surveysCompanion = SurveysCompanion(
+                  shStRefId: moor.Value(street.shStRefId),
+                  streetName: moor.Value(street.name),
+                  length: moor.Value(42),
+                  projectId: moor.Value(project.id),
+                  startStreetName: moor.Value("Campus Blvd."),
+                  endStreetName: moor.Value("Richmond Pl."),
+                  direction: moor.Value("up"),
+                  side: moor.Value(street.side));
+              int surveyId = await surveyDao.insertSurvey(surveysCompanion);
+              Survey survey = await surveyDao.getSurveyById(surveyId);
+              Navigator.pushNamed(context, WheelScreen.routeName,
+                  arguments: WheelScreenArguments(project, survey, listItems));
             },
           );
         },

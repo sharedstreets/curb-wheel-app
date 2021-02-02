@@ -11,7 +11,9 @@ class SurveyDao extends DatabaseAccessor<CurbWheelDatabase> with _$SurveyDaoMixi
 
   Stream<List<Survey>> watchAllSurveys() => select(surveys).watch();
 
-  Future insertSurvey(Survey survey) => into(surveys).insert(survey);
+  Future<int> insertSurvey(SurveysCompanion survey) => into(surveys).insert(survey);
+
+  Future<Survey> getSurveyById(int id) => (select(surveys)..where((s) => s.id.equals(id))).getSingle();
 
   Future updateSurvey(Survey survey) => update(surveys).replace(survey);
 

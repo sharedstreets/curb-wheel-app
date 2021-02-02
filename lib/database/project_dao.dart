@@ -11,6 +11,11 @@ class ProjectDao extends DatabaseAccessor<CurbWheelDatabase> with _$ProjectDaoMi
 
   Stream<List<Project>> watchAllProjects() => select(projects).watch();
 
+  Future<List<Project>> findProjectById(String projectId) {
+    return (select(projects)..where((p) => p.projectId.equals(projectId)))
+        .get();
+  }
+
   Future insertProject(ProjectsCompanion project) => into(projects).insert(project);
 
   Future updateProject(Project project) => update(projects).replace(project);

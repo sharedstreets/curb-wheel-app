@@ -35,7 +35,10 @@ dependencies:
   qr_code_scanner: ^0.3.0
   path_provider:
   shared_preferences: '>=0.5.0 <2.0.0'
+  flutter_svg:
+  rxdart:
   flutter_blue: ^0.7.3
+
 
 dev_dependencies:
   flutter_test:
@@ -46,12 +49,16 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   test: any
+  json_serializable:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+
 # The following section is specific to Flutter.
 flutter:
+  assets:
+    - assets/
   fonts:
     - family: Raleway
       fonts:
