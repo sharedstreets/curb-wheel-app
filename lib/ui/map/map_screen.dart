@@ -62,6 +62,8 @@ class _FullMapState extends State<FullMap> {
 
   _FullMapState(this.project);
 
+  String _streetName = "Select a street";
+
   @override
   void initState() {
     // TODO: implement initState
@@ -70,8 +72,11 @@ class _FullMapState extends State<FullMap> {
         .getDatastore(project);
   }
 
-  void _onLineTapped(Line l) {
-    print(l.data["id"]);
+  void _onLineTapped(Line tappedLine) async {
+    var f = (await _projectMapData.mapData).geomIndex[tappedLine.data["id"]];
+    setState(() {
+      _streetName = f.properties['name'];
+    });
   }
 
   void _onMapChanged() async {
@@ -106,7 +111,7 @@ class _FullMapState extends State<FullMap> {
             new LineOptions(
               geometry: mapboxGeom,
               lineColor: "#000000",
-              lineWidth: 0.0,
+              lineWidth: 4.0,
               lineOpacity: 0.0,
             ),
             {"id": f.properties['id']});
@@ -132,17 +137,27 @@ class _FullMapState extends State<FullMap> {
 
   @override
   Widget build(BuildContext context) {
-    _map = MapboxMap(
-      accessToken: ACCESS_TOKEN,
-      styleString: STYLE_STRING,
-      myLocationEnabled: true,
-      myLocationTrackingMode: MyLocationTrackingMode.Tracking,
-      compassEnabled: true,
-      onMapCreated: _onMapCreated,
-      trackCameraPosition: true,
-      initialCameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
-    );
+    if (_map == null)
+      _map = MapboxMap(
+        accessToken: ACCESS_TOKEN,
+        styleString: STYLE_STRING,
+        myLocationEnabled: true,
+        myLocationTrackingMode: MyLocationTrackingMode.Tracking,
+        compassEnabled: true,
+        onMapCreated: _onMapCreated,
+        trackCameraPosition: true,
+        initialCameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
+      );
 
-    return new Scaffold(body: _map);
+    return new Scaffold(
+        body: Column(children: [
+      Expanded(child: _map),
+      ExpansionTile(
+        title: Text(
+          _streetName,
+          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+        ),
+      ),
+    ]));
   }
 }
