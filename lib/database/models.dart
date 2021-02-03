@@ -1,5 +1,8 @@
 import 'database.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
+import 'package:uuid/uuid.dart';
+
+var uuid = Uuid();
 
 class SurveyItemWithFeature {
   SurveyItemWithFeature(this.surveyItem, this.feature);
@@ -37,6 +40,7 @@ class ListItem {
 
   SpansCompanion toSpansCompanion() {
     return SpansCompanion(
+        id: moor.Value(uuid.v4()),
         surveyItemId: moor.Value(this.surveyItemId),
         start: moor.Value(this.span.start),
         stop: moor.Value(this.span.stop));
@@ -46,6 +50,7 @@ class ListItem {
     List<PointsCompanion> pointsCompanions = [];
     for (PointContainer point in this.points) {
       pointsCompanions.add(PointsCompanion(
+          id: moor.Value(uuid.v4()),
           surveyItemId: moor.Value(this.surveyItemId),
           position: moor.Value(point.position)));
     }

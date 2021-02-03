@@ -34,14 +34,54 @@ class _WheelScreenState extends State<WheelScreen> {
   double streetLength = 40;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> _photoDialog() async {
+    switch (await showDialog<PhotoOptions>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, PhotoOptions.addPhoto);
+                },
+                child: const Text('Take a photo'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('No photo'),
+              ),
+            ],
+          );
+        })) {
+      case PhotoOptions.addPhoto:
+        // Let's go.
+        // ...
+        break;
+      case PhotoOptions.noPhoto:
+        break;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final WheelScreenArguments args = ModalRoute.of(context).settings.arguments;
     final Project project = args.project;
     final Survey survey = args.survey;
     final List<ListItem> incompleteSpans = args.incompleteSpans;
+    final bool newFeature = args.newFeature;
     _database = Provider.of<CurbWheelDatabase>(context);
     _counter = Provider.of<WheelCounter>(context);
     _progress = _counter.getForwardCounter() / 10 / streetLength;
+
+    if (newFeature) {
+      Future.delayed(Duration.zero, () => _photoDialog());
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text("Surveying"),
@@ -73,6 +113,8 @@ class _WheelScreenState extends State<WheelScreen> {
     );
   }
 }
+
+enum PhotoOptions { addPhoto, noPhoto }
 
 class WheelHeader extends StatefulWidget {
   final double progress;
