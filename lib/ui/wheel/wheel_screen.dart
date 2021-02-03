@@ -1,5 +1,6 @@
 import 'package:curbwheel/database/database.dart';
 import 'package:curbwheel/database/models.dart';
+import 'package:curbwheel/service/bluetooth_service.dart';
 import 'package:curbwheel/ui/features/features_screen.dart';
 import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,10 @@ class WheelScreen extends StatefulWidget {
 
 class _WheelScreenState extends State<WheelScreen> {
   CurbWheelDatabase _database;
+  WheelCounter _counter;
   List<Span> completeSpans;
+  double _progress;
+  double streetLength = 40;
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +38,8 @@ class _WheelScreenState extends State<WheelScreen> {
     final Survey survey = args.survey;
     final List<ListItem> incompleteSpans = args.incompleteSpans;
     _database = Provider.of<CurbWheelDatabase>(context);
-
-    _database = Provider.of<CurbWheelDatabase>(context);
+    _counter = Provider.of<WheelCounter>(context);
+    _progress = _counter.getForwardCounter() / 10 / streetLength;
     return Scaffold(
       appBar: AppBar(
         title: Text("Surveying"),
@@ -44,15 +48,14 @@ class _WheelScreenState extends State<WheelScreen> {
         color: Color(0xFFEFEFEF),
         child: Column(
           children: [
-            WheelHeader(0.5, survey),
+            WheelHeader(_progress, survey),
             Expanded(
-              child: Column(
-                children: [
-                  IncompleteList(incompleteSpans, 0.2),
-                  CompleteList(survey),
-                ],
-              )
-            )
+                child: Column(
+              children: [
+                IncompleteList(incompleteSpans, _progress),
+                CompleteList(survey),
+              ],
+            ))
           ],
         ),
       ),
@@ -62,7 +65,7 @@ class _WheelScreenState extends State<WheelScreen> {
         onPressed: () => {
           Navigator.pushNamed(context, FeatureSelectScreen.routeName,
               arguments: FeatureSelectScreenArguments(
-                  project, survey, 0.0, incompleteSpans))
+                  project, survey, _progress, incompleteSpans))
         },
       ),
     );
@@ -122,7 +125,7 @@ class _WheelHeaderState extends State<WheelHeader> {
             Padding(
               padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
               child: ProgressBar(
-                progress: 0.5,
+                progress: _progress,
                 backgroundStrokeWidth: 10.0,
               ),
             ),

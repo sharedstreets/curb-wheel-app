@@ -64,5 +64,6 @@ class SpanContainer {
 
   final int surveyItemId;
   final double start;
-  final double stop;
+  double stop;
+
 }
