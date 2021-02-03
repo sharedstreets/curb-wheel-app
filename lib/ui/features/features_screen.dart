@@ -5,6 +5,9 @@ import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+
+var uuid = Uuid();
 
 class FeatureSelectScreenArguments {
   final Project project;
@@ -77,22 +80,28 @@ class FeatureCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     onPressFeatureCard() {
+      String surveyItemId = uuid.v4();
       var listItem = ListItem(
+          surveyItemId: surveyItemId,
           surveyId: survey.id,
           featureId: feature.id,
           geometryType: feature.geometryType,
           name: feature.name,
-          color: feature.color,
-          span: SpanContainer(
-            start: position,
-            stop: position
-          ),
-          points: []);
+          color: feature.color);
+      if (this.feature.geometryType == 'line') {
+        listItem.span = SpanContainer(start: position, stop: position);
+        listItem.points = [];
+      } else {
+        listItem.points = [
+          PointContainer(surveyItemId: surveyItemId, position: position)
+        ];
+      }
+
       listItems.add(listItem);
 
       Navigator.pushNamedAndRemoveUntil(
           context, WheelScreen.routeName, ModalRoute.withName('/map'),
-          arguments: WheelScreenArguments(project, survey, listItems));
+          arguments: WheelScreenArguments(project, survey, listItems, newFeature: true));
     }
 
     final String assetName = feature.geometryType == 'line'

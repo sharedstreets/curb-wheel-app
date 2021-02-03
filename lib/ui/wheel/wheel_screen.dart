@@ -13,8 +13,10 @@ class WheelScreenArguments {
   final Project project;
   final Survey survey;
   final List<ListItem> incompleteSpans;
+  final bool newFeature;
 
-  WheelScreenArguments(this.project, this.survey, this.incompleteSpans);
+  WheelScreenArguments(this.project, this.survey, this.incompleteSpans,
+      {this.newFeature = false});
 }
 
 class WheelScreen extends StatefulWidget {

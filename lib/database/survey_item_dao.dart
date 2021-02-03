@@ -12,13 +12,13 @@ class SurveyItemDao extends DatabaseAccessor<CurbWheelDatabase>
 
   Stream<List<SurveyItem>> watchAllSurveyItems() => select(surveyItems).watch();
 
-  Stream<List<SurveyItem>> watchAllSurveyItemsBySurvey(int surveyId) =>
+  Stream<List<SurveyItem>> watchAllSurveyItemsBySurvey(String surveyId) =>
       (select(surveyItems)..where((s) => s.surveyId.equals(surveyId))).watch();
 
   Future<int> insertSurveyItem(SurveyItemsCompanion surveyItem) =>
       into(surveyItems).insert(surveyItem);
 
-  Future<SurveyItem> getSurveyItemsById(int id) =>
+  Future<SurveyItem> getSurveyItemsById(String id) =>
       (select(surveyItems)..where((s) => s.id.equals(id))).getSingle();
 
   Future updateSurveyItems(SurveyItem surveyItem) =>

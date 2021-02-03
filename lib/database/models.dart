@@ -19,33 +19,34 @@ class ListItem {
       this.span,
       this.points});
 
-  final int surveyId;
-  final int surveyItemId;
-  final int featureId;
+  final String surveyId;
+  final String surveyItemId;
+  final String featureId;
   final String geometryType; // line or point
   final String color;
   final String name;
-  final SpanContainer span;
-  final List<PointContainer> points;
+  SpanContainer span;
+  List<PointContainer> points;
 
   SurveyItemsCompanion toSurveyItemsCompanion() {
     return SurveyItemsCompanion(
+        id: moor.Value(this.surveyItemId),
         surveyId: moor.Value(this.surveyId),
         featureId: moor.Value(this.featureId));
   }
 
-  SpansCompanion toSpansCompanion(int surveyItemId) {
+  SpansCompanion toSpansCompanion() {
     return SpansCompanion(
-        surveyItemId: moor.Value(surveyItemId),
+        surveyItemId: moor.Value(this.surveyItemId),
         start: moor.Value(this.span.start),
         stop: moor.Value(this.span.stop));
   }
 
-  List<PointsCompanion> toPointsCompanion(int surveyItemId, int spanId) {
+  List<PointsCompanion> toPointsCompanion() {
     List<PointsCompanion> pointsCompanions = [];
     for (PointContainer point in this.points) {
       pointsCompanions.add(PointsCompanion(
-          surveyItemId: moor.Value(surveyItemId),
+          surveyItemId: moor.Value(this.surveyItemId),
           position: moor.Value(point.position)));
     }
     return pointsCompanions;
@@ -55,15 +56,14 @@ class ListItem {
 class PointContainer {
   PointContainer({this.surveyItemId, this.position});
 
-  final int surveyItemId;
+  final String surveyItemId;
   final double position;
 }
 
 class SpanContainer {
   SpanContainer({this.surveyItemId, this.start, this.stop});
 
-  final int surveyItemId;
+  final String surveyItemId;
   final double start;
   double stop;
-
 }

@@ -21,15 +21,15 @@ class _IncompleteListState extends State<IncompleteList> {
 
   void _completeItem(ListItem listItem, double progress) async {
     List<PointsCompanion> pointsCompanions;
-    int surveyItemId = await _database.surveyItemDao
+    await _database.surveyItemDao
         .insertSurveyItem(listItem.toSurveyItemsCompanion());
     if (listItem.geometryType == 'line') {
       listItem.span.stop = progress;
-      int spanId = await _database.spanDao
-          .insertSpan(listItem.toSpansCompanion(surveyItemId));
-      pointsCompanions = listItem.toPointsCompanion(surveyItemId, spanId);
+      await _database.spanDao
+          .insertSpan(listItem.toSpansCompanion());
+      pointsCompanions = listItem.toPointsCompanion();
     } else {
-      pointsCompanions = listItem.toPointsCompanion(surveyItemId, null);
+      pointsCompanions = listItem.toPointsCompanion();
     }
     for (var pointsCompanion in pointsCompanions) {
       await _database.pointDao.insertPoint(pointsCompanion);

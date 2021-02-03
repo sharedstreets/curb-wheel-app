@@ -38,6 +38,7 @@ dependencies:
   flutter_svg:
   rxdart:
   flutter_blue: ^0.7.3
+  uuid: 2.2.2
 
 
 dev_dependencies:
