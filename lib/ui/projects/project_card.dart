@@ -18,6 +18,11 @@ class ProjectCard extends StatelessWidget {
     return Card(
       child: InkWell(
         splashColor: Colors.white.withAlpha(100),
+        onTap: () {
+          Navigator.pushNamed(context, MapScreen.routeName,
+              arguments: MapScreenArguments(project)
+          );
+        },
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[

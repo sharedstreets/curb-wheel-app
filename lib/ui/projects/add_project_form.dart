@@ -7,6 +7,9 @@ import 'package:curbwheel/utils/file_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:moor/moor.dart' as moor;
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+
+var uuid = Uuid();
 
 class AddProjectFormScreen extends StatefulWidget {
   final String initalProjectUrl;
@@ -53,7 +56,7 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
   Future<bool> _checkIfNewProject() async {
     try {
       List<Project> projectList =
-          await _database.findProjectById(_config.projectId);
+          await _database.projectDao.findProjectById(_config.projectId);
 
       if (projectList.length > 0)
         return false;
@@ -65,7 +68,9 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
   }
 
   _addProject() async {
+    String projectId = uuid.v4();
     final _project = ProjectsCompanion(
+        id: moor.Value(projectId),
         projectConfigUrl: moor.Value(_projectUrl),
         projectId: moor.Value(_config.projectId),
         name: moor.Value(_config.projectName),
@@ -74,6 +79,20 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
     await _database.projectDao.insertProject(_project);
     await FileUtils.writeFile(
         _config.projectId, 'map.json', jsonEncode(_mapData.featureCollection));
+
+    for (var featureType in _config.featureTypes) {
+      var _feature = FeaturesCompanion(
+        id: moor.Value(uuid.v4()),
+        projectId: moor.Value(projectId),
+        geometryType: moor.Value(featureType.geometryType),
+        color: moor.Value(featureType.color),
+        name: moor.Value(featureType.value),
+      );
+      await _database.featureDao.insertFeature(_feature);
+    }
+    await FileWriter()
+        .writeFile(_config.projectId, 'map.json', _mapData.toString());
+
 
     Navigator.pop(context);
   }
@@ -98,7 +117,7 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
                 ),
               ),
               DownloadButton(
-                  urlConntroller: textFieldController,
+                  urlController: textFieldController,
                   callback: (String url, var config, var mapData) {
                     setState(() {
                       this._projectUrl = url;
@@ -123,11 +142,13 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
                         if (_config != null && snapshot.data != null) {
                           if (snapshot.data) {
                             return RaisedButton(
+                              color: Colors.black,
                               onPressed: () {
                                 _addProject();
                               },
                               child: Text('Add Project',
-                                  style: TextStyle(fontSize: 20)),
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20)),
                             );
                           } else
                             return Text("Project already imported.");
@@ -140,32 +161,31 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
 
 typedef void DownloadCallback(String url, var config, var mapData);
 
-// ignore: must_be_immutable
 class DownloadButton extends StatefulWidget {
-  TextEditingController urlConntroller;
+  final TextEditingController urlController;
   final DownloadCallback callback;
 
-  DownloadButton({Key key, @required this.urlConntroller, this.callback})
+  DownloadButton({Key key, @required this.urlController, this.callback})
       : super(key: key);
 
   @override
   _DownloadButtonState createState() => _DownloadButtonState(
-      urlConntroller: this.urlConntroller, callback: this.callback);
+      urlController: this.urlController, callback: this.callback);
 }
 
 class _DownloadButtonState extends State<DownloadButton> {
   var _loading = false;
-  TextEditingController urlConntroller;
+  TextEditingController urlController;
   final DownloadCallback callback;
 
-  _DownloadButtonState({this.urlConntroller, this.callback});
+  _DownloadButtonState({this.urlController, this.callback});
 
   _fetch() async {
-    final config = await ConfigClient().getConfig(urlConntroller.text);
+    final config = await ConfigClient().getConfig(urlController.text);
     final mapDataJson = await ConfigClient().getMapData(config);
     if (config != null && config.projectId != null) {
       setState(() {
-        callback(urlConntroller.text, config, mapDataJson);
+        callback(urlController.text, config, mapDataJson);
       });
     } else
       throw Exception("Unable to load valid project config.");
@@ -183,6 +203,7 @@ class _DownloadButtonState extends State<DownloadButton> {
             try {
               await _fetch();
             } catch (e) {
+              print(e);
               final snackBar = SnackBar(
                 content: Text('Unable to retreive project configuration.'),
               );

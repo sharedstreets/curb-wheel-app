@@ -11,6 +11,8 @@ import 'package:provider/provider.dart';
 enum Action { form, qrcode }
 
 class ProjectListScreen extends StatefulWidget {
+  static const routeName = '/project-list';
+
   @override
   State<StatefulWidget> createState() {
     return ProjectListScreenState();

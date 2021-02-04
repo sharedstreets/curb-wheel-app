@@ -11,9 +11,6 @@ class SpanDao extends DatabaseAccessor<CurbWheelDatabase> with _$SpanDaoMixin {
 
   Stream<List<Span>> watchAllSpans() => select(spans).watch();
 
-  Stream<List<Span>> watchSpansBySurvey(Survey survey) =>
-      (select(spans)..where((s) => s.surveyId.equals(survey.id))).watch();
-
   Future insertSpan(SpansCompanion span) => into(spans).insert(span);
 
   Future updateSpan(Span span) => update(spans).replace(span);

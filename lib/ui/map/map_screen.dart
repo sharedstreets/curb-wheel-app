@@ -17,7 +17,10 @@ const String STYLE_STRING =
 class MapScreen extends StatefulWidget {
   final db.Project project;
 
-  const MapScreen({Key key, this.project}) : super(key: key);
+class MapScreenArguments {
+  final Project project;
+  MapScreenArguments(this.project);
+}
 
   @override
   _MapScreenState createState() => _MapScreenState(project);
@@ -258,4 +261,12 @@ class _FullMapState extends State<FullMap> {
       Expanded(child: _map),
     ]));
   }
+}
+
+class Street {
+  final String shStRefId;
+  final String name;
+  final String side;
+
+  Street(this.shStRefId, this.name, this.side);
 }
