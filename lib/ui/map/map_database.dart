@@ -42,6 +42,7 @@ class MapData {
 
   Map<String, Feature> _geomIndex;
   Map<String, String> _refIndex;
+  Map<String, List<String>> _intersectionIndex;
   RTree<Feature<Geometry>> _spatialIndex;
 
   MapData(this._featureCollection);
@@ -50,6 +51,42 @@ class MapData {
       : _featureCollection = FeatureCollection.fromJson(json);
 
   FeatureCollection<Geometry> get featureCollection => _featureCollection;
+
+  Map<String, List<String>> get intersectionIndex {
+    _intersectionIndex = new Map();
+
+    for (Feature feature in _featureCollection.features) {
+      _intersectionIndex.putIfAbsent(
+          feature.properties['toIntersectionId'], () => List<String>());
+      _intersectionIndex.putIfAbsent(
+          feature.properties['fromIntersectionId'], () => List<String>());
+
+      _intersectionIndex[feature.properties['toIntersectionId']]
+          .add(feature.properties['id']);
+      _intersectionIndex[feature.properties['fromIntersectionId']]
+          .add(feature.properties['id']);
+    }
+    return _intersectionIndex;
+  }
+
+  List<String> getStreetsByIntersection(String intersectionId) {
+    List<String> streetIds = this.intersectionIndex[intersectionId];
+
+    Set<String> normalizedNames = Set();
+    Set<String> uniqueNames = Set();
+    for (String streetId in streetIds) {
+      String name = this.geomIndex[streetId].properties['name'];
+      if (name != null && name != "") {
+        String normalizedName = name.toLowerCase();
+        if (!normalizedNames.contains(normalizedName)) {
+          normalizedNames.add(normalizedName);
+          uniqueNames.add(name);
+        }
+      }
+    }
+
+    return uniqueNames.toList();
+  }
 
   Map<String, String> get refIndex {
     _refIndex = new Map();
@@ -95,11 +132,7 @@ class MapData {
   Future<List<LatLng>> getMapboxGLGeomById(String id) async {
     Feature f = this.geomIndex[id];
     if (f.properties['mapboxgl_latlngs'] == null) {
-      List<LatLng> latLngs = new List();
-      await coordEach(f,
-          (coord, coordIndex, featureIndex, multiFeatureIndex, geometryIndex) {
-        latLngs.add(new LatLng(coord[1], coord[0]));
-      }, false);
+      List<LatLng> latLngs = await getMapboxGLGeom(f);
       f.properties['mapboxgl_latlngs'] = latLngs;
     }
     return f.properties['mapboxgl_latlngs'];

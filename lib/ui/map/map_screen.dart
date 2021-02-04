@@ -62,7 +62,13 @@ class _FullMapState extends State<FullMap> {
 
   _FullMapState(this.project);
 
-  String _streetName = "Select a street";
+  String _streetName;
+  String _fromStreetName;
+  String _toStreetName;
+  String _geomId;
+  String _refId;
+
+  bool _zoomInToTap = true;
 
   @override
   void initState() {
@@ -73,19 +79,87 @@ class _FullMapState extends State<FullMap> {
   }
 
   void _onLineTapped(Line tappedLine) async {
-    var f = (await _projectMapData.mapData).geomIndex[tappedLine.data["id"]];
+    var data = await _projectMapData.mapData;
+    var f = data.geomIndex[tappedLine.data["id"]];
+
+    String streetName = f.properties['name'];
+
+    List<String> fromStreets =
+        data.getStreetsByIntersection(f.properties['fromIntersectionId']);
+    List<String> toStreets =
+        data.getStreetsByIntersection(f.properties['toIntersectionId']);
+
+    String fromStreetName;
+    for (String newStreet in fromStreets) {
+      if (streetName.toLowerCase() != newStreet.toLowerCase()) {
+        if (fromStreetName == null) {
+          fromStreetName = newStreet;
+        }
+      }
+    }
+
+    String toStreetName;
+    for (String newStreet in toStreets) {
+      if (streetName.toLowerCase() != newStreet.toLowerCase()) {
+        if (toStreetName == null) {
+          toStreetName = newStreet;
+        }
+      }
+    }
+
     setState(() {
-      _streetName = f.properties['name'];
+      _streetName = streetName;
+      _fromStreetName = fromStreetName;
+      _toStreetName = toStreetName;
     });
+
+    //lineOffset(f, 10)
+    // var offsetLine = lineSliceAlong(f, 20, 30);
+
+    List<LatLng> mapboxGeom = await getMapboxGLGeom(f);
+
+    _mapController.addLine(
+        new LineOptions(
+          geometry: mapboxGeom,
+          lineColor: "#0000ff",
+          lineWidth: 6.0,
+          lineOpacity: 0.1,
+        ),
+        {"id": f.properties['id']});
+
+    Point p = along(f, 20);
+
+    double b = bearing(Point(coordinates: f.geometry.coordinates[0]), p);
+
+    LatLng latLng = new LatLng(p.coordinates.lat, p.coordinates.lng);
+
+    _mapController.clearSymbols();
+    _mapController.addSymbol(
+        new SymbolOptions(
+          geometry: latLng,
+          textField: '➤➤➤',
+          textRotate: b - 90 - _mapController.cameraPosition.bearing,
+          textSize: 16,
+          textOffset: Offset(0, 0.25),
+          textAnchor: 'top',
+          textColor: '#0000ff',
+          textHaloBlur: 1,
+          textHaloColor: '#ffffff',
+          textHaloWidth: 0.8,
+        ),
+        {"id": f.properties['id']});
   }
 
   void _onMapChanged() async {
     MapData data = await _projectMapData.mapData;
 
-    // not preformant on a iphone 6s below z15
+    // not performant on a iphone 6s below z15
     // suggests importance of switching to geojson overlay
     if (_mapController.isCameraMoving == false &&
         _mapController.cameraPosition.zoom > 15.5) {
+      setState(() {
+        _zoomInToTap = false;
+      });
       LatLngBounds bounds = await _mapController.getVisibleRegion();
 
       // TOOD need to filter filter for box contains?
@@ -111,7 +185,7 @@ class _FullMapState extends State<FullMap> {
             new LineOptions(
               geometry: mapboxGeom,
               lineColor: "#000000",
-              lineWidth: 4.0,
+              lineWidth: 6.0,
               lineOpacity: 0.0,
             ),
             {"id": f.properties['id']});
@@ -151,13 +225,37 @@ class _FullMapState extends State<FullMap> {
 
     return new Scaffold(
         body: Column(children: [
-      Expanded(child: _map),
       ExpansionTile(
+        initiallyExpanded:
+            _fromStreetName != null || _toStreetName != null ? true : false,
         title: Text(
-          _streetName,
-          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          _streetName != null
+              ? _streetName
+              : _zoomInToTap
+                  ? "Zoom in to select street"
+                  : "Select a street",
+          style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
         ),
+        children: [
+          Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                  padding: EdgeInsets.fromLTRB(20, 0, 10, 10),
+                  child: Row(children: [
+                    _fromStreetName != null ? Text("from ") : Text(""),
+                    _fromStreetName != null
+                        ? Text(_fromStreetName,
+                            style: TextStyle(fontWeight: FontWeight.bold))
+                        : Text(""),
+                    _toStreetName != null ? Text(" to ") : Text(""),
+                    _toStreetName != null
+                        ? Text(_toStreetName,
+                            style: TextStyle(fontWeight: FontWeight.bold))
+                        : Text(""),
+                  ])))
+        ],
       ),
+      Expanded(child: _map),
     ]));
   }
 }
