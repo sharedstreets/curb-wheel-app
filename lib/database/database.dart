@@ -12,7 +12,7 @@ import 'package:moor_flutter/moor_flutter.dart';
 part 'database.g.dart';
 
 class Projects extends Table {
-  IntColumn get id => integer().autoIncrement()();
+  TextColumn get id => text()();
   TextColumn get projectConfigUrl => text()();
   TextColumn get projectId => text()();
   TextColumn get name => text()();
@@ -21,8 +21,8 @@ class Projects extends Table {
 }
 
 class Surveys extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  IntColumn get projectId => integer()();
+  TextColumn get id => text()();
+  TextColumn get projectId => text()();
   TextColumn get shStRefId => text()();
   TextColumn get streetName => text()();
   RealColumn get length => real()();
@@ -33,34 +33,34 @@ class Surveys extends Table {
 }
 
 class SurveyItems extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  IntColumn get surveyId => integer()();
-  IntColumn get featureId => integer()();
+  TextColumn get id => text()();
+  TextColumn get surveyId => text()();
+  TextColumn get featureId => text()();
   //TextColumn get gps => text().nullable()();
 }
 
 class Spans extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  IntColumn get surveyItemId => integer()();
+  TextColumn get id => text()();
+  TextColumn get surveyItemId => text()();
   RealColumn get start => real()();
   RealColumn get stop => real()();
 }
 
 class Points extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  IntColumn get surveyItemId => integer().nullable()();
+  TextColumn get id => text()();
+  TextColumn get surveyItemId => text().nullable()();
   RealColumn get position => real()();
 }
 
 class Photos extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  IntColumn get pointId => integer()();
+  TextColumn get id => text()();
+  TextColumn get pointId => text()();
   TextColumn get file => text()();
 }
 
 class Features extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  IntColumn get projectId => integer()();
+  TextColumn get id => text()();
+  TextColumn get projectId => text()();
   TextColumn get geometryType => text()(); // 'point' or 'line'
   TextColumn get color => text()(); // string of color hex code
   TextColumn get name => text()(); // label to be displayed in app
@@ -89,28 +89,30 @@ class CurbWheelDatabase extends _$CurbWheelDatabase {
   @override
   int get schemaVersion => 1;
 
-  Stream<List<ListItem>> getListItemBySurveyId(int surveyId) {
+  Stream<List<ListItem>> getListItemBySurveyId(String surveyId) {
     final query = (select(surveyItems).join([
       leftOuterJoin(features, features.id.equalsExp(surveyItems.featureId)),
       leftOuterJoin(spans, spans.surveyItemId.equalsExp(surveyItems.id)),
     ]));
     final Stream<List<SurveyItemWithFeature>> surveyItemWithFeatureStream =
         query.watch().map((rows) {
-      return rows.map((row) {
-        final surveyItemWithFeature = SurveyItemWithFeature(
-          row.readTable(surveyItems),
-          row.readTable(features),
-        );
-        return surveyItemWithFeature;
-      }).where((item) => item.surveyItem.surveyId == surveyId).toList();
+      return rows
+          .map((row) {
+            final surveyItemWithFeature = SurveyItemWithFeature(
+              row.readTable(surveyItems),
+              row.readTable(features),
+            );
+            return surveyItemWithFeature;
+          })
+          .where((item) => item.surveyItem.surveyId == surveyId)
+          .toList();
     });
     final pointsQuery = select(points);
     final Stream<List<PointContainer>> pointsStream =
         pointsQuery.watch().map((rows) {
       return rows.map((row) {
         return PointContainer(
-          surveyItemId:row.surveyItemId, 
-          position: row.position);
+            surveyItemId: row.surveyItemId, position: row.position);
       }).toList();
     });
 
@@ -119,9 +121,7 @@ class CurbWheelDatabase extends _$CurbWheelDatabase {
         spanQuery.watch().map((rows) {
       return rows.map((row) {
         return SpanContainer(
-          surveyItemId: row.surveyItemId, 
-          start: row.start, 
-          stop: row.stop);
+            surveyItemId: row.surveyItemId, start: row.start, stop: row.stop);
       }).toList();
     });
 

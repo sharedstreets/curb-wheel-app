@@ -5,6 +5,9 @@ import 'package:curbwheel/utils/write_file.dart';
 import 'package:flutter/material.dart';
 import 'package:moor/moor.dart' as moor;
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+
+var uuid = Uuid();
 
 class AddProjectFormScreen extends StatefulWidget {
   final String initalProjectUrl;
@@ -63,15 +66,18 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
   }
 
   _addProject() async {
+    String projectId = uuid.v4();
     final _project = ProjectsCompanion(
+        id: moor.Value(projectId),
         projectConfigUrl: moor.Value(_projectUrl),
         projectId: moor.Value(_config.projectId),
         name: moor.Value(_config.projectName),
         email: moor.Value(_config.email),
         organization: moor.Value(_config.organization));
-    var projectId = await _database.projectDao.insertProject(_project);
+    await _database.projectDao.insertProject(_project);
     for (var featureType in _config.featureTypes) {
       var _feature = FeaturesCompanion(
+        id: moor.Value(uuid.v4()),
         projectId: moor.Value(projectId),
         geometryType: moor.Value(featureType.geometryType),
         color: moor.Value(featureType.color),
@@ -131,13 +137,12 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
                           if (snapshot.data) {
                             return RaisedButton(
                               color: Colors.black,
-
                               onPressed: () {
                                 _addProject();
                               },
                               child: Text('Add Project',
-                          
-                                  style: TextStyle(color: Colors.white,fontSize: 20)),
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20)),
                             );
                           } else
                             return Text("Project already imported.");

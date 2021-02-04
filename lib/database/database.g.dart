@@ -8,7 +8,7 @@ part of 'database.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
 class Project extends DataClass implements Insertable<Project> {
-  final int id;
+  final String id;
   final String projectConfigUrl;
   final String projectId;
   final String name;
@@ -24,10 +24,9 @@ class Project extends DataClass implements Insertable<Project> {
   factory Project.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
     return Project(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       projectConfigUrl: stringType.mapFromDatabaseResponse(
           data['${effectivePrefix}project_config_url']),
       projectId: stringType
@@ -43,7 +42,7 @@ class Project extends DataClass implements Insertable<Project> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (!nullToAbsent || id != null) {
-      map['id'] = Variable<int>(id);
+      map['id'] = Variable<String>(id);
     }
     if (!nullToAbsent || projectConfigUrl != null) {
       map['project_config_url'] = Variable<String>(projectConfigUrl);
@@ -85,7 +84,7 @@ class Project extends DataClass implements Insertable<Project> {
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Project(
-      id: serializer.fromJson<int>(json['id']),
+      id: serializer.fromJson<String>(json['id']),
       projectConfigUrl: serializer.fromJson<String>(json['projectConfigUrl']),
       projectId: serializer.fromJson<String>(json['projectId']),
       name: serializer.fromJson<String>(json['name']),
@@ -97,7 +96,7 @@ class Project extends DataClass implements Insertable<Project> {
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'id': serializer.toJson<String>(id),
       'projectConfigUrl': serializer.toJson<String>(projectConfigUrl),
       'projectId': serializer.toJson<String>(projectId),
       'name': serializer.toJson<String>(name),
@@ -107,7 +106,7 @@ class Project extends DataClass implements Insertable<Project> {
   }
 
   Project copyWith(
-          {int id,
+          {String id,
           String projectConfigUrl,
           String projectId,
           String name,
@@ -156,7 +155,7 @@ class Project extends DataClass implements Insertable<Project> {
 }
 
 class ProjectsCompanion extends UpdateCompanion<Project> {
-  final Value<int> id;
+  final Value<String> id;
   final Value<String> projectConfigUrl;
   final Value<String> projectId;
   final Value<String> name;
@@ -171,19 +170,20 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     this.organization = const Value.absent(),
   });
   ProjectsCompanion.insert({
-    this.id = const Value.absent(),
+    @required String id,
     @required String projectConfigUrl,
     @required String projectId,
     @required String name,
     @required String email,
     @required String organization,
-  })  : projectConfigUrl = Value(projectConfigUrl),
+  })  : id = Value(id),
+        projectConfigUrl = Value(projectConfigUrl),
         projectId = Value(projectId),
         name = Value(name),
         email = Value(email),
         organization = Value(organization);
   static Insertable<Project> custom({
-    Expression<int> id,
+    Expression<String> id,
     Expression<String> projectConfigUrl,
     Expression<String> projectId,
     Expression<String> name,
@@ -201,7 +201,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   }
 
   ProjectsCompanion copyWith(
-      {Value<int> id,
+      {Value<String> id,
       Value<String> projectConfigUrl,
       Value<String> projectId,
       Value<String> name,
@@ -221,7 +221,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<String>(id.value);
     }
     if (projectConfigUrl.present) {
       map['project_config_url'] = Variable<String>(projectConfigUrl.value);
@@ -260,12 +260,15 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   final String _alias;
   $ProjectsTable(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
+  GeneratedTextColumn _id;
   @override
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  GeneratedTextColumn get id => _id ??= _constructId();
+  GeneratedTextColumn _constructId() {
+    return GeneratedTextColumn(
+      'id',
+      $tableName,
+      false,
+    );
   }
 
   final VerificationMeta _projectConfigUrlMeta =
@@ -348,6 +351,8 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
     }
     if (data.containsKey('project_config_url')) {
       context.handle(
@@ -387,7 +392,7 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
   Project map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -401,8 +406,8 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
 }
 
 class Feature extends DataClass implements Insertable<Feature> {
-  final int id;
-  final int projectId;
+  final String id;
+  final String projectId;
   final String geometryType;
   final String color;
   final String name;
@@ -415,12 +420,11 @@ class Feature extends DataClass implements Insertable<Feature> {
   factory Feature.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
     return Feature(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      projectId:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}project_id']),
+      id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      projectId: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}project_id']),
       geometryType: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}geometry_type']),
       color:
@@ -432,10 +436,10 @@ class Feature extends DataClass implements Insertable<Feature> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (!nullToAbsent || id != null) {
-      map['id'] = Variable<int>(id);
+      map['id'] = Variable<String>(id);
     }
     if (!nullToAbsent || projectId != null) {
-      map['project_id'] = Variable<int>(projectId);
+      map['project_id'] = Variable<String>(projectId);
     }
     if (!nullToAbsent || geometryType != null) {
       map['geometry_type'] = Variable<String>(geometryType);
@@ -468,8 +472,8 @@ class Feature extends DataClass implements Insertable<Feature> {
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Feature(
-      id: serializer.fromJson<int>(json['id']),
-      projectId: serializer.fromJson<int>(json['projectId']),
+      id: serializer.fromJson<String>(json['id']),
+      projectId: serializer.fromJson<String>(json['projectId']),
       geometryType: serializer.fromJson<String>(json['geometryType']),
       color: serializer.fromJson<String>(json['color']),
       name: serializer.fromJson<String>(json['name']),
@@ -479,8 +483,8 @@ class Feature extends DataClass implements Insertable<Feature> {
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'projectId': serializer.toJson<int>(projectId),
+      'id': serializer.toJson<String>(id),
+      'projectId': serializer.toJson<String>(projectId),
       'geometryType': serializer.toJson<String>(geometryType),
       'color': serializer.toJson<String>(color),
       'name': serializer.toJson<String>(name),
@@ -488,8 +492,8 @@ class Feature extends DataClass implements Insertable<Feature> {
   }
 
   Feature copyWith(
-          {int id,
-          int projectId,
+          {String id,
+          String projectId,
           String geometryType,
           String color,
           String name}) =>
@@ -529,8 +533,8 @@ class Feature extends DataClass implements Insertable<Feature> {
 }
 
 class FeaturesCompanion extends UpdateCompanion<Feature> {
-  final Value<int> id;
-  final Value<int> projectId;
+  final Value<String> id;
+  final Value<String> projectId;
   final Value<String> geometryType;
   final Value<String> color;
   final Value<String> name;
@@ -542,18 +546,19 @@ class FeaturesCompanion extends UpdateCompanion<Feature> {
     this.name = const Value.absent(),
   });
   FeaturesCompanion.insert({
-    this.id = const Value.absent(),
-    @required int projectId,
+    @required String id,
+    @required String projectId,
     @required String geometryType,
     @required String color,
     @required String name,
-  })  : projectId = Value(projectId),
+  })  : id = Value(id),
+        projectId = Value(projectId),
         geometryType = Value(geometryType),
         color = Value(color),
         name = Value(name);
   static Insertable<Feature> custom({
-    Expression<int> id,
-    Expression<int> projectId,
+    Expression<String> id,
+    Expression<String> projectId,
     Expression<String> geometryType,
     Expression<String> color,
     Expression<String> name,
@@ -568,8 +573,8 @@ class FeaturesCompanion extends UpdateCompanion<Feature> {
   }
 
   FeaturesCompanion copyWith(
-      {Value<int> id,
-      Value<int> projectId,
+      {Value<String> id,
+      Value<String> projectId,
       Value<String> geometryType,
       Value<String> color,
       Value<String> name}) {
@@ -586,10 +591,10 @@ class FeaturesCompanion extends UpdateCompanion<Feature> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<String>(id.value);
     }
     if (projectId.present) {
-      map['project_id'] = Variable<int>(projectId.value);
+      map['project_id'] = Variable<String>(projectId.value);
     }
     if (geometryType.present) {
       map['geometry_type'] = Variable<String>(geometryType.value);
@@ -621,20 +626,23 @@ class $FeaturesTable extends Features with TableInfo<$FeaturesTable, Feature> {
   final String _alias;
   $FeaturesTable(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
+  GeneratedTextColumn _id;
   @override
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  GeneratedTextColumn get id => _id ??= _constructId();
+  GeneratedTextColumn _constructId() {
+    return GeneratedTextColumn(
+      'id',
+      $tableName,
+      false,
+    );
   }
 
   final VerificationMeta _projectIdMeta = const VerificationMeta('projectId');
-  GeneratedIntColumn _projectId;
+  GeneratedTextColumn _projectId;
   @override
-  GeneratedIntColumn get projectId => _projectId ??= _constructProjectId();
-  GeneratedIntColumn _constructProjectId() {
-    return GeneratedIntColumn(
+  GeneratedTextColumn get projectId => _projectId ??= _constructProjectId();
+  GeneratedTextColumn _constructProjectId() {
+    return GeneratedTextColumn(
       'project_id',
       $tableName,
       false,
@@ -695,6 +703,8 @@ class $FeaturesTable extends Features with TableInfo<$FeaturesTable, Feature> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
     }
     if (data.containsKey('project_id')) {
       context.handle(_projectIdMeta,
@@ -726,7 +736,7 @@ class $FeaturesTable extends Features with TableInfo<$FeaturesTable, Feature> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
   Feature map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -740,8 +750,8 @@ class $FeaturesTable extends Features with TableInfo<$FeaturesTable, Feature> {
 }
 
 class Survey extends DataClass implements Insertable<Survey> {
-  final int id;
-  final int projectId;
+  final String id;
+  final String projectId;
   final String shStRefId;
   final String streetName;
   final double length;
@@ -762,13 +772,12 @@ class Survey extends DataClass implements Insertable<Survey> {
   factory Survey.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
     final doubleType = db.typeSystem.forDartType<double>();
     return Survey(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      projectId:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}project_id']),
+      id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      projectId: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}project_id']),
       shStRefId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}sh_st_ref_id']),
       streetName: stringType
@@ -788,10 +797,10 @@ class Survey extends DataClass implements Insertable<Survey> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (!nullToAbsent || id != null) {
-      map['id'] = Variable<int>(id);
+      map['id'] = Variable<String>(id);
     }
     if (!nullToAbsent || projectId != null) {
-      map['project_id'] = Variable<int>(projectId);
+      map['project_id'] = Variable<String>(projectId);
     }
     if (!nullToAbsent || shStRefId != null) {
       map['sh_st_ref_id'] = Variable<String>(shStRefId);
@@ -848,8 +857,8 @@ class Survey extends DataClass implements Insertable<Survey> {
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Survey(
-      id: serializer.fromJson<int>(json['id']),
-      projectId: serializer.fromJson<int>(json['projectId']),
+      id: serializer.fromJson<String>(json['id']),
+      projectId: serializer.fromJson<String>(json['projectId']),
       shStRefId: serializer.fromJson<String>(json['shStRefId']),
       streetName: serializer.fromJson<String>(json['streetName']),
       length: serializer.fromJson<double>(json['length']),
@@ -863,8 +872,8 @@ class Survey extends DataClass implements Insertable<Survey> {
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'projectId': serializer.toJson<int>(projectId),
+      'id': serializer.toJson<String>(id),
+      'projectId': serializer.toJson<String>(projectId),
       'shStRefId': serializer.toJson<String>(shStRefId),
       'streetName': serializer.toJson<String>(streetName),
       'length': serializer.toJson<double>(length),
@@ -876,8 +885,8 @@ class Survey extends DataClass implements Insertable<Survey> {
   }
 
   Survey copyWith(
-          {int id,
-          int projectId,
+          {String id,
+          String projectId,
           String shStRefId,
           String streetName,
           double length,
@@ -943,8 +952,8 @@ class Survey extends DataClass implements Insertable<Survey> {
 }
 
 class SurveysCompanion extends UpdateCompanion<Survey> {
-  final Value<int> id;
-  final Value<int> projectId;
+  final Value<String> id;
+  final Value<String> projectId;
   final Value<String> shStRefId;
   final Value<String> streetName;
   final Value<double> length;
@@ -964,8 +973,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     this.side = const Value.absent(),
   });
   SurveysCompanion.insert({
-    this.id = const Value.absent(),
-    @required int projectId,
+    @required String id,
+    @required String projectId,
     @required String shStRefId,
     @required String streetName,
     @required double length,
@@ -973,7 +982,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     @required String endStreetName,
     @required String direction,
     @required String side,
-  })  : projectId = Value(projectId),
+  })  : id = Value(id),
+        projectId = Value(projectId),
         shStRefId = Value(shStRefId),
         streetName = Value(streetName),
         length = Value(length),
@@ -982,8 +992,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
         direction = Value(direction),
         side = Value(side);
   static Insertable<Survey> custom({
-    Expression<int> id,
-    Expression<int> projectId,
+    Expression<String> id,
+    Expression<String> projectId,
     Expression<String> shStRefId,
     Expression<String> streetName,
     Expression<double> length,
@@ -1006,8 +1016,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
   }
 
   SurveysCompanion copyWith(
-      {Value<int> id,
-      Value<int> projectId,
+      {Value<String> id,
+      Value<String> projectId,
       Value<String> shStRefId,
       Value<String> streetName,
       Value<double> length,
@@ -1032,10 +1042,10 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<String>(id.value);
     }
     if (projectId.present) {
-      map['project_id'] = Variable<int>(projectId.value);
+      map['project_id'] = Variable<String>(projectId.value);
     }
     if (shStRefId.present) {
       map['sh_st_ref_id'] = Variable<String>(shStRefId.value);
@@ -1083,20 +1093,23 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
   final String _alias;
   $SurveysTable(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
+  GeneratedTextColumn _id;
   @override
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  GeneratedTextColumn get id => _id ??= _constructId();
+  GeneratedTextColumn _constructId() {
+    return GeneratedTextColumn(
+      'id',
+      $tableName,
+      false,
+    );
   }
 
   final VerificationMeta _projectIdMeta = const VerificationMeta('projectId');
-  GeneratedIntColumn _projectId;
+  GeneratedTextColumn _projectId;
   @override
-  GeneratedIntColumn get projectId => _projectId ??= _constructProjectId();
-  GeneratedIntColumn _constructProjectId() {
-    return GeneratedIntColumn(
+  GeneratedTextColumn get projectId => _projectId ??= _constructProjectId();
+  GeneratedTextColumn _constructProjectId() {
+    return GeneratedTextColumn(
       'project_id',
       $tableName,
       false,
@@ -1216,6 +1229,8 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
     }
     if (data.containsKey('project_id')) {
       context.handle(_projectIdMeta,
@@ -1277,7 +1292,7 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
   Survey map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -1291,34 +1306,34 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
 }
 
 class SurveyItem extends DataClass implements Insertable<SurveyItem> {
-  final int id;
-  final int surveyId;
-  final int featureId;
+  final String id;
+  final String surveyId;
+  final String featureId;
   SurveyItem(
       {@required this.id, @required this.surveyId, @required this.featureId});
   factory SurveyItem.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
+    final stringType = db.typeSystem.forDartType<String>();
     return SurveyItem(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      surveyId:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}survey_id']),
-      featureId:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}feature_id']),
+      id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      surveyId: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}survey_id']),
+      featureId: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}feature_id']),
     );
   }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (!nullToAbsent || id != null) {
-      map['id'] = Variable<int>(id);
+      map['id'] = Variable<String>(id);
     }
     if (!nullToAbsent || surveyId != null) {
-      map['survey_id'] = Variable<int>(surveyId);
+      map['survey_id'] = Variable<String>(surveyId);
     }
     if (!nullToAbsent || featureId != null) {
-      map['feature_id'] = Variable<int>(featureId);
+      map['feature_id'] = Variable<String>(featureId);
     }
     return map;
   }
@@ -1339,22 +1354,23 @@ class SurveyItem extends DataClass implements Insertable<SurveyItem> {
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return SurveyItem(
-      id: serializer.fromJson<int>(json['id']),
-      surveyId: serializer.fromJson<int>(json['surveyId']),
-      featureId: serializer.fromJson<int>(json['featureId']),
+      id: serializer.fromJson<String>(json['id']),
+      surveyId: serializer.fromJson<String>(json['surveyId']),
+      featureId: serializer.fromJson<String>(json['featureId']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'surveyId': serializer.toJson<int>(surveyId),
-      'featureId': serializer.toJson<int>(featureId),
+      'id': serializer.toJson<String>(id),
+      'surveyId': serializer.toJson<String>(surveyId),
+      'featureId': serializer.toJson<String>(featureId),
     };
   }
 
-  SurveyItem copyWith({int id, int surveyId, int featureId}) => SurveyItem(
+  SurveyItem copyWith({String id, String surveyId, String featureId}) =>
+      SurveyItem(
         id: id ?? this.id,
         surveyId: surveyId ?? this.surveyId,
         featureId: featureId ?? this.featureId,
@@ -1382,24 +1398,25 @@ class SurveyItem extends DataClass implements Insertable<SurveyItem> {
 }
 
 class SurveyItemsCompanion extends UpdateCompanion<SurveyItem> {
-  final Value<int> id;
-  final Value<int> surveyId;
-  final Value<int> featureId;
+  final Value<String> id;
+  final Value<String> surveyId;
+  final Value<String> featureId;
   const SurveyItemsCompanion({
     this.id = const Value.absent(),
     this.surveyId = const Value.absent(),
     this.featureId = const Value.absent(),
   });
   SurveyItemsCompanion.insert({
-    this.id = const Value.absent(),
-    @required int surveyId,
-    @required int featureId,
-  })  : surveyId = Value(surveyId),
+    @required String id,
+    @required String surveyId,
+    @required String featureId,
+  })  : id = Value(id),
+        surveyId = Value(surveyId),
         featureId = Value(featureId);
   static Insertable<SurveyItem> custom({
-    Expression<int> id,
-    Expression<int> surveyId,
-    Expression<int> featureId,
+    Expression<String> id,
+    Expression<String> surveyId,
+    Expression<String> featureId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1409,7 +1426,7 @@ class SurveyItemsCompanion extends UpdateCompanion<SurveyItem> {
   }
 
   SurveyItemsCompanion copyWith(
-      {Value<int> id, Value<int> surveyId, Value<int> featureId}) {
+      {Value<String> id, Value<String> surveyId, Value<String> featureId}) {
     return SurveyItemsCompanion(
       id: id ?? this.id,
       surveyId: surveyId ?? this.surveyId,
@@ -1421,13 +1438,13 @@ class SurveyItemsCompanion extends UpdateCompanion<SurveyItem> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<String>(id.value);
     }
     if (surveyId.present) {
-      map['survey_id'] = Variable<int>(surveyId.value);
+      map['survey_id'] = Variable<String>(surveyId.value);
     }
     if (featureId.present) {
-      map['feature_id'] = Variable<int>(featureId.value);
+      map['feature_id'] = Variable<String>(featureId.value);
     }
     return map;
   }
@@ -1449,20 +1466,23 @@ class $SurveyItemsTable extends SurveyItems
   final String _alias;
   $SurveyItemsTable(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
+  GeneratedTextColumn _id;
   @override
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  GeneratedTextColumn get id => _id ??= _constructId();
+  GeneratedTextColumn _constructId() {
+    return GeneratedTextColumn(
+      'id',
+      $tableName,
+      false,
+    );
   }
 
   final VerificationMeta _surveyIdMeta = const VerificationMeta('surveyId');
-  GeneratedIntColumn _surveyId;
+  GeneratedTextColumn _surveyId;
   @override
-  GeneratedIntColumn get surveyId => _surveyId ??= _constructSurveyId();
-  GeneratedIntColumn _constructSurveyId() {
-    return GeneratedIntColumn(
+  GeneratedTextColumn get surveyId => _surveyId ??= _constructSurveyId();
+  GeneratedTextColumn _constructSurveyId() {
+    return GeneratedTextColumn(
       'survey_id',
       $tableName,
       false,
@@ -1470,11 +1490,11 @@ class $SurveyItemsTable extends SurveyItems
   }
 
   final VerificationMeta _featureIdMeta = const VerificationMeta('featureId');
-  GeneratedIntColumn _featureId;
+  GeneratedTextColumn _featureId;
   @override
-  GeneratedIntColumn get featureId => _featureId ??= _constructFeatureId();
-  GeneratedIntColumn _constructFeatureId() {
-    return GeneratedIntColumn(
+  GeneratedTextColumn get featureId => _featureId ??= _constructFeatureId();
+  GeneratedTextColumn _constructFeatureId() {
+    return GeneratedTextColumn(
       'feature_id',
       $tableName,
       false,
@@ -1496,6 +1516,8 @@ class $SurveyItemsTable extends SurveyItems
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
     }
     if (data.containsKey('survey_id')) {
       context.handle(_surveyIdMeta,
@@ -1513,7 +1535,7 @@ class $SurveyItemsTable extends SurveyItems
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
   SurveyItem map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -1527,8 +1549,8 @@ class $SurveyItemsTable extends SurveyItems
 }
 
 class Span extends DataClass implements Insertable<Span> {
-  final int id;
-  final int surveyItemId;
+  final String id;
+  final String surveyItemId;
   final double start;
   final double stop;
   Span(
@@ -1539,11 +1561,11 @@ class Span extends DataClass implements Insertable<Span> {
   factory Span.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
+    final stringType = db.typeSystem.forDartType<String>();
     final doubleType = db.typeSystem.forDartType<double>();
     return Span(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      surveyItemId: intType
+      id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      surveyItemId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}survey_item_id']),
       start:
           doubleType.mapFromDatabaseResponse(data['${effectivePrefix}start']),
@@ -1554,10 +1576,10 @@ class Span extends DataClass implements Insertable<Span> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (!nullToAbsent || id != null) {
-      map['id'] = Variable<int>(id);
+      map['id'] = Variable<String>(id);
     }
     if (!nullToAbsent || surveyItemId != null) {
-      map['survey_item_id'] = Variable<int>(surveyItemId);
+      map['survey_item_id'] = Variable<String>(surveyItemId);
     }
     if (!nullToAbsent || start != null) {
       map['start'] = Variable<double>(start);
@@ -1584,8 +1606,8 @@ class Span extends DataClass implements Insertable<Span> {
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Span(
-      id: serializer.fromJson<int>(json['id']),
-      surveyItemId: serializer.fromJson<int>(json['surveyItemId']),
+      id: serializer.fromJson<String>(json['id']),
+      surveyItemId: serializer.fromJson<String>(json['surveyItemId']),
       start: serializer.fromJson<double>(json['start']),
       stop: serializer.fromJson<double>(json['stop']),
     );
@@ -1594,14 +1616,15 @@ class Span extends DataClass implements Insertable<Span> {
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'surveyItemId': serializer.toJson<int>(surveyItemId),
+      'id': serializer.toJson<String>(id),
+      'surveyItemId': serializer.toJson<String>(surveyItemId),
       'start': serializer.toJson<double>(start),
       'stop': serializer.toJson<double>(stop),
     };
   }
 
-  Span copyWith({int id, int surveyItemId, double start, double stop}) => Span(
+  Span copyWith({String id, String surveyItemId, double start, double stop}) =>
+      Span(
         id: id ?? this.id,
         surveyItemId: surveyItemId ?? this.surveyItemId,
         start: start ?? this.start,
@@ -1632,8 +1655,8 @@ class Span extends DataClass implements Insertable<Span> {
 }
 
 class SpansCompanion extends UpdateCompanion<Span> {
-  final Value<int> id;
-  final Value<int> surveyItemId;
+  final Value<String> id;
+  final Value<String> surveyItemId;
   final Value<double> start;
   final Value<double> stop;
   const SpansCompanion({
@@ -1643,16 +1666,17 @@ class SpansCompanion extends UpdateCompanion<Span> {
     this.stop = const Value.absent(),
   });
   SpansCompanion.insert({
-    this.id = const Value.absent(),
-    @required int surveyItemId,
+    @required String id,
+    @required String surveyItemId,
     @required double start,
     @required double stop,
-  })  : surveyItemId = Value(surveyItemId),
+  })  : id = Value(id),
+        surveyItemId = Value(surveyItemId),
         start = Value(start),
         stop = Value(stop);
   static Insertable<Span> custom({
-    Expression<int> id,
-    Expression<int> surveyItemId,
+    Expression<String> id,
+    Expression<String> surveyItemId,
     Expression<double> start,
     Expression<double> stop,
   }) {
@@ -1665,8 +1689,8 @@ class SpansCompanion extends UpdateCompanion<Span> {
   }
 
   SpansCompanion copyWith(
-      {Value<int> id,
-      Value<int> surveyItemId,
+      {Value<String> id,
+      Value<String> surveyItemId,
       Value<double> start,
       Value<double> stop}) {
     return SpansCompanion(
@@ -1681,10 +1705,10 @@ class SpansCompanion extends UpdateCompanion<Span> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<String>(id.value);
     }
     if (surveyItemId.present) {
-      map['survey_item_id'] = Variable<int>(surveyItemId.value);
+      map['survey_item_id'] = Variable<String>(surveyItemId.value);
     }
     if (start.present) {
       map['start'] = Variable<double>(start.value);
@@ -1712,22 +1736,25 @@ class $SpansTable extends Spans with TableInfo<$SpansTable, Span> {
   final String _alias;
   $SpansTable(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
+  GeneratedTextColumn _id;
   @override
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  GeneratedTextColumn get id => _id ??= _constructId();
+  GeneratedTextColumn _constructId() {
+    return GeneratedTextColumn(
+      'id',
+      $tableName,
+      false,
+    );
   }
 
   final VerificationMeta _surveyItemIdMeta =
       const VerificationMeta('surveyItemId');
-  GeneratedIntColumn _surveyItemId;
+  GeneratedTextColumn _surveyItemId;
   @override
-  GeneratedIntColumn get surveyItemId =>
+  GeneratedTextColumn get surveyItemId =>
       _surveyItemId ??= _constructSurveyItemId();
-  GeneratedIntColumn _constructSurveyItemId() {
-    return GeneratedIntColumn(
+  GeneratedTextColumn _constructSurveyItemId() {
+    return GeneratedTextColumn(
       'survey_item_id',
       $tableName,
       false,
@@ -1773,6 +1800,8 @@ class $SpansTable extends Spans with TableInfo<$SpansTable, Span> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
     }
     if (data.containsKey('survey_item_id')) {
       context.handle(
@@ -1798,7 +1827,7 @@ class $SpansTable extends Spans with TableInfo<$SpansTable, Span> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
   Span map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -1812,18 +1841,18 @@ class $SpansTable extends Spans with TableInfo<$SpansTable, Span> {
 }
 
 class Point extends DataClass implements Insertable<Point> {
-  final int id;
-  final int surveyItemId;
+  final String id;
+  final String surveyItemId;
   final double position;
   Point({@required this.id, this.surveyItemId, @required this.position});
   factory Point.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
+    final stringType = db.typeSystem.forDartType<String>();
     final doubleType = db.typeSystem.forDartType<double>();
     return Point(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      surveyItemId: intType
+      id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      surveyItemId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}survey_item_id']),
       position: doubleType
           .mapFromDatabaseResponse(data['${effectivePrefix}position']),
@@ -1833,10 +1862,10 @@ class Point extends DataClass implements Insertable<Point> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (!nullToAbsent || id != null) {
-      map['id'] = Variable<int>(id);
+      map['id'] = Variable<String>(id);
     }
     if (!nullToAbsent || surveyItemId != null) {
-      map['survey_item_id'] = Variable<int>(surveyItemId);
+      map['survey_item_id'] = Variable<String>(surveyItemId);
     }
     if (!nullToAbsent || position != null) {
       map['position'] = Variable<double>(position);
@@ -1860,8 +1889,8 @@ class Point extends DataClass implements Insertable<Point> {
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Point(
-      id: serializer.fromJson<int>(json['id']),
-      surveyItemId: serializer.fromJson<int>(json['surveyItemId']),
+      id: serializer.fromJson<String>(json['id']),
+      surveyItemId: serializer.fromJson<String>(json['surveyItemId']),
       position: serializer.fromJson<double>(json['position']),
     );
   }
@@ -1869,13 +1898,13 @@ class Point extends DataClass implements Insertable<Point> {
   Map<String, dynamic> toJson({ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'surveyItemId': serializer.toJson<int>(surveyItemId),
+      'id': serializer.toJson<String>(id),
+      'surveyItemId': serializer.toJson<String>(surveyItemId),
       'position': serializer.toJson<double>(position),
     };
   }
 
-  Point copyWith({int id, int surveyItemId, double position}) => Point(
+  Point copyWith({String id, String surveyItemId, double position}) => Point(
         id: id ?? this.id,
         surveyItemId: surveyItemId ?? this.surveyItemId,
         position: position ?? this.position,
@@ -1903,8 +1932,8 @@ class Point extends DataClass implements Insertable<Point> {
 }
 
 class PointsCompanion extends UpdateCompanion<Point> {
-  final Value<int> id;
-  final Value<int> surveyItemId;
+  final Value<String> id;
+  final Value<String> surveyItemId;
   final Value<double> position;
   const PointsCompanion({
     this.id = const Value.absent(),
@@ -1912,13 +1941,14 @@ class PointsCompanion extends UpdateCompanion<Point> {
     this.position = const Value.absent(),
   });
   PointsCompanion.insert({
-    this.id = const Value.absent(),
+    @required String id,
     this.surveyItemId = const Value.absent(),
     @required double position,
-  }) : position = Value(position);
+  })  : id = Value(id),
+        position = Value(position);
   static Insertable<Point> custom({
-    Expression<int> id,
-    Expression<int> surveyItemId,
+    Expression<String> id,
+    Expression<String> surveyItemId,
     Expression<double> position,
   }) {
     return RawValuesInsertable({
@@ -1929,7 +1959,7 @@ class PointsCompanion extends UpdateCompanion<Point> {
   }
 
   PointsCompanion copyWith(
-      {Value<int> id, Value<int> surveyItemId, Value<double> position}) {
+      {Value<String> id, Value<String> surveyItemId, Value<double> position}) {
     return PointsCompanion(
       id: id ?? this.id,
       surveyItemId: surveyItemId ?? this.surveyItemId,
@@ -1941,10 +1971,10 @@ class PointsCompanion extends UpdateCompanion<Point> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<String>(id.value);
     }
     if (surveyItemId.present) {
-      map['survey_item_id'] = Variable<int>(surveyItemId.value);
+      map['survey_item_id'] = Variable<String>(surveyItemId.value);
     }
     if (position.present) {
       map['position'] = Variable<double>(position.value);
@@ -1968,22 +1998,25 @@ class $PointsTable extends Points with TableInfo<$PointsTable, Point> {
   final String _alias;
   $PointsTable(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedIntColumn _id;
+  GeneratedTextColumn _id;
   @override
-  GeneratedIntColumn get id => _id ??= _constructId();
-  GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false,
-        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  GeneratedTextColumn get id => _id ??= _constructId();
+  GeneratedTextColumn _constructId() {
+    return GeneratedTextColumn(
+      'id',
+      $tableName,
+      false,
+    );
   }
 
   final VerificationMeta _surveyItemIdMeta =
       const VerificationMeta('surveyItemId');
-  GeneratedIntColumn _surveyItemId;
+  GeneratedTextColumn _surveyItemId;
   @override
-  GeneratedIntColumn get surveyItemId =>
+  GeneratedTextColumn get surveyItemId =>
       _surveyItemId ??= _constructSurveyItemId();
-  GeneratedIntColumn _constructSurveyItemId() {
-    return GeneratedIntColumn(
+  GeneratedTextColumn _constructSurveyItemId() {
+    return GeneratedTextColumn(
       'survey_item_id',
       $tableName,
       true,
@@ -2017,6 +2050,8 @@ class $PointsTable extends Points with TableInfo<$PointsTable, Point> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
     }
     if (data.containsKey('survey_item_id')) {
       context.handle(
@@ -2034,7 +2069,7 @@ class $PointsTable extends Points with TableInfo<$PointsTable, Point> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
   Point map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;

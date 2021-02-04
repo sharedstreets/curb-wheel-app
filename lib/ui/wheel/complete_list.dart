@@ -25,9 +25,7 @@ class _CompleteListState extends State<CompleteList> {
     _database = Provider.of<CurbWheelDatabase>(context);
     _survey = widget.survey;
     return Container(
-      child: Column(
-        children: [
-          CompletedListHeader(),
+      child: 
           StreamBuilder(
             stream: _database.getListItemBySurveyId(_survey.id),
             builder: (context, AsyncSnapshot<List<ListItem>> snapshot) {
@@ -43,25 +41,10 @@ class _CompleteListState extends State<CompleteList> {
                 return Text("No items");
               }
             })
-        ],
-      ),
     );
   }
 }
 
-
-class CompletedListHeader extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(children: [
-        Text("Completed Items", style: TextStyle(color: Colors.black,fontSize: 20)),
-        Divider(color: Colors.grey)
-      ],)
-      
-    );
-  }
-}
 
 class InactiveCard extends StatefulWidget {
   final ListItem listItem;

@@ -5,15 +5,18 @@ import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+
+var uuid = Uuid();
 
 class FeatureSelectScreenArguments {
   final Project project;
   final Survey survey;
+  final List<ListItem> incompleteSpans;
   final double position;
-  final List<ListItem> listItems;
 
   FeatureSelectScreenArguments(
-      this.project, this.survey, this.position, this.listItems);
+      this.project, this.survey, this.incompleteSpans, this.position);
 }
 
 class FeatureSelectScreen extends StatefulWidget {
@@ -33,8 +36,8 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
         ModalRoute.of(context).settings.arguments;
     final Project project = args.project;
     final Survey survey = args.survey;
+    final List<ListItem> incompleteSpans = args.incompleteSpans;
     final double position = args.position;
-    final List<ListItem> listItems = args.listItems;
     Future<List<Feature>> features =
         _database.featureDao.getAllFeaturesByProject(survey.projectId);
 
@@ -52,8 +55,8 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
                 child: ListView.builder(
                     itemCount: features.length,
                     itemBuilder: (context, index) {
-                      return FeatureCard(features[index], project, survey,
-                          position, listItems);
+                      return FeatureCard(
+                          features[index], project, survey, position, incompleteSpans);
                     }),
               ),
             );
@@ -69,30 +72,34 @@ class FeatureCard extends StatelessWidget {
   final Project project;
   final Survey survey;
   final double position;
-  final List<ListItem> listItems;
+  final List<ListItem> incompleteSpans;
 
-  FeatureCard(
-      this.feature, this.project, this.survey, this.position, this.listItems);
+  FeatureCard(this.feature, this.project, this.survey, this.position, this.incompleteSpans);
 
   @override
   Widget build(BuildContext context) {
     onPressFeatureCard() {
+      String surveyItemId = uuid.v4();
       var listItem = ListItem(
+          surveyItemId: surveyItemId,
           surveyId: survey.id,
           featureId: feature.id,
           geometryType: feature.geometryType,
           name: feature.name,
-          color: feature.color,
-          span: SpanContainer(
-            start: position,
-            stop: position
-          ),
-          points: []);
-      listItems.add(listItem);
+          color: feature.color);
+      if (this.feature.geometryType == 'line') {
+        listItem.span = SpanContainer(start: position, stop: position);
+        listItem.points = [];
+      } else {
+        listItem.points = [
+          PointContainer(surveyItemId: surveyItemId, position: position)
+        ];
+      }
 
       Navigator.pushNamedAndRemoveUntil(
           context, WheelScreen.routeName, ModalRoute.withName('/map'),
-          arguments: WheelScreenArguments(project, survey, listItems));
+          arguments: WheelScreenArguments(project, survey, incompleteSpans,
+              listItem: listItem));
     }
 
     final String assetName = feature.geometryType == 'line'

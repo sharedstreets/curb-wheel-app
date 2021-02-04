@@ -19,16 +19,17 @@ class IncompleteList extends StatefulWidget {
 class _IncompleteListState extends State<IncompleteList> {
   CurbWheelDatabase _database;
 
-  void _completeItem(ListItem listItem) async {
+  void _completeItem(ListItem listItem, double progress) async {
     List<PointsCompanion> pointsCompanions;
-    int surveyItemId = await _database.surveyItemDao
+    await _database.surveyItemDao
         .insertSurveyItem(listItem.toSurveyItemsCompanion());
     if (listItem.geometryType == 'line') {
-      int spanId =
-          await _database.spanDao.insertSpan(listItem.toSpansCompanion(surveyItemId));
-      pointsCompanions = listItem.toPointsCompanion(surveyItemId,spanId);
+      listItem.span.stop = progress;
+      await _database.spanDao
+          .insertSpan(listItem.toSpansCompanion());
+      pointsCompanions = listItem.toPointsCompanion();
     } else {
-      pointsCompanions = listItem.toPointsCompanion(surveyItemId, null);
+      pointsCompanions = listItem.toPointsCompanion();
     }
     for (var pointsCompanion in pointsCompanions) {
       await _database.pointDao.insertPoint(pointsCompanion);
@@ -42,9 +43,11 @@ class _IncompleteListState extends State<IncompleteList> {
     return Container(
       padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
       child: widget.listItems.isEmpty
-          ? Center(child: Padding(
-            padding:EdgeInsets.all(20.0),
-            child: Text('No active items', style: TextStyle(color: Colors.black,fontSize: 20))))
+          ? Center(
+              child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Text('No active items',
+                      style: TextStyle(color: Colors.black, fontSize: 20))))
           : ListView.builder(
               shrinkWrap: true,
               itemCount: widget.listItems.length,
@@ -97,7 +100,7 @@ class _ActiveCardState extends State<ActiveCard> {
                     Spacer(),
                     IconButton(
                       icon: Icon(Icons.check),
-                      onPressed: () => _callback(_listItem),
+                      onPressed: () => _callback(_listItem, _progress),
                     )
                   ]),
                   Padding(
@@ -106,9 +109,11 @@ class _ActiveCardState extends State<ActiveCard> {
                           start: _listItem.span.start,
                           progress: _progress,
                           progressColor: colorConvert(_listItem.color),
-                          points: _listItem.points.map((p)=> p.position).toList())),
+                          points: _listItem.points
+                              .map((p) => p.position)
+                              .toList())),
                   Text(
-                      "${_listItem.span.start * 40}m-${(_progress * 40).toStringAsFixed(1)}m"),
+                      "${(_listItem.span.start * 40).toStringAsFixed(1)}m-${(_progress * 40).toStringAsFixed(1)}m"),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -120,8 +125,6 @@ class _ActiveCardState extends State<ActiveCard> {
                   )
                 ],
               ),
-            )
-          )
-        );
+            )));
   }
 }
