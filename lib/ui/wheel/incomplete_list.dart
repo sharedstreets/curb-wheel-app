@@ -113,7 +113,7 @@ class _ActiveCardState extends State<ActiveCard> {
                               .map((p) => p.position)
                               .toList())),
                   Text(
-                      "${_listItem.span.start * 40}m-${(_progress * 40).toStringAsFixed(1)}m"),
+                      "${(_listItem.span.start * 40).toStringAsFixed(1)}m-${(_progress * 40).toStringAsFixed(1)}m"),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

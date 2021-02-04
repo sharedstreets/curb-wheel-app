@@ -12,11 +12,11 @@ var uuid = Uuid();
 class FeatureSelectScreenArguments {
   final Project project;
   final Survey survey;
+  final List<ListItem> incompleteSpans;
   final double position;
-  final List<ListItem> listItems;
 
   FeatureSelectScreenArguments(
-      this.project, this.survey, this.position, this.listItems);
+      this.project, this.survey, this.incompleteSpans, this.position);
 }
 
 class FeatureSelectScreen extends StatefulWidget {
@@ -36,8 +36,8 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
         ModalRoute.of(context).settings.arguments;
     final Project project = args.project;
     final Survey survey = args.survey;
+    final List<ListItem> incompleteSpans = args.incompleteSpans;
     final double position = args.position;
-    final List<ListItem> listItems = args.listItems;
     Future<List<Feature>> features =
         _database.featureDao.getAllFeaturesByProject(survey.projectId);
 
@@ -55,8 +55,8 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
                 child: ListView.builder(
                     itemCount: features.length,
                     itemBuilder: (context, index) {
-                      return FeatureCard(features[index], project, survey,
-                          position, listItems);
+                      return FeatureCard(
+                          features[index], project, survey, position, incompleteSpans);
                     }),
               ),
             );
@@ -72,10 +72,9 @@ class FeatureCard extends StatelessWidget {
   final Project project;
   final Survey survey;
   final double position;
-  final List<ListItem> listItems;
+  final List<ListItem> incompleteSpans;
 
-  FeatureCard(
-      this.feature, this.project, this.survey, this.position, this.listItems);
+  FeatureCard(this.feature, this.project, this.survey, this.position, this.incompleteSpans);
 
   @override
   Widget build(BuildContext context) {
@@ -97,11 +96,10 @@ class FeatureCard extends StatelessWidget {
         ];
       }
 
-      listItems.add(listItem);
-
       Navigator.pushNamedAndRemoveUntil(
           context, WheelScreen.routeName, ModalRoute.withName('/map'),
-          arguments: WheelScreenArguments(project, survey, listItems, newFeature: true));
+          arguments: WheelScreenArguments(project, survey, incompleteSpans,
+              listItem: listItem));
     }
 
     final String assetName = feature.geometryType == 'line'

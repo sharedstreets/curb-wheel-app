@@ -1,5 +1,6 @@
 import 'package:curbwheel/database/models.dart';
 import 'package:curbwheel/database/survey_dao.dart';
+import 'package:curbwheel/service/bluetooth_service.dart';
 import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
@@ -30,8 +31,7 @@ class MapScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = "Select a street";
 
-    List<ListItem> listItems = [];
-
+    WheelCounter _counter = Provider.of<WheelCounter>(context);
     CurbWheelDatabase _database = Provider.of<CurbWheelDatabase>(context);
     SurveyDao surveyDao = _database.surveyDao;
 
@@ -62,8 +62,9 @@ class MapScreen extends StatelessWidget {
                   side: moor.Value(street.side));
               await surveyDao.insertSurvey(surveysCompanion);
               Survey survey = await surveyDao.getSurveyById(surveyId);
+              _counter.resetForwardCounter();
               Navigator.pushNamed(context, WheelScreen.routeName,
-                  arguments: WheelScreenArguments(project, survey, listItems));
+                  arguments: WheelScreenArguments(project, survey, []));
             },
           );
         },
