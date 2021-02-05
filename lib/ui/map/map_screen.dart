@@ -61,12 +61,13 @@ class _FullMapState extends State<FullMap> {
   final db.Project project;
 
   _FullMapState(this.project);
-
-  String _streetName;
   String _fromStreetName;
   String _toStreetName;
+
+  String _streetName;
   String _geomId;
   String _refId;
+  String _sideOfStreet = "right";
 
   bool _zoomInToTap = true;
 
@@ -111,6 +112,8 @@ class _FullMapState extends State<FullMap> {
       _streetName = streetName;
       _fromStreetName = fromStreetName;
       _toStreetName = toStreetName;
+      _geomId = f.properties['id'];
+      _refId = f.properties['forwardReferenceId'];
     });
 
     //lineOffset(f, 10)
@@ -235,6 +238,11 @@ class _FullMapState extends State<FullMap> {
                   ? "Zoom in to select street"
                   : "Select a street",
           style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+
+          // put button here for firing survey here should call
+          // _onStreetSelected() to start survey
+          //
+          //
         ),
         children: [
           Align(
