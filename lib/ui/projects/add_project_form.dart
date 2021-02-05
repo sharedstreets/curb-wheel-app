@@ -90,8 +90,7 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
       );
       await _database.featureDao.insertFeature(_feature);
     }
-    await FileWriter()
-        .writeFile(_config.projectId, 'map.json', _mapData.toString());
+    //await FileUtils.writeFile(_config.projectId, 'map.json', _mapData.toString());
 
 
     Navigator.pop(context);

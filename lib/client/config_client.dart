@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:chopper/chopper.dart';
 
-import 'package:curbwheel/ui/map/map_database.dart';
 import 'package:curbwheel/service/models.dart';
 import '../service/api_services.dart';
 

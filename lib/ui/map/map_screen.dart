@@ -14,13 +14,17 @@ const String ACCESS_TOKEN =
 const String STYLE_STRING =
     "mapbox://styles/transportpartnership/ckke3y9ts0wbn17mk62j9vt4a";
 
-class MapScreen extends StatefulWidget {
-  final db.Project project;
-
 class MapScreenArguments {
-  final Project project;
+  final db.Project project;
   MapScreenArguments(this.project);
 }
+
+class MapScreen extends StatefulWidget {
+  static const routeName = '/map';
+
+  final db.Project project;
+
+  MapScreen({Key key, this.project}) : super(key: key);
 
   @override
   _MapScreenState createState() => _MapScreenState(project);
@@ -33,13 +37,10 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //_database = Provider.of<CurbWheelDatabase>(context);
-    //Stream<List<Project>> _projects = _database.projectDao.watc();
     return Scaffold(
         appBar: AppBar(
-            title: Text(
-          widget.project.name,
-          //style: TextStyle(color: Colors.white),
+            title: Text(""
+          //widget.project.name,
         )),
         body: FullMap(project));
   }
