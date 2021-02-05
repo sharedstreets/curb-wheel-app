@@ -60,7 +60,6 @@ class CurbWheel extends StatelessWidget {
         routes: {
           SplashScreen.routeName: (context) => SplashScreen(),
           ProjectListScreen.routeName: (context) => ProjectListScreen(),
-          //MapScreen.routeName: (context) => MapScreen(),
           FeatureSelectScreen.routeName: (context) => FeatureSelectScreen(),
         },
       );

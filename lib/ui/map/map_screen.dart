@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:curbwheel/utils/spatial_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
@@ -40,8 +42,8 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
         appBar: AppBar(
             title: Text(""
-          //widget.project.name,
-        )),
+                //widget.project.name,
+                )),
         body: FullMap(project));
   }
 }
@@ -85,6 +87,10 @@ class _FullMapState extends State<FullMap> {
   void _onLineTapped(Line tappedLine) async {
     var data = await _projectMapData.mapData;
     var f = data.geomIndex[tappedLine.data["id"]];
+    print("FEATURE");
+    print(f);
+    print("TAPPED");
+    print(tappedLine.data);
 
     String streetName = f.properties['name'];
 
