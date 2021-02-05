@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:curbwheel/utils/spatial_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
@@ -14,10 +16,17 @@ const String ACCESS_TOKEN =
 const String STYLE_STRING =
     "mapbox://styles/transportpartnership/ckke3y9ts0wbn17mk62j9vt4a";
 
+class MapScreenArguments {
+  final db.Project project;
+  MapScreenArguments(this.project);
+}
+
 class MapScreen extends StatefulWidget {
+  static const routeName = '/map';
+
   final db.Project project;
 
-  const MapScreen({Key key, this.project}) : super(key: key);
+  MapScreen({Key key, this.project}) : super(key: key);
 
   @override
   _MapScreenState createState() => _MapScreenState(project);
@@ -30,14 +39,11 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //_database = Provider.of<CurbWheelDatabase>(context);
-    //Stream<List<Project>> _projects = _database.projectDao.watc();
     return Scaffold(
         appBar: AppBar(
-            title: Text(
-          widget.project.name,
-          //style: TextStyle(color: Colors.white),
-        )),
+            title: Text(""
+                //widget.project.name,
+                )),
         body: FullMap(project));
   }
 }
@@ -82,6 +88,10 @@ class _FullMapState extends State<FullMap> {
   void _onLineTapped(Line tappedLine) async {
     var data = await _projectMapData.mapData;
     var f = data.geomIndex[tappedLine.data["id"]];
+    print("FEATURE");
+    print(f);
+    print("TAPPED");
+    print(tappedLine.data);
 
     String streetName = f.properties['name'];
 
@@ -266,4 +276,12 @@ class _FullMapState extends State<FullMap> {
       Expanded(child: _map),
     ]));
   }
+}
+
+class Street {
+  final String shStRefId;
+  final String name;
+  final String side;
+
+  Street(this.shStRefId, this.name, this.side);
 }

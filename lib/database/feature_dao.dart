@@ -11,9 +11,9 @@ class FeatureDao extends DatabaseAccessor<CurbWheelDatabase> with _$FeatureDaoMi
 
   Stream<List<Feature>> watchAllFeatures() => select(features).watch();
 
-  Future<List<Feature>> getAllFeaturesByProject(int projectId) => (select(features)..where((f) => f.projectId.equals(projectId))).get();
+  Future<List<Feature>> getAllFeaturesByProject(String projectId) => (select(features)..where((f) => f.projectId.equals(projectId))).get();
 
-  Stream<List<Feature>> watchAllFeaturesByProject(int projectId) => (select(features)..where((f) => f.projectId.equals(projectId))).watch();
+  Stream<List<Feature>> watchAllFeaturesByProject(String projectId) => (select(features)..where((f) => f.projectId.equals(projectId))).watch();
 
   Future insertFeature(FeaturesCompanion feature) => into(features).insert(feature);
 

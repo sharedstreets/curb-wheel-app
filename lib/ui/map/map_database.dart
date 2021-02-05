@@ -30,6 +30,8 @@ class ProjectMapDatastore {
     if (_mapData == null) {
       String mapDataString =
           await FileUtils.readFile(_project.projectId, 'map.json');
+      print("MAPDATA");
+      print(mapDataString);
       Map<String, dynamic> mapDataJson = jsonDecode(mapDataString);
       _mapData = MapData.fromJson(mapDataJson);
     }
