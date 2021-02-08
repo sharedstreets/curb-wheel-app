@@ -1,11 +1,15 @@
-import 'dart:convert';
-
+import 'package:curbwheel/database/database.dart';
+import 'package:curbwheel/database/survey_dao.dart';
+import 'package:curbwheel/service/bluetooth_service.dart';
+import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 import 'package:curbwheel/utils/spatial_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:provider/provider.dart';
 import 'package:turf/turf.dart';
+import 'package:uuid/uuid.dart';
+import 'package:moor_flutter/moor_flutter.dart' as moor;
 
 import '../../database/database.dart' as db;
 import 'map_database.dart';
@@ -15,6 +19,8 @@ const String ACCESS_TOKEN =
 
 const String STYLE_STRING =
     "mapbox://styles/transportpartnership/ckke3y9ts0wbn17mk62j9vt4a";
+
+var uuid = Uuid();
 
 class MapScreenArguments {
   final db.Project project;
@@ -69,7 +75,7 @@ class _FullMapState extends State<FullMap> {
   _FullMapState(this.project);
   String _fromStreetName;
   String _toStreetName;
-
+  Street _selectedStreet;
   String _streetName;
   String _geomId;
   String _refId;
@@ -86,14 +92,11 @@ class _FullMapState extends State<FullMap> {
   }
 
   void _onLineTapped(Line tappedLine) async {
+    //var data = await _projectMapData.mapData;
     var data = await _projectMapData.mapData;
     var f = data.geomIndex[tappedLine.data["id"]];
-    print("FEATURE");
-    print(f);
-    print("TAPPED");
-    print(tappedLine.data);
-
     String streetName = f.properties['name'];
+    var selectedStreet = Street(f.properties['id'], streetName, "left");
 
     if (streetName == null || streetName == "") streetName = "Unamed Street";
 
@@ -126,6 +129,7 @@ class _FullMapState extends State<FullMap> {
       _toStreetName = toStreetName;
       _geomId = f.properties['id'];
       _refId = f.properties['forwardReferenceId'];
+      _selectedStreet = selectedStreet;
     });
 
     //lineOffset(f, 10)
@@ -226,6 +230,9 @@ class _FullMapState extends State<FullMap> {
 
   @override
   Widget build(BuildContext context) {
+    WheelCounter _counter = Provider.of<WheelCounter>(context);
+    CurbWheelDatabase _database = Provider.of<CurbWheelDatabase>(context);
+    SurveyDao surveyDao = _database.surveyDao;
     if (_map == null)
       _map = MapboxMap(
         accessToken: ACCESS_TOKEN,
@@ -237,7 +244,26 @@ class _FullMapState extends State<FullMap> {
         trackCameraPosition: true,
         initialCameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
       );
-
+    var _fromText =
+        _fromStreetName != null ? TextSpan(text: "from ") : TextSpan(text: "");
+    var fromStreetName = _fromStreetName != null
+        ? TextSpan(
+            text: _fromStreetName,
+            style: TextStyle(fontWeight: FontWeight.bold))
+        : TextSpan(text: "");
+    var _toText =
+        _toStreetName != null ? TextSpan(text: " to ") : TextSpan(text: "");
+    var toStreetName = _toStreetName != null
+        ? TextSpan(
+            text: _toStreetName, style: TextStyle(fontWeight: FontWeight.bold))
+        : TextSpan(text: "");
+    var _crossStreetText = RichText(
+      text: TextSpan(
+        text: '',
+        style: DefaultTextStyle.of(context).style,
+        children: <TextSpan>[_fromText, fromStreetName, _toText, toStreetName],
+      ),
+    );
     return new Scaffold(
         body: Column(children: [
       ExpansionTile(
@@ -258,21 +284,42 @@ class _FullMapState extends State<FullMap> {
         ),
         children: [
           Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                  padding: EdgeInsets.fromLTRB(20, 0, 10, 10),
-                  child: Row(children: [
-                    _fromStreetName != null ? Text("from ") : Text(""),
-                    _fromStreetName != null
-                        ? Text(_fromStreetName,
-                            style: TextStyle(fontWeight: FontWeight.bold))
-                        : Text(""),
-                    _toStreetName != null ? Text(" to ") : Text(""),
-                    _toStreetName != null
-                        ? Text(_toStreetName,
-                            style: TextStyle(fontWeight: FontWeight.bold))
-                        : Text(""),
-                  ])))
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 10, 10),
+              child: Row(children: [
+                Flexible(child: _crossStreetText),
+                ButtonBar(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_forward),
+                      onPressed: () async {
+                        String surveyId = uuid.v4();
+                        var surveysCompanion = SurveysCompanion(
+                            id: moor.Value(surveyId),
+                            shStRefId: moor.Value(_refId),
+                            streetName: moor.Value(_streetName),
+                            length: moor.Value(42),
+                            projectId: moor.Value(project.id),
+                            startStreetName: moor.Value(_fromStreetName),
+                            endStreetName: moor.Value(_toStreetName),
+                            direction: moor.Value("up"),
+                            side: moor.Value("left"));
+                        await surveyDao.insertSurvey(surveysCompanion);
+                        Survey survey = await surveyDao.getSurveyById(surveyId);
+                        _counter.resetForwardCounter();
+                        Navigator.pushNamed(context, WheelScreen.routeName,
+                            arguments: WheelScreenArguments(
+                                project, survey, []
+                                )
+                                );
+                      },
+                    )
+                  ],
+                )
+              ]),
+            ),
+          ),
         ],
       ),
       Expanded(child: _map),

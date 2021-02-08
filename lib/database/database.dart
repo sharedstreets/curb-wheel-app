@@ -6,7 +6,7 @@ import 'project_dao.dart';
 import 'survey_dao.dart';
 import 'survey_item_dao.dart';
 import 'point_dao.dart';
-import 'feature_dao.dart';
+import 'feature_type_dao.dart';
 import 'package:moor_flutter/moor_flutter.dart';
 
 part 'database.g.dart';
@@ -39,14 +39,14 @@ class SurveyItems extends Table {
   //TextColumn get gps => text().nullable()();
 }
 
-class Spans extends Table {
+class SurveySpans extends Table {
   TextColumn get id => text()();
   TextColumn get surveyItemId => text()();
   RealColumn get start => real()();
   RealColumn get stop => real()();
 }
 
-class Points extends Table {
+class SurveyPoints extends Table {
   TextColumn get id => text()();
   TextColumn get surveyItemId => text().nullable()();
   RealColumn get position => real()();
@@ -58,7 +58,7 @@ class Photos extends Table {
   TextColumn get file => text()();
 }
 
-class Features extends Table {
+class FeatureTypes extends Table {
   TextColumn get id => text()();
   TextColumn get projectId => text()();
   TextColumn get geometryType => text()(); // 'point' or 'line'
@@ -68,18 +68,18 @@ class Features extends Table {
 
 @UseMoor(tables: [
   Projects,
-  Features,
+  FeatureTypes,
   Surveys,
   SurveyItems,
-  Spans,
-  Points,
+  SurveySpans,
+  SurveyPoints,
 ], daos: [
   ProjectDao,
-  FeatureDao,
+  FeatureTypeDao,
   SurveyDao,
   SurveyItemDao,
-  SpanDao,
-  PointDao,
+  SurveySpanDao,
+  SurveyPointDao,
 ])
 class CurbWheelDatabase extends _$CurbWheelDatabase {
   CurbWheelDatabase()
@@ -91,8 +91,8 @@ class CurbWheelDatabase extends _$CurbWheelDatabase {
 
   Stream<List<ListItem>> getListItemBySurveyId(String surveyId) {
     final query = (select(surveyItems).join([
-      leftOuterJoin(features, features.id.equalsExp(surveyItems.featureId)),
-      leftOuterJoin(spans, spans.surveyItemId.equalsExp(surveyItems.id)),
+      leftOuterJoin(featureTypes, featureTypes.id.equalsExp(surveyItems.featureId)),
+      leftOuterJoin(surveySpans, surveySpans.surveyItemId.equalsExp(surveyItems.id)),
     ]));
     final Stream<List<SurveyItemWithFeature>> surveyItemWithFeatureStream =
         query.watch().map((rows) {
@@ -100,14 +100,14 @@ class CurbWheelDatabase extends _$CurbWheelDatabase {
           .map((row) {
             final surveyItemWithFeature = SurveyItemWithFeature(
               row.readTable(surveyItems),
-              row.readTable(features),
+              row.readTable(featureTypes),
             );
             return surveyItemWithFeature;
           })
           .where((item) => item.surveyItem.surveyId == surveyId)
           .toList();
     });
-    final pointsQuery = select(points);
+    final pointsQuery = select(surveyPoints);
     final Stream<List<PointContainer>> pointsStream =
         pointsQuery.watch().map((rows) {
       return rows.map((row) {
@@ -116,7 +116,7 @@ class CurbWheelDatabase extends _$CurbWheelDatabase {
       }).toList();
     });
 
-    final spanQuery = select(spans);
+    final spanQuery = select(surveySpans);
     final Stream<List<SpanContainer>> spanStream =
         spanQuery.watch().map((rows) {
       return rows.map((row) {

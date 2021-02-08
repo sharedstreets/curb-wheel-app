@@ -6,6 +6,6 @@ part of 'point_dao.dart';
 // DaoGenerator
 // **************************************************************************
 
-mixin _$PointDaoMixin on DatabaseAccessor<CurbWheelDatabase> {
-  $PointsTable get points => attachedDatabase.points;
+mixin _$SurveyPointDaoMixin on DatabaseAccessor<CurbWheelDatabase> {
+  $SurveyPointsTable get surveyPoints => attachedDatabase.surveyPoints;
 }

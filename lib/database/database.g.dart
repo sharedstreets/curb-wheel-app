@@ -405,23 +405,23 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   }
 }
 
-class Feature extends DataClass implements Insertable<Feature> {
+class FeatureType extends DataClass implements Insertable<FeatureType> {
   final String id;
   final String projectId;
   final String geometryType;
   final String color;
   final String name;
-  Feature(
+  FeatureType(
       {@required this.id,
       @required this.projectId,
       @required this.geometryType,
       @required this.color,
       @required this.name});
-  factory Feature.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+  factory FeatureType.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final stringType = db.typeSystem.forDartType<String>();
-    return Feature(
+    return FeatureType(
       id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       projectId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}project_id']),
@@ -453,8 +453,8 @@ class Feature extends DataClass implements Insertable<Feature> {
     return map;
   }
 
-  FeaturesCompanion toCompanion(bool nullToAbsent) {
-    return FeaturesCompanion(
+  FeatureTypesCompanion toCompanion(bool nullToAbsent) {
+    return FeatureTypesCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       projectId: projectId == null && nullToAbsent
           ? const Value.absent()
@@ -468,10 +468,10 @@ class Feature extends DataClass implements Insertable<Feature> {
     );
   }
 
-  factory Feature.fromJson(Map<String, dynamic> json,
+  factory FeatureType.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
-    return Feature(
+    return FeatureType(
       id: serializer.fromJson<String>(json['id']),
       projectId: serializer.fromJson<String>(json['projectId']),
       geometryType: serializer.fromJson<String>(json['geometryType']),
@@ -491,13 +491,13 @@ class Feature extends DataClass implements Insertable<Feature> {
     };
   }
 
-  Feature copyWith(
+  FeatureType copyWith(
           {String id,
           String projectId,
           String geometryType,
           String color,
           String name}) =>
-      Feature(
+      FeatureType(
         id: id ?? this.id,
         projectId: projectId ?? this.projectId,
         geometryType: geometryType ?? this.geometryType,
@@ -506,7 +506,7 @@ class Feature extends DataClass implements Insertable<Feature> {
       );
   @override
   String toString() {
-    return (StringBuffer('Feature(')
+    return (StringBuffer('FeatureType(')
           ..write('id: $id, ')
           ..write('projectId: $projectId, ')
           ..write('geometryType: $geometryType, ')
@@ -524,7 +524,7 @@ class Feature extends DataClass implements Insertable<Feature> {
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
-      (other is Feature &&
+      (other is FeatureType &&
           other.id == this.id &&
           other.projectId == this.projectId &&
           other.geometryType == this.geometryType &&
@@ -532,20 +532,20 @@ class Feature extends DataClass implements Insertable<Feature> {
           other.name == this.name);
 }
 
-class FeaturesCompanion extends UpdateCompanion<Feature> {
+class FeatureTypesCompanion extends UpdateCompanion<FeatureType> {
   final Value<String> id;
   final Value<String> projectId;
   final Value<String> geometryType;
   final Value<String> color;
   final Value<String> name;
-  const FeaturesCompanion({
+  const FeatureTypesCompanion({
     this.id = const Value.absent(),
     this.projectId = const Value.absent(),
     this.geometryType = const Value.absent(),
     this.color = const Value.absent(),
     this.name = const Value.absent(),
   });
-  FeaturesCompanion.insert({
+  FeatureTypesCompanion.insert({
     @required String id,
     @required String projectId,
     @required String geometryType,
@@ -556,7 +556,7 @@ class FeaturesCompanion extends UpdateCompanion<Feature> {
         geometryType = Value(geometryType),
         color = Value(color),
         name = Value(name);
-  static Insertable<Feature> custom({
+  static Insertable<FeatureType> custom({
     Expression<String> id,
     Expression<String> projectId,
     Expression<String> geometryType,
@@ -572,13 +572,13 @@ class FeaturesCompanion extends UpdateCompanion<Feature> {
     });
   }
 
-  FeaturesCompanion copyWith(
+  FeatureTypesCompanion copyWith(
       {Value<String> id,
       Value<String> projectId,
       Value<String> geometryType,
       Value<String> color,
       Value<String> name}) {
-    return FeaturesCompanion(
+    return FeatureTypesCompanion(
       id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       geometryType: geometryType ?? this.geometryType,
@@ -610,7 +610,7 @@ class FeaturesCompanion extends UpdateCompanion<Feature> {
 
   @override
   String toString() {
-    return (StringBuffer('FeaturesCompanion(')
+    return (StringBuffer('FeatureTypesCompanion(')
           ..write('id: $id, ')
           ..write('projectId: $projectId, ')
           ..write('geometryType: $geometryType, ')
@@ -621,10 +621,11 @@ class FeaturesCompanion extends UpdateCompanion<Feature> {
   }
 }
 
-class $FeaturesTable extends Features with TableInfo<$FeaturesTable, Feature> {
+class $FeatureTypesTable extends FeatureTypes
+    with TableInfo<$FeatureTypesTable, FeatureType> {
   final GeneratedDatabase _db;
   final String _alias;
-  $FeaturesTable(this._db, [this._alias]);
+  $FeatureTypesTable(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedTextColumn _id;
   @override
@@ -691,13 +692,13 @@ class $FeaturesTable extends Features with TableInfo<$FeaturesTable, Feature> {
   List<GeneratedColumn> get $columns =>
       [id, projectId, geometryType, color, name];
   @override
-  $FeaturesTable get asDslTable => this;
+  $FeatureTypesTable get asDslTable => this;
   @override
-  String get $tableName => _alias ?? 'features';
+  String get $tableName => _alias ?? 'feature_types';
   @override
-  final String actualTableName = 'features';
+  final String actualTableName = 'feature_types';
   @override
-  VerificationContext validateIntegrity(Insertable<Feature> instance,
+  VerificationContext validateIntegrity(Insertable<FeatureType> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -738,14 +739,14 @@ class $FeaturesTable extends Features with TableInfo<$FeaturesTable, Feature> {
   @override
   Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
-  Feature map(Map<String, dynamic> data, {String tablePrefix}) {
+  FeatureType map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Feature.fromData(data, _db, prefix: effectivePrefix);
+    return FeatureType.fromData(data, _db, prefix: effectivePrefix);
   }
 
   @override
-  $FeaturesTable createAlias(String alias) {
-    return $FeaturesTable(_db, alias);
+  $FeatureTypesTable createAlias(String alias) {
+    return $FeatureTypesTable(_db, alias);
   }
 }
 
@@ -1548,22 +1549,22 @@ class $SurveyItemsTable extends SurveyItems
   }
 }
 
-class Span extends DataClass implements Insertable<Span> {
+class SurveySpan extends DataClass implements Insertable<SurveySpan> {
   final String id;
   final String surveyItemId;
   final double start;
   final double stop;
-  Span(
+  SurveySpan(
       {@required this.id,
       @required this.surveyItemId,
       @required this.start,
       @required this.stop});
-  factory Span.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+  factory SurveySpan.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final stringType = db.typeSystem.forDartType<String>();
     final doubleType = db.typeSystem.forDartType<double>();
-    return Span(
+    return SurveySpan(
       id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       surveyItemId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}survey_item_id']),
@@ -1590,8 +1591,8 @@ class Span extends DataClass implements Insertable<Span> {
     return map;
   }
 
-  SpansCompanion toCompanion(bool nullToAbsent) {
-    return SpansCompanion(
+  SurveySpansCompanion toCompanion(bool nullToAbsent) {
+    return SurveySpansCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       surveyItemId: surveyItemId == null && nullToAbsent
           ? const Value.absent()
@@ -1602,10 +1603,10 @@ class Span extends DataClass implements Insertable<Span> {
     );
   }
 
-  factory Span.fromJson(Map<String, dynamic> json,
+  factory SurveySpan.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
-    return Span(
+    return SurveySpan(
       id: serializer.fromJson<String>(json['id']),
       surveyItemId: serializer.fromJson<String>(json['surveyItemId']),
       start: serializer.fromJson<double>(json['start']),
@@ -1623,8 +1624,9 @@ class Span extends DataClass implements Insertable<Span> {
     };
   }
 
-  Span copyWith({String id, String surveyItemId, double start, double stop}) =>
-      Span(
+  SurveySpan copyWith(
+          {String id, String surveyItemId, double start, double stop}) =>
+      SurveySpan(
         id: id ?? this.id,
         surveyItemId: surveyItemId ?? this.surveyItemId,
         start: start ?? this.start,
@@ -1632,7 +1634,7 @@ class Span extends DataClass implements Insertable<Span> {
       );
   @override
   String toString() {
-    return (StringBuffer('Span(')
+    return (StringBuffer('SurveySpan(')
           ..write('id: $id, ')
           ..write('surveyItemId: $surveyItemId, ')
           ..write('start: $start, ')
@@ -1647,25 +1649,25 @@ class Span extends DataClass implements Insertable<Span> {
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
-      (other is Span &&
+      (other is SurveySpan &&
           other.id == this.id &&
           other.surveyItemId == this.surveyItemId &&
           other.start == this.start &&
           other.stop == this.stop);
 }
 
-class SpansCompanion extends UpdateCompanion<Span> {
+class SurveySpansCompanion extends UpdateCompanion<SurveySpan> {
   final Value<String> id;
   final Value<String> surveyItemId;
   final Value<double> start;
   final Value<double> stop;
-  const SpansCompanion({
+  const SurveySpansCompanion({
     this.id = const Value.absent(),
     this.surveyItemId = const Value.absent(),
     this.start = const Value.absent(),
     this.stop = const Value.absent(),
   });
-  SpansCompanion.insert({
+  SurveySpansCompanion.insert({
     @required String id,
     @required String surveyItemId,
     @required double start,
@@ -1674,7 +1676,7 @@ class SpansCompanion extends UpdateCompanion<Span> {
         surveyItemId = Value(surveyItemId),
         start = Value(start),
         stop = Value(stop);
-  static Insertable<Span> custom({
+  static Insertable<SurveySpan> custom({
     Expression<String> id,
     Expression<String> surveyItemId,
     Expression<double> start,
@@ -1688,12 +1690,12 @@ class SpansCompanion extends UpdateCompanion<Span> {
     });
   }
 
-  SpansCompanion copyWith(
+  SurveySpansCompanion copyWith(
       {Value<String> id,
       Value<String> surveyItemId,
       Value<double> start,
       Value<double> stop}) {
-    return SpansCompanion(
+    return SurveySpansCompanion(
       id: id ?? this.id,
       surveyItemId: surveyItemId ?? this.surveyItemId,
       start: start ?? this.start,
@@ -1721,7 +1723,7 @@ class SpansCompanion extends UpdateCompanion<Span> {
 
   @override
   String toString() {
-    return (StringBuffer('SpansCompanion(')
+    return (StringBuffer('SurveySpansCompanion(')
           ..write('id: $id, ')
           ..write('surveyItemId: $surveyItemId, ')
           ..write('start: $start, ')
@@ -1731,10 +1733,11 @@ class SpansCompanion extends UpdateCompanion<Span> {
   }
 }
 
-class $SpansTable extends Spans with TableInfo<$SpansTable, Span> {
+class $SurveySpansTable extends SurveySpans
+    with TableInfo<$SurveySpansTable, SurveySpan> {
   final GeneratedDatabase _db;
   final String _alias;
-  $SpansTable(this._db, [this._alias]);
+  $SurveySpansTable(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedTextColumn _id;
   @override
@@ -1788,13 +1791,13 @@ class $SpansTable extends Spans with TableInfo<$SpansTable, Span> {
   @override
   List<GeneratedColumn> get $columns => [id, surveyItemId, start, stop];
   @override
-  $SpansTable get asDslTable => this;
+  $SurveySpansTable get asDslTable => this;
   @override
-  String get $tableName => _alias ?? 'spans';
+  String get $tableName => _alias ?? 'survey_spans';
   @override
-  final String actualTableName = 'spans';
+  final String actualTableName = 'survey_spans';
   @override
-  VerificationContext validateIntegrity(Insertable<Span> instance,
+  VerificationContext validateIntegrity(Insertable<SurveySpan> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1829,28 +1832,28 @@ class $SpansTable extends Spans with TableInfo<$SpansTable, Span> {
   @override
   Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
-  Span map(Map<String, dynamic> data, {String tablePrefix}) {
+  SurveySpan map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Span.fromData(data, _db, prefix: effectivePrefix);
+    return SurveySpan.fromData(data, _db, prefix: effectivePrefix);
   }
 
   @override
-  $SpansTable createAlias(String alias) {
-    return $SpansTable(_db, alias);
+  $SurveySpansTable createAlias(String alias) {
+    return $SurveySpansTable(_db, alias);
   }
 }
 
-class Point extends DataClass implements Insertable<Point> {
+class SurveyPoint extends DataClass implements Insertable<SurveyPoint> {
   final String id;
   final String surveyItemId;
   final double position;
-  Point({@required this.id, this.surveyItemId, @required this.position});
-  factory Point.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+  SurveyPoint({@required this.id, this.surveyItemId, @required this.position});
+  factory SurveyPoint.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final stringType = db.typeSystem.forDartType<String>();
     final doubleType = db.typeSystem.forDartType<double>();
-    return Point(
+    return SurveyPoint(
       id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       surveyItemId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}survey_item_id']),
@@ -1873,8 +1876,8 @@ class Point extends DataClass implements Insertable<Point> {
     return map;
   }
 
-  PointsCompanion toCompanion(bool nullToAbsent) {
-    return PointsCompanion(
+  SurveyPointsCompanion toCompanion(bool nullToAbsent) {
+    return SurveyPointsCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       surveyItemId: surveyItemId == null && nullToAbsent
           ? const Value.absent()
@@ -1885,10 +1888,10 @@ class Point extends DataClass implements Insertable<Point> {
     );
   }
 
-  factory Point.fromJson(Map<String, dynamic> json,
+  factory SurveyPoint.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
-    return Point(
+    return SurveyPoint(
       id: serializer.fromJson<String>(json['id']),
       surveyItemId: serializer.fromJson<String>(json['surveyItemId']),
       position: serializer.fromJson<double>(json['position']),
@@ -1904,14 +1907,15 @@ class Point extends DataClass implements Insertable<Point> {
     };
   }
 
-  Point copyWith({String id, String surveyItemId, double position}) => Point(
+  SurveyPoint copyWith({String id, String surveyItemId, double position}) =>
+      SurveyPoint(
         id: id ?? this.id,
         surveyItemId: surveyItemId ?? this.surveyItemId,
         position: position ?? this.position,
       );
   @override
   String toString() {
-    return (StringBuffer('Point(')
+    return (StringBuffer('SurveyPoint(')
           ..write('id: $id, ')
           ..write('surveyItemId: $surveyItemId, ')
           ..write('position: $position')
@@ -1925,28 +1929,28 @@ class Point extends DataClass implements Insertable<Point> {
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
-      (other is Point &&
+      (other is SurveyPoint &&
           other.id == this.id &&
           other.surveyItemId == this.surveyItemId &&
           other.position == this.position);
 }
 
-class PointsCompanion extends UpdateCompanion<Point> {
+class SurveyPointsCompanion extends UpdateCompanion<SurveyPoint> {
   final Value<String> id;
   final Value<String> surveyItemId;
   final Value<double> position;
-  const PointsCompanion({
+  const SurveyPointsCompanion({
     this.id = const Value.absent(),
     this.surveyItemId = const Value.absent(),
     this.position = const Value.absent(),
   });
-  PointsCompanion.insert({
+  SurveyPointsCompanion.insert({
     @required String id,
     this.surveyItemId = const Value.absent(),
     @required double position,
   })  : id = Value(id),
         position = Value(position);
-  static Insertable<Point> custom({
+  static Insertable<SurveyPoint> custom({
     Expression<String> id,
     Expression<String> surveyItemId,
     Expression<double> position,
@@ -1958,9 +1962,9 @@ class PointsCompanion extends UpdateCompanion<Point> {
     });
   }
 
-  PointsCompanion copyWith(
+  SurveyPointsCompanion copyWith(
       {Value<String> id, Value<String> surveyItemId, Value<double> position}) {
-    return PointsCompanion(
+    return SurveyPointsCompanion(
       id: id ?? this.id,
       surveyItemId: surveyItemId ?? this.surveyItemId,
       position: position ?? this.position,
@@ -1984,7 +1988,7 @@ class PointsCompanion extends UpdateCompanion<Point> {
 
   @override
   String toString() {
-    return (StringBuffer('PointsCompanion(')
+    return (StringBuffer('SurveyPointsCompanion(')
           ..write('id: $id, ')
           ..write('surveyItemId: $surveyItemId, ')
           ..write('position: $position')
@@ -1993,10 +1997,11 @@ class PointsCompanion extends UpdateCompanion<Point> {
   }
 }
 
-class $PointsTable extends Points with TableInfo<$PointsTable, Point> {
+class $SurveyPointsTable extends SurveyPoints
+    with TableInfo<$SurveyPointsTable, SurveyPoint> {
   final GeneratedDatabase _db;
   final String _alias;
-  $PointsTable(this._db, [this._alias]);
+  $SurveyPointsTable(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedTextColumn _id;
   @override
@@ -2038,13 +2043,13 @@ class $PointsTable extends Points with TableInfo<$PointsTable, Point> {
   @override
   List<GeneratedColumn> get $columns => [id, surveyItemId, position];
   @override
-  $PointsTable get asDslTable => this;
+  $SurveyPointsTable get asDslTable => this;
   @override
-  String get $tableName => _alias ?? 'points';
+  String get $tableName => _alias ?? 'survey_points';
   @override
-  final String actualTableName = 'points';
+  final String actualTableName = 'survey_points';
   @override
-  VerificationContext validateIntegrity(Insertable<Point> instance,
+  VerificationContext validateIntegrity(Insertable<SurveyPoint> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -2071,14 +2076,14 @@ class $PointsTable extends Points with TableInfo<$PointsTable, Point> {
   @override
   Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
-  Point map(Map<String, dynamic> data, {String tablePrefix}) {
+  SurveyPoint map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Point.fromData(data, _db, prefix: effectivePrefix);
+    return SurveyPoint.fromData(data, _db, prefix: effectivePrefix);
   }
 
   @override
-  $PointsTable createAlias(String alias) {
-    return $PointsTable(_db, alias);
+  $SurveyPointsTable createAlias(String alias) {
+    return $SurveyPointsTable(_db, alias);
   }
 }
 
@@ -2087,35 +2092,39 @@ abstract class _$CurbWheelDatabase extends GeneratedDatabase {
       : super(SqlTypeSystem.defaultInstance, e);
   $ProjectsTable _projects;
   $ProjectsTable get projects => _projects ??= $ProjectsTable(this);
-  $FeaturesTable _features;
-  $FeaturesTable get features => _features ??= $FeaturesTable(this);
+  $FeatureTypesTable _featureTypes;
+  $FeatureTypesTable get featureTypes =>
+      _featureTypes ??= $FeatureTypesTable(this);
   $SurveysTable _surveys;
   $SurveysTable get surveys => _surveys ??= $SurveysTable(this);
   $SurveyItemsTable _surveyItems;
   $SurveyItemsTable get surveyItems => _surveyItems ??= $SurveyItemsTable(this);
-  $SpansTable _spans;
-  $SpansTable get spans => _spans ??= $SpansTable(this);
-  $PointsTable _points;
-  $PointsTable get points => _points ??= $PointsTable(this);
+  $SurveySpansTable _surveySpans;
+  $SurveySpansTable get surveySpans => _surveySpans ??= $SurveySpansTable(this);
+  $SurveyPointsTable _surveyPoints;
+  $SurveyPointsTable get surveyPoints =>
+      _surveyPoints ??= $SurveyPointsTable(this);
   ProjectDao _projectDao;
   ProjectDao get projectDao =>
       _projectDao ??= ProjectDao(this as CurbWheelDatabase);
-  FeatureDao _featureDao;
-  FeatureDao get featureDao =>
-      _featureDao ??= FeatureDao(this as CurbWheelDatabase);
+  FeatureTypeDao _featureTypeDao;
+  FeatureTypeDao get featureTypeDao =>
+      _featureTypeDao ??= FeatureTypeDao(this as CurbWheelDatabase);
   SurveyDao _surveyDao;
   SurveyDao get surveyDao =>
       _surveyDao ??= SurveyDao(this as CurbWheelDatabase);
   SurveyItemDao _surveyItemDao;
   SurveyItemDao get surveyItemDao =>
       _surveyItemDao ??= SurveyItemDao(this as CurbWheelDatabase);
-  SpanDao _spanDao;
-  SpanDao get spanDao => _spanDao ??= SpanDao(this as CurbWheelDatabase);
-  PointDao _pointDao;
-  PointDao get pointDao => _pointDao ??= PointDao(this as CurbWheelDatabase);
+  SurveySpanDao _surveySpanDao;
+  SurveySpanDao get surveySpanDao =>
+      _surveySpanDao ??= SurveySpanDao(this as CurbWheelDatabase);
+  SurveyPointDao _surveyPointDao;
+  SurveyPointDao get surveyPointDao =>
+      _surveyPointDao ??= SurveyPointDao(this as CurbWheelDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [projects, features, surveys, surveyItems, spans, points];
+      [projects, featureTypes, surveys, surveyItems, surveySpans, surveyPoints];
 }
