@@ -2,6 +2,7 @@ import 'package:curbwheel/ui/features/features_screen.dart';
 import 'package:curbwheel/ui/map/map_screen.dart';
 import 'package:curbwheel/ui/projects/project_list_screen.dart';
 import 'package:curbwheel/service/bluetooth_service.dart';
+import 'package:curbwheel/ui/map/map_database.dart';
 import 'package:curbwheel/ui/splash/splash_screen.dart';
 import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 
@@ -10,6 +11,8 @@ import 'package:provider/provider.dart';
 import 'database/database.dart';
 
 void main() => runApp(MultiProvider(providers: [
+      Provider<CurbWheelDatabase>(create: (_) => CurbWheelDatabase()),
+      Provider<ProjectMapDatastores>(create: (_) => ProjectMapDatastores()),
       ChangeNotifierProvider(create: (BuildContext context) => BleConnection()),
       ChangeNotifierProxyProvider<BleConnection, WheelCounter>(
         create: (BuildContext context) => WheelCounter(),
@@ -22,21 +25,17 @@ void main() => runApp(MultiProvider(providers: [
 class CurbWheel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Provider(
-      create: (BuildContext context) => CurbWheelDatabase(),
-      child: MaterialApp(
-        title: 'CurbWheel',
-        theme: ThemeData(
-          fontFamily: 'Raleway',
-          primaryColor: Colors.black,
-          textTheme: TextTheme(
+    return MaterialApp(
+      title: 'CurbWheel',
+      theme: ThemeData(
+        fontFamily: 'Raleway',
+        primaryColor: Colors.black,
+        textTheme: TextTheme(
             headline1: TextStyle(
-                fontSize: 52.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black),
+                fontSize: 52.0, fontWeight: FontWeight.bold, color: Colors.black),
             subtitle2: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
             bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
-          ),
+          )
         ),
         onGenerateRoute: (settings) {
           if (settings.name == WheelScreen.routeName) {
@@ -47,6 +46,13 @@ class CurbWheel extends StatelessWidget {
                     listItem: args.listItem);
               },
             );
+          } if (settings.name == MapScreen.routeName) {
+            final MapScreenArguments args = settings.arguments;
+            return MaterialPageRoute(
+              builder: (context) {
+                return MapScreen(project: args.project);
+              },
+            );
           } else {
             return null;
           }
@@ -54,11 +60,8 @@ class CurbWheel extends StatelessWidget {
         routes: {
           SplashScreen.routeName: (context) => SplashScreen(),
           ProjectListScreen.routeName: (context) => ProjectListScreen(),
-          MapScreen.routeName: (context) => MapScreen(),
-          //WheelScreen.routeName: (context) => WheelScreen(),
           FeatureSelectScreen.routeName: (context) => FeatureSelectScreen(),
         },
-      ),
-    );
+      );
   }
 }

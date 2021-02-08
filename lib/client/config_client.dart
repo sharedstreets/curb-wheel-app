@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:chopper/chopper.dart';
+
 import 'package:curbwheel/service/models.dart';
 import '../service/api_services.dart';
-import 'package:turf/turf.dart';
 
 class ConfigClient {
   final ChopperClient chopper;

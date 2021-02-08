@@ -1,11 +1,7 @@
-import 'package:curbwheel/client/config_client.dart';
 import 'package:curbwheel/ui/ble/ble_selector.dart';
 import 'package:curbwheel/ui/preferences.dart/preferences_screen.dart';
 import 'package:curbwheel/ui/projects/add_project_form.dart';
 import 'package:curbwheel/ui/projects/qr_scanner.dart';
-import 'package:curbwheel/utils/write_file.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import 'package:curbwheel/database/database.dart';
 import 'project_card.dart';

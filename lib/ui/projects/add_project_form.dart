@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:curbwheel/client/config_client.dart';
 import 'package:curbwheel/database/database.dart';
 import 'package:curbwheel/ui/projects/project_config_card.dart';
-import 'package:curbwheel/utils/write_file.dart';
+import 'package:curbwheel/utils/file_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:moor/moor.dart' as moor;
 import 'package:provider/provider.dart';
@@ -75,18 +77,21 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
         email: moor.Value(_config.email),
         organization: moor.Value(_config.organization));
     await _database.projectDao.insertProject(_project);
+    await FileUtils.writeFile(
+        _config.projectId, 'map.json', jsonEncode(_mapData.featureCollection));
+
     for (var featureType in _config.featureTypes) {
-      var _feature = FeaturesCompanion(
+      var _feature = FeatureTypesCompanion(
         id: moor.Value(uuid.v4()),
         projectId: moor.Value(projectId),
         geometryType: moor.Value(featureType.geometryType),
         color: moor.Value(featureType.color),
         name: moor.Value(featureType.value),
       );
-      await _database.featureDao.insertFeature(_feature);
+      await _database.featureTypeDao.insertFeature(_feature);
     }
-    await FileWriter()
-        .writeFile(_config.projectId, 'map.json', _mapData.toString());
+    //await FileUtils.writeFile(_config.projectId, 'map.json', _mapData.toString());
+
 
     Navigator.pop(context);
   }

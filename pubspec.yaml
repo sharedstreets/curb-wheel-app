@@ -38,6 +38,9 @@ dependencies:
   flutter_svg:
   rxdart:
   flutter_blue: ^0.7.3
+  mapbox_gl: ^0.9.0
+  r_tree: ^1.1.0
+  location: ^3.2.4
   uuid: 2.2.2
 
 
