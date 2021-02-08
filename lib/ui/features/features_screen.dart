@@ -38,12 +38,12 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
     final Survey survey = args.survey;
     final List<ListItem> incompleteSpans = args.incompleteSpans;
     final double position = args.position;
-    Future<List<Feature>> features =
-        _database.featureDao.getAllFeaturesByProject(survey.projectId);
+    Future<List<FeatureType>> features =
+        _database.featureTypeDao.getAllFeaturesByProject(survey.projectId);
 
-    return FutureBuilder<List<Feature>>(
+    return FutureBuilder<List<FeatureType>>(
         future: features,
-        builder: (BuildContext context, AsyncSnapshot<List<Feature>> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<List<FeatureType>> snapshot) {
           if (snapshot.hasData) {
             var features = snapshot.data;
             return Scaffold(
@@ -68,7 +68,7 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
 }
 
 class FeatureCard extends StatelessWidget {
-  final Feature feature;
+  final FeatureType feature;
   final Project project;
   final Survey survey;
   final double position;

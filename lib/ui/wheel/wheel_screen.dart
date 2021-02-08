@@ -155,8 +155,10 @@ class _WheelScreenState extends State<WheelScreen>
                                 text: 'Completed ($completeLength)',
                               ),
                             ],
-                          ));
-                    }),
+                          )
+                        );
+                    }
+                    ),
               ],
             )),
             Expanded(

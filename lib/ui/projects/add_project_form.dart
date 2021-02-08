@@ -81,14 +81,14 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
         _config.projectId, 'map.json', jsonEncode(_mapData.featureCollection));
 
     for (var featureType in _config.featureTypes) {
-      var _feature = FeaturesCompanion(
+      var _feature = FeatureTypesCompanion(
         id: moor.Value(uuid.v4()),
         projectId: moor.Value(projectId),
         geometryType: moor.Value(featureType.geometryType),
         color: moor.Value(featureType.color),
         name: moor.Value(featureType.value),
       );
-      await _database.featureDao.insertFeature(_feature);
+      await _database.featureTypeDao.insertFeature(_feature);
     }
     //await FileUtils.writeFile(_config.projectId, 'map.json', _mapData.toString());
 

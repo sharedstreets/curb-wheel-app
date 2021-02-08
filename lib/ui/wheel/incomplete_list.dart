@@ -20,19 +20,19 @@ class _IncompleteListState extends State<IncompleteList> {
   CurbWheelDatabase _database;
 
   void _completeItem(ListItem listItem, double progress) async {
-    List<PointsCompanion> pointsCompanions;
+    List<SurveyPointsCompanion> pointsCompanions;
     await _database.surveyItemDao
         .insertSurveyItem(listItem.toSurveyItemsCompanion());
     if (listItem.geometryType == 'line') {
       listItem.span.stop = progress;
-      await _database.spanDao
+      await _database.surveySpanDao
           .insertSpan(listItem.toSpansCompanion());
       pointsCompanions = listItem.toPointsCompanion();
     } else {
       pointsCompanions = listItem.toPointsCompanion();
     }
     for (var pointsCompanion in pointsCompanions) {
-      await _database.pointDao.insertPoint(pointsCompanion);
+      await _database.surveyPointDao.insertPoint(pointsCompanion);
     }
     setState(() => widget.listItems.remove(listItem));
   }

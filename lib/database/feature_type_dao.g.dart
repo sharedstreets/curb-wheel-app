@@ -1,11 +1,11 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'feature_dao.dart';
+part of 'feature_type_dao.dart';
 
 // **************************************************************************
 // DaoGenerator
 // **************************************************************************
 
-mixin _$FeatureDaoMixin on DatabaseAccessor<CurbWheelDatabase> {
-  $FeaturesTable get features => attachedDatabase.features;
+mixin _$FeatureTypeDaoMixin on DatabaseAccessor<CurbWheelDatabase> {
+  $FeatureTypesTable get featureTypes => attachedDatabase.featureTypes;
 }

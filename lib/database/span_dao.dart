@@ -3,17 +3,17 @@ import 'package:moor_flutter/moor_flutter.dart';
 
 part 'span_dao.g.dart';
 
-@UseDao(tables: [Spans])
-class SpanDao extends DatabaseAccessor<CurbWheelDatabase> with _$SpanDaoMixin {
-  SpanDao(CurbWheelDatabase db) : super(db);
+@UseDao(tables: [SurveySpans])
+class SurveySpanDao extends DatabaseAccessor<CurbWheelDatabase> with _$SurveySpanDaoMixin {
+  SurveySpanDao(CurbWheelDatabase db) : super(db);
 
-  Future<List<Span>> getAllSpans() => select(spans).get();
+  Future<List<SurveySpan>> getAllSpans() => select(surveySpans).get();
 
-  Stream<List<Span>> watchAllSpans() => select(spans).watch();
+  Stream<List<SurveySpan>> watchAllSpans() => select(surveySpans).watch();
 
-  Future insertSpan(SpansCompanion span) => into(spans).insert(span);
+  Future insertSpan(SurveySpansCompanion surveySpan) => into(surveySpans).insert(surveySpan);
 
-  Future updateSpan(Span span) => update(spans).replace(span);
+  Future updateSpan(SurveySpan surveySpan) => update(surveySpans).replace(surveySpan);
 
-  Future deleteSpan(Span span) => delete(spans).delete(span);
+  Future deleteSpan(SurveySpan surveySpan) => delete(surveySpans).delete(surveySpan);
 }

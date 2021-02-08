@@ -8,7 +8,7 @@ class SurveyItemWithFeature {
   SurveyItemWithFeature(this.surveyItem, this.feature);
 
   final SurveyItem surveyItem;
-  final Feature feature;
+  final FeatureType feature;
 }
 
 class ListItem {
@@ -38,18 +38,18 @@ class ListItem {
         featureId: moor.Value(this.featureId));
   }
 
-  SpansCompanion toSpansCompanion() {
-    return SpansCompanion(
+  SurveySpansCompanion toSpansCompanion() {
+    return SurveySpansCompanion(
         id: moor.Value(uuid.v4()),
         surveyItemId: moor.Value(this.surveyItemId),
         start: moor.Value(this.span.start),
         stop: moor.Value(this.span.stop));
   }
 
-  List<PointsCompanion> toPointsCompanion() {
-    List<PointsCompanion> pointsCompanions = [];
+  List<SurveyPointsCompanion> toPointsCompanion() {
+    List<SurveyPointsCompanion> pointsCompanions = [];
     for (PointContainer point in this.points) {
-      pointsCompanions.add(PointsCompanion(
+      pointsCompanions.add(SurveyPointsCompanion(
           id: moor.Value(uuid.v4()),
           surveyItemId: moor.Value(this.surveyItemId),
           position: moor.Value(point.position)));
