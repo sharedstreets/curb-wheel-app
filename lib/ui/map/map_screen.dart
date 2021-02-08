@@ -95,6 +95,8 @@ class _FullMapState extends State<FullMap> {
 
     String streetName = f.properties['name'];
 
+    if (streetName == null || streetName == "") streetName = "Unamed Street";
+
     List<String> fromStreets =
         data.getStreetsByIntersection(f.properties['fromIntersectionId']);
     List<String> toStreets =
