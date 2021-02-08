@@ -235,7 +235,26 @@ class _FullMapState extends State<FullMap> {
         trackCameraPosition: true,
         initialCameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
       );
-
+    var _fromText = _fromStreetName != null ? TextSpan(text: "from ") : TextSpan(text: "");
+    var fromStreetName = _fromStreetName != null
+        ? TextSpan(text: _fromStreetName, style: TextStyle(fontWeight: FontWeight.bold))
+        : TextSpan(text: "");
+    var _toText = _toStreetName != null ? TextSpan(text: " to ") : TextSpan(text:"");
+    var toStreetName = _toStreetName != null
+        ? TextSpan(text: _toStreetName, style: TextStyle(fontWeight: FontWeight.bold))
+        : TextSpan(text: "");
+    var _crossStreetText = RichText(
+      text: TextSpan(
+        text: '',
+        style: DefaultTextStyle.of(context).style,
+        children: <TextSpan>[
+          _fromText,
+          fromStreetName,
+          _toText,
+          toStreetName
+        ],
+      ),
+    );
     return new Scaffold(
         body: Column(children: [
       ExpansionTile(
@@ -259,18 +278,7 @@ class _FullMapState extends State<FullMap> {
               alignment: Alignment.centerLeft,
               child: Padding(
                   padding: EdgeInsets.fromLTRB(20, 0, 10, 10),
-                  child: Row(children: [
-                    _fromStreetName != null ? Text("from ") : Text(""),
-                    _fromStreetName != null
-                        ? Text(_fromStreetName,
-                            style: TextStyle(fontWeight: FontWeight.bold))
-                        : Text(""),
-                    _toStreetName != null ? Text(" to ") : Text(""),
-                    _toStreetName != null
-                        ? Text(_toStreetName,
-                            style: TextStyle(fontWeight: FontWeight.bold))
-                        : Text(""),
-                  ])))
+                  child: Row(children: [Flexible(child: _crossStreetText)])))
         ],
       ),
       Expanded(child: _map),
