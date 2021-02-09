@@ -181,6 +181,7 @@ class BleConnection extends ChangeNotifier {
 
   String _previousWheelId;
   bool _isScanning;
+  Timer _scanTimer;
 
   BleConnection() {
     _flutterBlue.isScanning.listen((event) {
@@ -200,6 +201,8 @@ class BleConnection extends ChangeNotifier {
           wheel._stateStreamController.stream
               .listen((WheelStatus status) async {
             if (status == WheelStatus.CONNECTED) {
+              _stopRescaning();
+
               if (_currentWheel != null && _currentWheel != wheel)
                 _currentWheel.disconnect();
 
@@ -209,6 +212,8 @@ class BleConnection extends ChangeNotifier {
               prefs.setString('previousWheelId', _previousWheelId);
 
               _wheelConnectionStreamController.add(wheel);
+            } else if (status == WheelStatus.DISCONNECTED) {
+              _startRescaning();
             }
             notifyListeners();
           });
@@ -231,6 +236,24 @@ class BleConnection extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _previousWheelId = prefs.getString('previousWheelId');
 
+    _startRescaning();
+  }
+
+  _startRescaning() {
+    if (_scanTimer == null) {
+      scan();
+      _scanTimer = Timer.periodic(new Duration(seconds: 10), _scanPeriodic);
+    }
+  }
+
+  _stopRescaning() {
+    if (_scanTimer != null) {
+      _scanTimer.cancel();
+      _scanTimer = null;
+    }
+  }
+
+  _scanPeriodic(Timer timer) {
     scan();
   }
 
