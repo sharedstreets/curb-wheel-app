@@ -37,7 +37,7 @@ class _BleDeviceList extends State<BleListDisplay> {
   @override
   void initState() {
     super.initState();
-    //Provider.of<BleConnection>(context).scan();
+    Provider.of<BleConnection>(context, listen: false).scan();
   }
 
   @override
