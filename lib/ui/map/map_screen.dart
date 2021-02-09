@@ -54,6 +54,16 @@ class _MapScreenState extends State<MapScreen> {
   }
 }
 
+class _Line {
+  LineOptions options;
+  Map<String, dynamic> data;
+}
+
+class _Symbol {
+  SymbolOptions options;
+  Map<String, dynamic> data;
+}
+
 class FullMap extends StatefulWidget {
   final db.Project project;
 
@@ -72,6 +82,10 @@ class _FullMapState extends State<FullMap> {
 
   final db.Project project;
 
+  List<_Line> _basemapLines = new List();
+  List<_Line> _selectionLines = new List();
+  List<_Symbol> _selectionSymbols = [];
+
   _FullMapState(this.project);
   String _fromStreetName;
   String _toStreetName;
@@ -89,6 +103,21 @@ class _FullMapState extends State<FullMap> {
     super.initState();
     _projectMapData = Provider.of<ProjectMapDatastores>(context, listen: false)
         .getDatastore(project);
+  }
+
+  _redrawMap() {
+    _mapController.clearLines();
+    for (_Line l in _basemapLines) {
+      _mapController.addLine(l.options, l.data);
+    }
+    for (_Line l in _selectionLines) {
+      _mapController.addLine(l.options, l.data);
+    }
+
+    _mapController.clearSymbols();
+    for (_Symbol s in _selectionSymbols) {
+      _mapController.addSymbol(s.options, s.data);
+    }
   }
 
   void _onLineTapped(Line tappedLine) async {
@@ -137,36 +166,40 @@ class _FullMapState extends State<FullMap> {
 
     List<LatLng> mapboxGeom = await getMapboxGLGeom(f);
 
-    _mapController.addLine(
-        new LineOptions(
-          geometry: mapboxGeom,
-          lineColor: "#0000ff",
-          lineWidth: 6.0,
-          lineOpacity: 0.1,
-        ),
-        {"id": f.properties['id']});
+    _selectionLines = new List();
+    _Line l = new _Line();
+    l.options = new LineOptions(
+      geometry: mapboxGeom,
+      lineColor: "#0000ff",
+      lineWidth: 6.0,
+      lineOpacity: 0.1,
+    );
+    l.data = {"id": f.properties['id']};
+    _selectionLines.add(l);
 
     Point p = along(f, 20);
-
     double b = bearing(Point(coordinates: f.geometry.coordinates[0]), p);
-
     LatLng latLng = new LatLng(p.coordinates.lat, p.coordinates.lng);
 
-    _mapController.clearSymbols();
-    _mapController.addSymbol(
-        new SymbolOptions(
-          geometry: latLng,
-          textField: '➤➤➤',
-          textRotate: b - 90 - _mapController.cameraPosition.bearing,
-          textSize: 16,
-          textOffset: Offset(0, 0.25),
-          textAnchor: 'top',
-          textColor: '#0000ff',
-          textHaloBlur: 1,
-          textHaloColor: '#ffffff',
-          textHaloWidth: 0.8,
-        ),
-        {"id": f.properties['id']});
+    _selectionSymbols = List();
+    _Symbol s = new _Symbol();
+    s.options = new SymbolOptions(
+      geometry: latLng,
+      textField: '➤➤➤',
+      textRotate: b - 90 - _mapController.cameraPosition.bearing,
+      textSize: 16,
+      textOffset: Offset(0, 0.25),
+      textAnchor: 'top',
+      textColor: '#0000ff',
+      textHaloBlur: 1,
+      textHaloColor: '#ffffff',
+      textHaloWidth: 0.8,
+    );
+    s.data = {"id": f.properties['id']};
+
+    _selectionSymbols.add(s);
+
+    _redrawMap();
   }
 
   void _onMapChanged() async {
@@ -196,19 +229,24 @@ class _FullMapState extends State<FullMap> {
         print(l);
       });
 
-      _mapController.clearLines();
+      _basemapLines = new List();
       for (Feature<Geometry> f in features) {
         List<LatLng> mapboxGeom =
             await data.getMapboxGLGeomById(f.properties['id']);
-        Future<Line> l = _mapController.addLine(
-            new LineOptions(
-              geometry: mapboxGeom,
-              lineColor: "#000000",
-              lineWidth: 6.0,
-              lineOpacity: 0.0,
-            ),
-            {"id": f.properties['id']});
+
+        _Line l = new _Line();
+        l.options = new LineOptions(
+          geometry: mapboxGeom,
+          lineColor: "#000000",
+          lineWidth: 6.0,
+          lineOpacity: 0.0,
+        );
+
+        l.data = {"id": f.properties['id']};
+        _basemapLines.add(l);
       }
+
+      _redrawMap();
     }
   }
 
@@ -309,10 +347,8 @@ class _FullMapState extends State<FullMap> {
                         Survey survey = await surveyDao.getSurveyById(surveyId);
                         _counter.resetForwardCounter();
                         Navigator.pushNamed(context, WheelScreen.routeName,
-                            arguments: WheelScreenArguments(
-                                project, survey, []
-                                )
-                                );
+                            arguments:
+                                WheelScreenArguments(project, survey, []));
                       },
                     )
                   ],
