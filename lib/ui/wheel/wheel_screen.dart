@@ -200,9 +200,11 @@ class _WheelHeaderState extends State<WheelHeader> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Flexible(child: 
                 Text(
                   '${_survey.streetName}',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                ),
                 ),
                 IconButton(icon: Icon(Icons.check), onPressed: () => {}),
               ],
