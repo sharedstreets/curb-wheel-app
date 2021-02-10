@@ -236,7 +236,11 @@ class _FullMapState extends State<FullMap> {
     LatLng latLng = new LatLng(p.coordinates.lat, p.coordinates.lng);
 
     double sideOfStreetOffset = 0.25;
-    if (sideOfStreet == SideOfStreet.Left) sideOfStreetOffset = -1.75;
+    if (sideOfStreet == SideOfStreet.Left &&
+        direction == DirectionOfTravel.Forward)
+      sideOfStreetOffset = -1.75;
+    else if (sideOfStreet == SideOfStreet.Right &&
+        direction == DirectionOfTravel.Backward) sideOfStreetOffset = -1.75;
 
     double rotationOffset = b - 90;
     double paddingOffset = 2;
