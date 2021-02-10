@@ -3,6 +3,7 @@ import 'package:curbwheel/database/models.dart';
 import 'package:curbwheel/service/bluetooth_service.dart';
 import 'package:curbwheel/ui/ble/ble_selector.dart';
 import 'package:curbwheel/ui/features/features_screen.dart';
+import 'package:curbwheel/ui/map/street_select_map_screen.dart';
 import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -83,14 +84,14 @@ class _WheelScreenState extends State<WheelScreen>
           );
         })) {
       case PhotoOptions.addPhoto:
-      this.incompleteSpans.add(this.listItem);
-      setState(() => this.listItem = null);
-      setState(() => this.incompleteSpans = incompleteSpans);
+        this.incompleteSpans.add(this.listItem);
+        setState(() => this.listItem = null);
+        setState(() => this.incompleteSpans = incompleteSpans);
         break;
       case PhotoOptions.noPhoto:
-      this.incompleteSpans.add(this.listItem);
-      setState(() => this.listItem = null);
-      setState(() => this.incompleteSpans = incompleteSpans);
+        this.incompleteSpans.add(this.listItem);
+        setState(() => this.listItem = null);
+        setState(() => this.incompleteSpans = incompleteSpans);
         break;
     }
   }
@@ -109,7 +110,11 @@ class _WheelScreenState extends State<WheelScreen>
     }
 
     return Scaffold(
-        appBar: AppBar(title: Text("Surveying"), actions: [BleStatusButton()]),
+        appBar: AppBar(
+            title: Text("Survey street",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.white)),
+            actions: [BleStatusButton()]),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           backgroundColor: Colors.black,
@@ -138,27 +143,24 @@ class _WheelScreenState extends State<WheelScreen>
                           child: TabBar(
                             controller: _tabController,
                             indicator: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: Colors.black,
-                                  width: 4.0,
-                                )
-                              )
-                            ),
+                                border: Border(
+                                    bottom: BorderSide(
+                              color: Colors.black,
+                              width: 4.0,
+                            ))),
                             labelColor: Colors.black,
                             unselectedLabelColor: Colors.black,
                             tabs: [
                               Tab(
-                                text: 'Active (${incompleteSpans.length})',
+                                text:
+                                    'Active features(${incompleteSpans.length})',
                               ),
                               Tab(
-                                text: 'Completed ($completeLength)',
+                                text: 'Completed features ($completeLength)',
                               ),
                             ],
-                          )
-                        );
-                    }
-                    ),
+                          ));
+                    }),
               ],
             )),
             Expanded(
@@ -200,11 +202,11 @@ class _WheelHeaderState extends State<WheelHeader> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(child: 
-                Text(
-                  '${_survey.streetName}',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                ),
+                Flexible(
+                  child: Text(
+                    '${_survey.streetName}',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                  ),
                 ),
                 IconButton(icon: Icon(Icons.check), onPressed: () => {}),
               ],
@@ -213,9 +215,15 @@ class _WheelHeaderState extends State<WheelHeader> {
               alignment: Alignment.centerLeft,
               child: RichText(
                 text: TextSpan(
-                  text: 'Between ',
+                  text: '',
                   style: DefaultTextStyle.of(context).style,
                   children: <TextSpan>[
+                    TextSpan(
+                        text: _survey.side == SideOfStreet.Left.toString()
+                            ? "Left side"
+                            : "Right side",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    TextSpan(text: " between "),
                     TextSpan(
                         text: '${_survey.startStreetName}',
                         style: TextStyle(fontWeight: FontWeight.bold)),
@@ -231,11 +239,12 @@ class _WheelHeaderState extends State<WheelHeader> {
               padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
               child: ProgressBar(
                 progress: _progress,
+                progressColor: Color(0xff667ad2),
                 backgroundStrokeWidth: 10.0,
               ),
             ),
             Text(
-                "Surveyed ${(_progress * 40).toStringAsFixed(1)}m of ${_survey.length}m"),
+                "Surveyed ${(_progress * 40).toStringAsFixed(1)}m of ${_survey.length.toStringAsFixed(1)}m"),
           ],
         ),
       ),

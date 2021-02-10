@@ -100,7 +100,7 @@ class ProjectListScreenState extends State<ProjectListScreen> {
     return Scaffold(
       appBar: AppBar(
           title: Text(
-            'Projects',
+            'CurbWheel projects',
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
           actions: [

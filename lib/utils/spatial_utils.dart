@@ -730,3 +730,18 @@ Future<List<LatLng>> getMapboxGLGeom(turf.Feature f) async {
 
   return latLngs;
 }
+
+turf.FeatureCollection<turf.LineString> LineCollectionFeatureCollectionFromJson(
+    Map<String, dynamic> json) {
+  return turf.FeatureCollection<turf.LineString>(
+    bbox: json['bbox'] == null
+        ? null
+        : turf.BBox.fromJson(
+            (json['bbox'] as List)?.map((e) => e as num)?.toList()),
+    features: (json['features'] as List)
+        ?.map((e) => e == null
+            ? null
+            : turf.Feature<turf.LineString>.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
