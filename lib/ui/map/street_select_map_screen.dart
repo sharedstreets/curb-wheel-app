@@ -25,29 +25,30 @@ class MapScreenArguments {
   MapScreenArguments(this.project);
 }
 
-class MapScreen extends StatefulWidget {
+class StreetSelectMapScreen extends StatefulWidget {
   static const routeName = '/map';
 
   final db.Project project;
 
-  MapScreen({Key key, this.project}) : super(key: key);
+  StreetSelectMapScreen({Key key, this.project}) : super(key: key);
 
   @override
-  _MapScreenState createState() => _MapScreenState(project);
+  _StreetSelectMapScreenState createState() =>
+      _StreetSelectMapScreenState(project);
 }
 
-class _MapScreenState extends State<MapScreen> {
+class _StreetSelectMapScreenState extends State<StreetSelectMapScreen> {
   final db.Project project;
 
-  _MapScreenState(this.project);
+  _StreetSelectMapScreenState(this.project);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text(""
-                //widget.project.name,
-                )),
+            title: Text("Select street",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.white))),
         body: FullMap(project));
   }
 }
@@ -430,9 +431,15 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
                     alignment: Alignment.centerLeft,
                     child: RichText(
                       text: TextSpan(
-                        text: 'Between ',
+                        text: '',
                         style: DefaultTextStyle.of(context).style,
                         children: <TextSpan>[
+                          TextSpan(
+                              text: _street.sideOfStreet == SideOfStreet.Left
+                                  ? "Left side"
+                                  : "Right side",
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: " between "),
                           TextSpan(
                               text: '${_street.fromStreetName}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
@@ -488,24 +495,3 @@ class _IconTextButtonState extends State<IconTextButton> {
         child: Row(children: [Icon(widget.icon), Text(this.widget.label)]));
   }
 }
-
-// var _fromText =
-//         _fromStreetName != null ? TextSpan(text: "from ") : TextSpan(text: "");
-//     var fromStreetName = _fromStreetName != null
-//         ? TextSpan(
-//             text: _fromStreetName,
-//             style: TextStyle(fontWeight: FontWeight.bold))
-//         : TextSpan(text: "");
-//     var _toText =
-//         _toStreetName != null ? TextSpan(text: " to ") : TextSpan(text: "");
-//     var toStreetName = _toStreetName != null
-//         ? TextSpan(
-//             text: _toStreetName, style: TextStyle(fontWeight: FontWeight.bold))
-//         : TextSpan(text: "");
-//     var _crossStreetText = RichText(
-//       text: TextSpan(
-//         text: '',
-//         style: DefaultTextStyle.of(context).style,
-//         children: <TextSpan>[_fromText, fromStreetName, _toText, toStreetName],
-//       ),
-//     );
