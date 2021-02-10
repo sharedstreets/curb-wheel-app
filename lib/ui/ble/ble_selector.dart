@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:curbwheel/service/bluetooth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,17 +35,25 @@ class BleListDisplay extends StatefulWidget {
 
 class _BleDeviceList extends State<BleListDisplay> {
   BleWheel _pendingWheel;
+  Timer _wheelScanTimer;
 
   @override
   void initState() {
     super.initState();
-    //Provider.of<BleConnection>(context).scan();
+    Provider.of<BleConnection>(context, listen: false).scan();
+    _wheelScanTimer =
+        Timer.periodic(new Duration(seconds: 5), this._scanPeriodic);
   }
 
   @override
   void dispose() {
     super.dispose();
+    if (_wheelScanTimer != null) _wheelScanTimer.cancel();
     print("disposing of ble list...");
+  }
+
+  _scanPeriodic(Timer timer) {
+    Provider.of<BleConnection>(context, listen: false).scan();
   }
 
   void _displaySnackBar(BuildContext context, {@required String error}) {

@@ -1,8 +1,8 @@
+import 'package:curbwheel/ui/map/street_select_map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import '../../database/database.dart';
-import '../map/map_screen.dart';
 
 class ProjectCard extends StatelessWidget {
   const ProjectCard({
@@ -25,9 +25,8 @@ class ProjectCard extends StatelessWidget {
           if (hasPermissions != PermissionStatus.granted) {
             await location.requestPermission();
           }
-          Navigator.pushNamed(context, MapScreen.routeName,
-              arguments: MapScreenArguments(project)
-          );
+          Navigator.pushNamed(context, StreetSelectMapScreen.routeName,
+              arguments: StreetSelectMapScreenArguments(project));
         },
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -44,10 +43,10 @@ class ProjectCard extends StatelessWidget {
                   }
                 },
               ),
-              title:  Text(
-                    project.name,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+              title: Text(
+                project.name,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: Text(project.organization),
             ),
           ],

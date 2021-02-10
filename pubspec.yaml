@@ -41,6 +41,7 @@ dependencies:
   mapbox_gl: ^0.9.0
   r_tree: ^1.1.0
   location: ^3.2.4
+  synchronized: ^2.2.0+2
   uuid: 2.2.2
   camera:
 

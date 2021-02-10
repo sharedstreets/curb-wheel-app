@@ -43,20 +43,23 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
 
     return FutureBuilder<List<FeatureType>>(
         future: features,
-        builder: (BuildContext context, AsyncSnapshot<List<FeatureType>> snapshot) {
+        builder:
+            (BuildContext context, AsyncSnapshot<List<FeatureType>> snapshot) {
           if (snapshot.hasData) {
             var features = snapshot.data;
             return Scaffold(
               appBar: AppBar(
-                title: Text("Select a feature type"),
+                title: Text("Select feature type",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white)),
               ),
               body: Container(
                 padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
                 child: ListView.builder(
                     itemCount: features.length,
                     itemBuilder: (context, index) {
-                      return FeatureCard(
-                          features[index], project, survey, position, incompleteSpans);
+                      return FeatureCard(features[index], project, survey,
+                          position, incompleteSpans);
                     }),
               ),
             );
@@ -74,7 +77,8 @@ class FeatureCard extends StatelessWidget {
   final double position;
   final List<ListItem> incompleteSpans;
 
-  FeatureCard(this.feature, this.project, this.survey, this.position, this.incompleteSpans);
+  FeatureCard(this.feature, this.project, this.survey, this.position,
+      this.incompleteSpans);
 
   @override
   Widget build(BuildContext context) {
