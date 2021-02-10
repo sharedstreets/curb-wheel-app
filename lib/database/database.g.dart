@@ -2087,6 +2087,243 @@ class $SurveyPointsTable extends SurveyPoints
   }
 }
 
+class Photo extends DataClass implements Insertable<Photo> {
+  final String id;
+  final String pointId;
+  final String file;
+  Photo({@required this.id, @required this.pointId, @required this.file});
+  factory Photo.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final stringType = db.typeSystem.forDartType<String>();
+    return Photo(
+      id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      pointId: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}point_id']),
+      file: stringType.mapFromDatabaseResponse(data['${effectivePrefix}file']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<String>(id);
+    }
+    if (!nullToAbsent || pointId != null) {
+      map['point_id'] = Variable<String>(pointId);
+    }
+    if (!nullToAbsent || file != null) {
+      map['file'] = Variable<String>(file);
+    }
+    return map;
+  }
+
+  PhotosCompanion toCompanion(bool nullToAbsent) {
+    return PhotosCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      pointId: pointId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pointId),
+      file: file == null && nullToAbsent ? const Value.absent() : Value(file),
+    );
+  }
+
+  factory Photo.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return Photo(
+      id: serializer.fromJson<String>(json['id']),
+      pointId: serializer.fromJson<String>(json['pointId']),
+      file: serializer.fromJson<String>(json['file']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'pointId': serializer.toJson<String>(pointId),
+      'file': serializer.toJson<String>(file),
+    };
+  }
+
+  Photo copyWith({String id, String pointId, String file}) => Photo(
+        id: id ?? this.id,
+        pointId: pointId ?? this.pointId,
+        file: file ?? this.file,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Photo(')
+          ..write('id: $id, ')
+          ..write('pointId: $pointId, ')
+          ..write('file: $file')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      $mrjf($mrjc(id.hashCode, $mrjc(pointId.hashCode, file.hashCode)));
+  @override
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      (other is Photo &&
+          other.id == this.id &&
+          other.pointId == this.pointId &&
+          other.file == this.file);
+}
+
+class PhotosCompanion extends UpdateCompanion<Photo> {
+  final Value<String> id;
+  final Value<String> pointId;
+  final Value<String> file;
+  const PhotosCompanion({
+    this.id = const Value.absent(),
+    this.pointId = const Value.absent(),
+    this.file = const Value.absent(),
+  });
+  PhotosCompanion.insert({
+    @required String id,
+    @required String pointId,
+    @required String file,
+  })  : id = Value(id),
+        pointId = Value(pointId),
+        file = Value(file);
+  static Insertable<Photo> custom({
+    Expression<String> id,
+    Expression<String> pointId,
+    Expression<String> file,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (pointId != null) 'point_id': pointId,
+      if (file != null) 'file': file,
+    });
+  }
+
+  PhotosCompanion copyWith(
+      {Value<String> id, Value<String> pointId, Value<String> file}) {
+    return PhotosCompanion(
+      id: id ?? this.id,
+      pointId: pointId ?? this.pointId,
+      file: file ?? this.file,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (pointId.present) {
+      map['point_id'] = Variable<String>(pointId.value);
+    }
+    if (file.present) {
+      map['file'] = Variable<String>(file.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhotosCompanion(')
+          ..write('id: $id, ')
+          ..write('pointId: $pointId, ')
+          ..write('file: $file')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PhotosTable extends Photos with TableInfo<$PhotosTable, Photo> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $PhotosTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  GeneratedTextColumn _id;
+  @override
+  GeneratedTextColumn get id => _id ??= _constructId();
+  GeneratedTextColumn _constructId() {
+    return GeneratedTextColumn(
+      'id',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _pointIdMeta = const VerificationMeta('pointId');
+  GeneratedTextColumn _pointId;
+  @override
+  GeneratedTextColumn get pointId => _pointId ??= _constructPointId();
+  GeneratedTextColumn _constructPointId() {
+    return GeneratedTextColumn(
+      'point_id',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _fileMeta = const VerificationMeta('file');
+  GeneratedTextColumn _file;
+  @override
+  GeneratedTextColumn get file => _file ??= _constructFile();
+  GeneratedTextColumn _constructFile() {
+    return GeneratedTextColumn(
+      'file',
+      $tableName,
+      false,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, pointId, file];
+  @override
+  $PhotosTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'photos';
+  @override
+  final String actualTableName = 'photos';
+  @override
+  VerificationContext validateIntegrity(Insertable<Photo> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('point_id')) {
+      context.handle(_pointIdMeta,
+          pointId.isAcceptableOrUnknown(data['point_id'], _pointIdMeta));
+    } else if (isInserting) {
+      context.missing(_pointIdMeta);
+    }
+    if (data.containsKey('file')) {
+      context.handle(
+          _fileMeta, file.isAcceptableOrUnknown(data['file'], _fileMeta));
+    } else if (isInserting) {
+      context.missing(_fileMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  @override
+  Photo map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return Photo.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  $PhotosTable createAlias(String alias) {
+    return $PhotosTable(_db, alias);
+  }
+}
+
 abstract class _$CurbWheelDatabase extends GeneratedDatabase {
   _$CurbWheelDatabase(QueryExecutor e)
       : super(SqlTypeSystem.defaultInstance, e);
@@ -2104,6 +2341,8 @@ abstract class _$CurbWheelDatabase extends GeneratedDatabase {
   $SurveyPointsTable _surveyPoints;
   $SurveyPointsTable get surveyPoints =>
       _surveyPoints ??= $SurveyPointsTable(this);
+  $PhotosTable _photos;
+  $PhotosTable get photos => _photos ??= $PhotosTable(this);
   ProjectDao _projectDao;
   ProjectDao get projectDao =>
       _projectDao ??= ProjectDao(this as CurbWheelDatabase);
@@ -2122,9 +2361,18 @@ abstract class _$CurbWheelDatabase extends GeneratedDatabase {
   SurveyPointDao _surveyPointDao;
   SurveyPointDao get surveyPointDao =>
       _surveyPointDao ??= SurveyPointDao(this as CurbWheelDatabase);
+  PhotoDao _photoDao;
+  PhotoDao get photoDao => _photoDao ??= PhotoDao(this as CurbWheelDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [projects, featureTypes, surveys, surveyItems, surveySpans, surveyPoints];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        projects,
+        featureTypes,
+        surveys,
+        surveyItems,
+        surveySpans,
+        surveyPoints,
+        photos
+      ];
 }

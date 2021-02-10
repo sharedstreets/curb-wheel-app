@@ -43,6 +43,7 @@ dependencies:
   location: ^3.2.4
   synchronized: ^2.2.0+2
   uuid: 2.2.2
+  camera:
 
 
 dev_dependencies:

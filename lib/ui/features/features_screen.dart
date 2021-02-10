@@ -100,8 +100,8 @@ class FeatureCard extends StatelessWidget {
         ];
       }
 
-      Navigator.pushNamedAndRemoveUntil(
-          context, WheelScreen.routeName, ModalRoute.withName('/map'),
+      Navigator.pushReplacementNamed(
+          context, WheelScreen.routeName,
           arguments: WheelScreenArguments(project, survey, incompleteSpans,
               listItem: listItem));
     }

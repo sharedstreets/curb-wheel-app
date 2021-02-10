@@ -51,6 +51,7 @@ class _WheelScreenState extends State<WheelScreen>
   @override
   void initState() {
     super.initState();
+    print("WHEEL INIT STATE");
     _tabController = TabController(length: 2, vsync: this);
     this.listItem = widget.listItem;
     this.incompleteSpans = widget.incompleteSpans;
@@ -64,6 +65,7 @@ class _WheelScreenState extends State<WheelScreen>
 
   Future<void> _photoDialog(incompleteSpans, listItem) async {
     switch (await showDialog<PhotoOptions>(
+        useRootNavigator: false,
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -71,12 +73,14 @@ class _WheelScreenState extends State<WheelScreen>
               SimpleDialogOption(
                 onPressed: () {
                   Navigator.pop(context, PhotoOptions.addPhoto);
+                  Navigator.pop(context);
                 },
                 child: const Text('Add a photo'),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, PhotoOptions.noPhoto);
+                  Navigator.pop(context, PhotoOptions.addPhoto);
+                  Navigator.pop(context);
                 },
                 child: const Text('Continue surveying'),
               ),
@@ -98,15 +102,23 @@ class _WheelScreenState extends State<WheelScreen>
 
   @override
   Widget build(BuildContext context) {
+    print("WHEEL BUILD");
+
     _project = widget.project;
     _survey = widget.survey;
     _database = Provider.of<CurbWheelDatabase>(context);
     _counter = Provider.of<WheelCounter>(context);
     _progress = _counter.getForwardCounter() / 10 / streetLength;
 
+
     if (this.listItem != null) {
+      this.incompleteSpans.add(this.listItem);
+      setState(() => this.listItem = null);
+      setState(() => this.incompleteSpans = incompleteSpans);
+      /*
       Future.delayed(
           Duration.zero, () => _photoDialog(incompleteSpans, listItem));
+      */
     }
 
     return Scaffold(
@@ -167,7 +179,7 @@ class _WheelScreenState extends State<WheelScreen>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  IncompleteList(this.incompleteSpans, _progress),
+                  IncompleteList(_survey.id, this.incompleteSpans, _progress),
                   CompleteList(_survey),
                 ],
               ),

@@ -1,5 +1,6 @@
 import 'package:curbwheel/database/database.dart';
 import 'package:curbwheel/database/models.dart';
+import 'package:curbwheel/ui/camera/camera_screen.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
 import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +8,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class IncompleteList extends StatefulWidget {
+  final String surveyItemId;
   final List<ListItem> listItems;
   final double progress;
 
-  IncompleteList(this.listItems, this.progress);
+  IncompleteList(this.surveyItemId, this.listItems, this.progress);
 
   @override
   _IncompleteListState createState() => _IncompleteListState();
@@ -25,8 +27,7 @@ class _IncompleteListState extends State<IncompleteList> {
         .insertSurveyItem(listItem.toSurveyItemsCompanion());
     if (listItem.geometryType == 'line') {
       listItem.span.stop = progress;
-      await _database.surveySpanDao
-          .insertSpan(listItem.toSpansCompanion());
+      await _database.surveySpanDao.insertSpan(listItem.toSpansCompanion());
       pointsCompanions = listItem.toPointsCompanion();
     } else {
       pointsCompanions = listItem.toPointsCompanion();
@@ -52,8 +53,8 @@ class _IncompleteListState extends State<IncompleteList> {
               shrinkWrap: true,
               itemCount: widget.listItems.length,
               itemBuilder: (context, index) {
-                return ActiveCard(
-                    widget.listItems[index], widget.progress, _completeItem);
+                return ActiveCard(widget.listItems[index],
+                    widget.progress, _completeItem);
               }),
     );
   }
@@ -73,9 +74,9 @@ class ActiveCard extends StatefulWidget {
 class _ActiveCardState extends State<ActiveCard> {
   @override
   Widget build(BuildContext context) {
-    var _progress = widget.progress;
-    var _listItem = widget.listItem;
-    var _callback = widget.callback;
+    double _progress = widget.progress;
+    ListItem _listItem = widget.listItem;
+    Function _callback = widget.callback;
 
     final String assetName = _listItem.geometryType == 'line'
         ? 'assets/vector-line.svg'
@@ -120,7 +121,13 @@ class _ActiveCardState extends State<ActiveCard> {
                       IconButton(
                           icon: Icon(Icons.more_horiz), onPressed: () => {}),
                       IconButton(
-                          icon: Icon(Icons.camera_alt), onPressed: () => {})
+                          icon: Icon(Icons.camera_alt),
+                          onPressed: () => {
+                                Navigator.pushNamed(
+                                    context, CameraScreen.routeName,
+                                    arguments: CameraScreenArguments(
+                                        surveyItemId: _listItem.surveyItemId, position: _progress))
+                              })
                     ],
                   )
                 ],
