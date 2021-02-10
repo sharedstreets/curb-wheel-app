@@ -63,6 +63,7 @@ class _WheelScreenState extends State<WheelScreen>
 
   Future<void> _photoDialog(incompleteSpans, listItem) async {
     switch (await showDialog<PhotoOptions>(
+        useRootNavigator: false,
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
@@ -70,12 +71,14 @@ class _WheelScreenState extends State<WheelScreen>
               SimpleDialogOption(
                 onPressed: () {
                   Navigator.pop(context, PhotoOptions.addPhoto);
+                  Navigator.pop(context);
                 },
                 child: const Text('Add a photo'),
               ),
               SimpleDialogOption(
                 onPressed: () {
-                  Navigator.pop(context, PhotoOptions.noPhoto);
+                  Navigator.pop(context, PhotoOptions.addPhoto);
+                  Navigator.pop(context);
                 },
                 child: const Text('Continue surveying'),
               ),
@@ -83,14 +86,14 @@ class _WheelScreenState extends State<WheelScreen>
           );
         })) {
       case PhotoOptions.addPhoto:
-      this.incompleteSpans.add(this.listItem);
-      setState(() => this.listItem = null);
-      setState(() => this.incompleteSpans = incompleteSpans);
+        this.incompleteSpans.add(this.listItem);
+        setState(() => this.listItem = null);
+        setState(() => this.incompleteSpans = incompleteSpans);
         break;
       case PhotoOptions.noPhoto:
-      this.incompleteSpans.add(this.listItem);
-      setState(() => this.listItem = null);
-      setState(() => this.incompleteSpans = incompleteSpans);
+        this.incompleteSpans.add(this.listItem);
+        setState(() => this.listItem = null);
+        setState(() => this.incompleteSpans = incompleteSpans);
         break;
     }
   }
@@ -138,13 +141,11 @@ class _WheelScreenState extends State<WheelScreen>
                           child: TabBar(
                             controller: _tabController,
                             indicator: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: Colors.black,
-                                  width: 4.0,
-                                )
-                              )
-                            ),
+                                border: Border(
+                                    bottom: BorderSide(
+                              color: Colors.black,
+                              width: 4.0,
+                            ))),
                             labelColor: Colors.black,
                             unselectedLabelColor: Colors.black,
                             tabs: [
@@ -155,10 +156,8 @@ class _WheelScreenState extends State<WheelScreen>
                                 text: 'Completed ($completeLength)',
                               ),
                             ],
-                          )
-                        );
-                    }
-                    ),
+                          ));
+                    }),
               ],
             )),
             Expanded(

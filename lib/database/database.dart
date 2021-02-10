@@ -6,6 +6,7 @@ import 'project_dao.dart';
 import 'survey_dao.dart';
 import 'survey_item_dao.dart';
 import 'point_dao.dart';
+import 'photo_dao.dart';
 import 'feature_type_dao.dart';
 import 'package:moor_flutter/moor_flutter.dart';
 
@@ -73,6 +74,7 @@ class FeatureTypes extends Table {
   SurveyItems,
   SurveySpans,
   SurveyPoints,
+  Photos,
 ], daos: [
   ProjectDao,
   FeatureTypeDao,
@@ -80,6 +82,7 @@ class FeatureTypes extends Table {
   SurveyItemDao,
   SurveySpanDao,
   SurveyPointDao,
+  PhotoDao
 ])
 class CurbWheelDatabase extends _$CurbWheelDatabase {
   CurbWheelDatabase()

@@ -1,3 +1,4 @@
+import 'package:curbwheel/camera/camera_screen.dart';
 import 'package:curbwheel/database/database.dart';
 import 'package:curbwheel/database/models.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
@@ -120,7 +121,9 @@ class _ActiveCardState extends State<ActiveCard> {
                       IconButton(
                           icon: Icon(Icons.more_horiz), onPressed: () => {}),
                       IconButton(
-                          icon: Icon(Icons.camera_alt), onPressed: () => {})
+                          icon: Icon(Icons.camera_alt), onPressed: () => {
+                            Navigator.pushNamed(context, CameraScreen.routeName, arguments: CameraScreenArguments(position: _progress))
+                          })
                     ],
                   )
                 ],

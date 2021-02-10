@@ -1,3 +1,5 @@
+import 'package:curbwheel/camera/camera_screen.dart';
+import 'package:curbwheel/camera/preview_screen.dart';
 import 'package:curbwheel/ui/features/features_screen.dart';
 import 'package:curbwheel/ui/map/map_screen.dart';
 import 'package:curbwheel/ui/projects/project_list_screen.dart';
@@ -51,6 +53,20 @@ class CurbWheel extends StatelessWidget {
             return MaterialPageRoute(
               builder: (context) {
                 return MapScreen(project: args.project);
+              },
+            );
+          } if (settings.name == CameraScreen.routeName) {
+            final CameraScreenArguments args = settings.arguments;
+            return MaterialPageRoute(
+              builder: (context) {
+                return CameraScreen(position: args.position, pointId: args.pointId,);
+              },
+            );
+          } if (settings.name == PreviewScreen.routeName) {
+            final PreviewScreenArguments args = settings.arguments;
+            return MaterialPageRoute(
+              builder: (context) {
+                return PreviewScreen(filePath: args.filePath, position: args.position, pointId: args.pointId);
               },
             );
           } else {
