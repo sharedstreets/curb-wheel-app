@@ -59,14 +59,14 @@ class CurbWheel extends StatelessWidget {
             final CameraScreenArguments args = settings.arguments;
             return MaterialPageRoute(
               builder: (context) {
-                return CameraScreen(position: args.position, pointId: args.pointId,);
+                return CameraScreen(surveyItemId: args.surveyItemId, position: args.position, pointId: args.pointId,);
               },
             );
           } if (settings.name == PreviewScreen.routeName) {
             final PreviewScreenArguments args = settings.arguments;
             return MaterialPageRoute(
               builder: (context) {
-                return PreviewScreen(filePath: args.filePath, position: args.position, pointId: args.pointId);
+                return PreviewScreen(surveyItemId: args.surveyItemId, filePath: args.filePath, position: args.position, pointId: args.pointId);
               },
             );
           } else {

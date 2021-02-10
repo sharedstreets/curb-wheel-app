@@ -5,19 +5,21 @@ import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CameraScreenArguments {
+  final String surveyItemId;
   final double position;
   final String pointId;
 
-  CameraScreenArguments({this.position, this.pointId});
+  CameraScreenArguments({this.surveyItemId, this.position, this.pointId});
 }
 
 class CameraScreen extends StatefulWidget {
   static const routeName = '/camera';
 
+  final String surveyItemId;
   final double position;
   final String pointId;
 
-  CameraScreen({this.position, this.pointId});
+  CameraScreen({this.surveyItemId, this.position, this.pointId});
 
   @override
   _CameraScreenState createState() => _CameraScreenState();
@@ -61,17 +63,18 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   Widget cameraWidget(context) {
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return Text(
+        'Loading',
+        style: TextStyle(
+            color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
+      );
+    }
     var camera = cameraController.value;
-    // fetch screen size
     final size = MediaQuery.of(context).size;
-        
-    // calculate scale depending on screen and camera ratios
-    // this is actually size.aspectRatio / (1 / camera.aspectRatio)
-    // because camera preview size is received as landscape
-    // but we're calculating for portrait orientation
+
     var scale = size.aspectRatio * camera.aspectRatio;
 
-    // to prevent scaling down, invert the value
     if (scale < 1) scale = 1 / scale;
 
     return Transform.scale(
@@ -79,8 +82,8 @@ class _CameraScreenState extends State<CameraScreen> {
       child: Center(
         child: CameraPreview(cameraController),
       ),
-  );
-}
+    );
+  }
 
   /// Display camera preview
   Widget cameraPreview() {
@@ -125,7 +128,7 @@ class _CameraScreenState extends State<CameraScreen> {
         XFile img = await cameraController.takePicture();
         img.saveTo(path);
         Navigator.pushNamed(context, PreviewScreen.routeName,
-            arguments: PreviewScreenArguments(path,
+            arguments: PreviewScreenArguments(widget.surveyItemId, path,
                 position: _position, pointId: _pointId));
       } catch (e) {
         print(e);
@@ -162,16 +165,7 @@ class _CameraScreenState extends State<CameraScreen> {
       body: Container(
         child: Stack(
           children: <Widget>[
-            Expanded(
-              flex: 1,
-             child: cameraWidget(context),
-            ),
-            /*
-            Align(
-              alignment: Alignment.center,
-              child: cameraPreview(),
-            ),
-            */
+            cameraWidget(context),
             Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(

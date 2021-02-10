@@ -169,7 +169,7 @@ class _WheelScreenState extends State<WheelScreen>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  IncompleteList(this.incompleteSpans, _progress),
+                  IncompleteList(_survey.id, this.incompleteSpans, _progress),
                   CompleteList(_survey),
                 ],
               ),

@@ -12,21 +12,24 @@ import 'package:flutter/material.dart';
 var uuid = Uuid();
 
 class PreviewScreenArguments {
+  final String surveyItemId;
   final String filePath;
   final double position;
   final String pointId;
 
-  PreviewScreenArguments(this.filePath, {this.position, this.pointId});
+  PreviewScreenArguments(this.surveyItemId, this.filePath,
+      {this.position, this.pointId});
 }
 
 class PreviewScreen extends StatefulWidget {
   static const routeName = '/image-preview';
 
+  final String surveyItemId;
   final String filePath;
   final double position;
   final String pointId;
 
-  PreviewScreen({this.filePath, this.position, this.pointId});
+  PreviewScreen({this.surveyItemId, this.filePath, this.position, this.pointId});
 
   @override
   _PreviewScreenState createState() => _PreviewScreenState();
@@ -35,6 +38,11 @@ class PreviewScreen extends StatefulWidget {
 class _PreviewScreenState extends State<PreviewScreen> {
   @override
   Widget build(BuildContext context) {
+    String _filePath = widget.filePath;
+    double _position = widget.position;
+    String _surveyItemId = widget.surveyItemId;
+    String _pointId = widget.pointId;
+
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: true,
@@ -66,14 +74,21 @@ class _PreviewScreenState extends State<PreviewScreen> {
                             color: Colors.white,
                           ),
                           onPressed: () {
-                            getBytes().then((bytes) {
+                            getBytes().then((bytes) async {
                               var database = Provider.of<CurbWheelDatabase>(
                                   context,
                                   listen: false);
-                              database.photoDao.insertPhoto(PhotosCompanion(
-                                  id: moor.Value(uuid.v4()),
-                                  pointId: moor.Value(widget.filePath),
-                                  file: moor.Value(widget.filePath)));
+                              String pointId = uuid.v4();
+                              await database.surveyPointDao.insertPoint(
+                                  SurveyPointsCompanion(
+                                      id: moor.Value(pointId),
+                                      surveyItemId: moor.Value(_surveyItemId),
+                                      position: moor.Value(_position)));
+                              await database.photoDao.insertPhoto(
+                                  PhotosCompanion(
+                                      id: moor.Value(uuid.v4()),
+                                      pointId: moor.Value(pointId),
+                                      file: moor.Value(_filePath)));
                               print("SAVED IMAGE");
                               Navigator.pop(context);
                               Navigator.pop(context);
