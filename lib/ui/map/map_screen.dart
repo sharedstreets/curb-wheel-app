@@ -1,4 +1,5 @@
-import 'package:curbwheel/database/database.dart';
+import 'package:curbwheel/database/database.dart' as db;
+import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:curbwheel/database/survey_dao.dart';
 import 'package:curbwheel/service/bluetooth_service.dart';
 import 'package:curbwheel/ui/wheel/wheel_screen.dart';
@@ -9,9 +10,6 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:provider/provider.dart';
 import 'package:turf/turf.dart';
 import 'package:uuid/uuid.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
-
-import '../../database/database.dart' as db;
 import 'map_database.dart';
 
 const String ACCESS_TOKEN =
@@ -64,6 +62,31 @@ class _Symbol {
   Map<String, dynamic> data;
 }
 
+enum SideOfStreet { Right, Left }
+
+enum DirectionOfTravel { Forward, Backward }
+
+class Street {
+  final String shstGeomId;
+  final String shStRefId;
+  final num length;
+  final String streetName;
+  final String fromStreetName;
+  final String toStreetName;
+  final SideOfStreet sideOfStreet;
+  final DirectionOfTravel directionOfTravel;
+
+  Street(
+      this.shstGeomId,
+      this.shStRefId,
+      this.length,
+      this.streetName,
+      this.fromStreetName,
+      this.toStreetName,
+      this.sideOfStreet,
+      this.directionOfTravel);
+}
+
 class FullMap extends StatefulWidget {
   final db.Project project;
 
@@ -87,13 +110,7 @@ class _FullMapState extends State<FullMap> {
   List<_Symbol> _selectionSymbols = [];
 
   _FullMapState(this.project);
-  String _fromStreetName;
-  String _toStreetName;
   Street _selectedStreet;
-  String _streetName;
-  String _geomId;
-  String _refId;
-  String _sideOfStreet = "right";
 
   bool _zoomInToTap = true;
 
@@ -120,77 +137,126 @@ class _FullMapState extends State<FullMap> {
     }
   }
 
-  void _onLineTapped(Line tappedLine) async {
-    //var data = await _projectMapData.mapData;
-    var data = await _projectMapData.mapData;
-    var f = data.geomIndex[tappedLine.data["id"]];
-    String streetName = f.properties['name'];
-    var selectedStreet = Street(f.properties['id'], streetName, "left");
+  _onToggleDirection() {
+    if (_selectedStreet != null) {
+      _selectStreet(
+          _selectedStreet.shstGeomId,
+          _selectedStreet.sideOfStreet,
+          _selectedStreet.directionOfTravel == DirectionOfTravel.Forward
+              ? DirectionOfTravel.Backward
+              : DirectionOfTravel.Forward);
+    }
+  }
 
+  _onToggleSide() {
+    if (_selectedStreet != null) {
+      _selectStreet(
+          _selectedStreet.shstGeomId,
+          _selectedStreet.sideOfStreet == SideOfStreet.Right
+              ? SideOfStreet.Left
+              : SideOfStreet.Right,
+          _selectedStreet.directionOfTravel);
+    }
+  }
+
+  void _onLineTapped(Line tappedLine) async {
+    _selectStreet(
+        tappedLine.data['id'], SideOfStreet.Right, DirectionOfTravel.Forward);
+  }
+
+  void _selectStreet(String geomId, SideOfStreet sideOfStreet,
+      DirectionOfTravel direction) async {
+    var data = await _projectMapData.mapData;
+    Feature<LineString> f = data.geomIndex[geomId];
+    String streetName = f.properties['name'];
     if (streetName == null || streetName == "") streetName = "Unamed Street";
 
-    List<String> fromStreets =
-        data.getStreetsByIntersection(f.properties['fromIntersectionId']);
-    List<String> toStreets =
-        data.getStreetsByIntersection(f.properties['toIntersectionId']);
+    String fromId = direction == DirectionOfTravel.Forward
+        ? f.properties['fromIntersectionId']
+        : f.properties['toIntersectionId'];
+    String toId = direction == DirectionOfTravel.Forward
+        ? f.properties['toIntersectionId']
+        : f.properties['fromIntersectionId'];
+    String refId = direction == DirectionOfTravel.Forward
+        ? f.properties['forwardReferenceId']
+        : f.properties['backReferenceId'];
+    num refLength = f.properties['distance'];
 
-    String fromStreetName;
+    List<String> fromStreets = data.getStreetsByIntersection(fromId);
+    List<String> toStreets = data.getStreetsByIntersection(toId);
+
+    String fromStreetName = "Unamed Street";
     for (String newStreet in fromStreets) {
       if (streetName.toLowerCase() != newStreet.toLowerCase()) {
-        if (fromStreetName == null) {
+        if (fromStreetName == "Unamed Street") {
           fromStreetName = newStreet;
         }
       }
     }
 
-    String toStreetName;
+    String toStreetName = "Unamed Street";
     for (String newStreet in toStreets) {
       if (streetName.toLowerCase() != newStreet.toLowerCase()) {
-        if (toStreetName == null) {
+        if (toStreetName == "Unamed Street") {
           toStreetName = newStreet;
         }
       }
     }
 
-    setState(() {
-      _streetName = streetName;
-      _fromStreetName = fromStreetName;
-      _toStreetName = toStreetName;
-      _geomId = f.properties['id'];
-      _refId = f.properties['forwardReferenceId'];
-      _selectedStreet = selectedStreet;
-    });
+    Street selectedStreet = Street(geomId, refId, refLength, streetName,
+        fromStreetName, toStreetName, sideOfStreet, direction);
 
-    //lineOffset(f, 10)
-    // var offsetLine = lineSliceAlong(f, 20, 30);
+    // clone and reverse objects
+    List<Position> geomCoords;
+    if (direction == DirectionOfTravel.Forward)
+      geomCoords = f.geometry.coordinates;
+    else
+      geomCoords =
+          List<Position>.from(f.geometry.coordinates).reversed.toList();
 
-    List<LatLng> mapboxGeom = await getMapboxGLGeom(f);
+    Feature<LineString> visualizationFeature =
+        Feature<LineString>(geometry: LineString(coordinates: geomCoords));
+
+    List<LatLng> mapboxGeom = await getMapboxGLGeom(visualizationFeature);
 
     _selectionLines = new List();
     _Line l = new _Line();
     l.options = new LineOptions(
       geometry: mapboxGeom,
-      lineColor: "#0000ff",
-      lineWidth: 6.0,
-      lineOpacity: 0.1,
+      lineColor: "#667ad2",
+      lineWidth: 8.0,
+      lineOpacity: 1.0,
     );
     l.data = {"id": f.properties['id']};
     _selectionLines.add(l);
 
-    Point p = along(f, 20);
-    double b = bearing(Point(coordinates: f.geometry.coordinates[0]), p);
+    Point p = along(visualizationFeature, 20);
+    double b = bearing(Point(coordinates: geomCoords[0]), p);
     LatLng latLng = new LatLng(p.coordinates.lat, p.coordinates.lng);
+
+    double sideOfStreetOffset = 0.25;
+    if (sideOfStreet == SideOfStreet.Left) sideOfStreetOffset = -1.75;
+
+    double rotationOffset = b - 90;
+    double paddingOffset = 2;
+    String arrows = ">>>";
+    if (rotationOffset > 90) {
+      arrows = "<<<";
+      rotationOffset = rotationOffset - 180;
+      paddingOffset = -2;
+    }
 
     _selectionSymbols = List();
     _Symbol s = new _Symbol();
     s.options = new SymbolOptions(
       geometry: latLng,
-      textField: '➤➤➤',
-      textRotate: b - 90 - _mapController.cameraPosition.bearing,
-      textSize: 16,
-      textOffset: Offset(0, 0.25),
+      textField: arrows + ' ' + streetName + ' ' + arrows,
+      textRotate: rotationOffset,
+      textSize: 14,
+      textMaxWidth: 30,
+      textOffset: Offset(paddingOffset, sideOfStreetOffset),
       textAnchor: 'top',
-      textColor: '#0000ff',
+      textColor: '#667ad2',
       textHaloBlur: 1,
       textHaloColor: '#ffffff',
       textHaloWidth: 0.8,
@@ -200,6 +266,10 @@ class _FullMapState extends State<FullMap> {
     _selectionSymbols.add(s);
 
     _redrawMap();
+
+    setState(() {
+      _selectedStreet = selectedStreet;
+    });
   }
 
   void _onMapChanged() async {
@@ -223,14 +293,10 @@ class _FullMapState extends State<FullMap> {
       _lastBounds = bounds;
 
       // ick is this the rigfh way to handle async object initialization?
-      List<Feature<Geometry>> features = data.getGeomsByBounds(bounds);
-
-      _mapController.onLineTapped.add((Line l) {
-        print(l);
-      });
+      List<Feature<LineString>> features = data.getGeomsByBounds(bounds);
 
       _basemapLines = new List();
-      for (Feature<Geometry> f in features) {
+      for (Feature<LineString> f in features) {
         List<LatLng> mapboxGeom =
             await data.getMapboxGLGeomById(f.properties['id']);
 
@@ -268,9 +334,6 @@ class _FullMapState extends State<FullMap> {
 
   @override
   Widget build(BuildContext context) {
-    WheelCounter _counter = Provider.of<WheelCounter>(context);
-    CurbWheelDatabase _database = Provider.of<CurbWheelDatabase>(context);
-    SurveyDao surveyDao = _database.surveyDao;
     if (_map == null)
       _map = MapboxMap(
         accessToken: ACCESS_TOKEN,
@@ -278,95 +341,171 @@ class _FullMapState extends State<FullMap> {
         myLocationEnabled: true,
         myLocationTrackingMode: MyLocationTrackingMode.Tracking,
         compassEnabled: true,
+        rotateGesturesEnabled: false,
         onMapCreated: _onMapCreated,
         trackCameraPosition: true,
         initialCameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
       );
-    var _fromText =
-        _fromStreetName != null ? TextSpan(text: "from ") : TextSpan(text: "");
-    var fromStreetName = _fromStreetName != null
-        ? TextSpan(
-            text: _fromStreetName,
-            style: TextStyle(fontWeight: FontWeight.bold))
-        : TextSpan(text: "");
-    var _toText =
-        _toStreetName != null ? TextSpan(text: " to ") : TextSpan(text: "");
-    var toStreetName = _toStreetName != null
-        ? TextSpan(
-            text: _toStreetName, style: TextStyle(fontWeight: FontWeight.bold))
-        : TextSpan(text: "");
-    var _crossStreetText = RichText(
-      text: TextSpan(
-        text: '',
-        style: DefaultTextStyle.of(context).style,
-        children: <TextSpan>[_fromText, fromStreetName, _toText, toStreetName],
-      ),
-    );
+
     return new Scaffold(
         body: Column(children: [
-      ExpansionTile(
-        initiallyExpanded:
-            _fromStreetName != null || _toStreetName != null ? true : false,
-        title: Text(
-          _streetName != null
-              ? _streetName
-              : _zoomInToTap
-                  ? "Zoom in to select street"
-                  : "Select a street",
-          style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-
-          // put button here for firing survey here should call
-          // _onStreetSelected() to start survey
-          //
-          //
-        ),
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 10, 10),
-              child: Row(children: [
-                Flexible(child: _crossStreetText),
-                ButtonBar(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.arrow_forward),
-                      onPressed: () async {
-                        String surveyId = uuid.v4();
-                        var surveysCompanion = SurveysCompanion(
-                            id: moor.Value(surveyId),
-                            shStRefId: moor.Value(_refId),
-                            streetName: moor.Value(_streetName),
-                            length: moor.Value(42),
-                            projectId: moor.Value(project.id),
-                            startStreetName: moor.Value(_fromStreetName),
-                            endStreetName: moor.Value(_toStreetName),
-                            direction: moor.Value("up"),
-                            side: moor.Value("left"));
-                        await surveyDao.insertSurvey(surveysCompanion);
-                        Survey survey = await surveyDao.getSurveyById(surveyId);
-                        _counter.resetForwardCounter();
-                        Navigator.pushNamed(context, WheelScreen.routeName,
-                            arguments:
-                                WheelScreenArguments(project, survey, []));
-                      },
-                    )
-                  ],
-                )
-              ]),
-            ),
-          ),
-        ],
-      ),
+      SelectStreetHeader(project, _zoomInToTap, _selectedStreet,
+          _onToggleDirection, _onToggleSide),
       Expanded(child: _map),
     ]));
   }
 }
 
-class Street {
-  final String shStRefId;
-  final String name;
-  final String side;
+class SelectStreetHeader extends StatefulWidget {
+  final db.Project project;
+  final Street street;
+  final Function toggleSideCallback;
+  final Function toggleDirectionCallback;
+  final bool zoomInToTap;
 
-  Street(this.shStRefId, this.name, this.side);
+  SelectStreetHeader(this.project, this.zoomInToTap, this.street,
+      this.toggleDirectionCallback, this.toggleSideCallback);
+
+  @override
+  _SelectStreetHeader createState() => _SelectStreetHeader();
 }
+
+class _SelectStreetHeader extends State<SelectStreetHeader> {
+  @override
+  Widget build(BuildContext context) {
+    WheelCounter _counter = Provider.of<WheelCounter>(context);
+    db.CurbWheelDatabase _database = Provider.of<db.CurbWheelDatabase>(context);
+    SurveyDao surveyDao = _database.surveyDao;
+
+    var _street = widget.street;
+    var _project = widget.project;
+
+    String streetName = _street != null
+        ? _street.streetName
+        : widget.zoomInToTap == null || widget.zoomInToTap == true
+            ? "Zoom in to select street"
+            : "Select a street";
+
+    return Container(
+      color: Colors.white,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Text(
+                    '${streetName}',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.arrow_forward),
+                  onPressed: () async {
+                    String surveyId = uuid.v4();
+                    var surveysCompanion = db.SurveysCompanion(
+                        id: moor.Value(surveyId),
+                        shStRefId: moor.Value(_street.shStRefId),
+                        streetName: moor.Value(_street.streetName),
+                        length: moor.Value(_street.length),
+                        projectId: moor.Value(_project.id),
+                        startStreetName: moor.Value(_street.fromStreetName),
+                        endStreetName: moor.Value(_street.toStreetName),
+                        direction:
+                            moor.Value(_street.directionOfTravel.toString()),
+                        side: moor.Value(_street.sideOfStreet.toString()));
+                    await surveyDao.insertSurvey(surveysCompanion);
+                    db.Survey survey = await surveyDao.getSurveyById(surveyId);
+                    _counter.resetForwardCounter();
+                    Navigator.pushNamed(context, WheelScreen.routeName,
+                        arguments: WheelScreenArguments(_project, survey, []));
+                  },
+                )
+              ],
+            ),
+            _street != null
+                ? Align(
+                    alignment: Alignment.centerLeft,
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Between ',
+                        style: DefaultTextStyle.of(context).style,
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: '${_street.fromStreetName}',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(text: ' and '),
+                          TextSpan(
+                              text: '${_street.toStreetName}',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  )
+                : Text(""),
+            _street != null
+                ? Center(
+                    child: Row(children: [
+                    IconTextButton(
+                        label: "Toggle Side",
+                        icon: Icons.swap_horiz,
+                        callback: widget.toggleSideCallback),
+                    IconTextButton(
+                        label: "Toggle Direction",
+                        icon: Icons.swap_vert,
+                        callback: widget.toggleDirectionCallback),
+                  ]))
+                : Text("")
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class IconTextButton extends StatefulWidget {
+  final String label;
+  final IconData icon;
+  final Function callback;
+
+  IconTextButton({Key key, this.label, this.icon, this.callback})
+      : super(key: key);
+
+  @override
+  _IconTextButtonState createState() => _IconTextButtonState();
+}
+
+class _IconTextButtonState extends State<IconTextButton> {
+  @override
+  build(BuildContext context) {
+    return FlatButton(
+        onPressed: () async {
+          this.widget.callback();
+        },
+        padding: EdgeInsets.all(10.0),
+        child: Row(children: [Icon(widget.icon), Text(this.widget.label)]));
+  }
+}
+
+// var _fromText =
+//         _fromStreetName != null ? TextSpan(text: "from ") : TextSpan(text: "");
+//     var fromStreetName = _fromStreetName != null
+//         ? TextSpan(
+//             text: _fromStreetName,
+//             style: TextStyle(fontWeight: FontWeight.bold))
+//         : TextSpan(text: "");
+//     var _toText =
+//         _toStreetName != null ? TextSpan(text: " to ") : TextSpan(text: "");
+//     var toStreetName = _toStreetName != null
+//         ? TextSpan(
+//             text: _toStreetName, style: TextStyle(fontWeight: FontWeight.bold))
+//         : TextSpan(text: "");
+//     var _crossStreetText = RichText(
+//       text: TextSpan(
+//         text: '',
+//         style: DefaultTextStyle.of(context).style,
+//         children: <TextSpan>[_fromText, fromStreetName, _toText, toStreetName],
+//       ),
+//     );
