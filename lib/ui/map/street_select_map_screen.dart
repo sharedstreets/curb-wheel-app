@@ -20,9 +20,9 @@ const String STYLE_STRING =
 
 var uuid = Uuid();
 
-class MapScreenArguments {
+class StreetSelectMapScreenArguments {
   final db.Project project;
-  MapScreenArguments(this.project);
+  StreetSelectMapScreenArguments(this.project);
 }
 
 class StreetSelectMapScreen extends StatefulWidget {
