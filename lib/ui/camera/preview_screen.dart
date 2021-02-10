@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:curbwheel/camera/camera_screen.dart';
+import 'package:curbwheel/ui/camera/camera_screen.dart';
 import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:uuid/uuid.dart';
-import '../database/database.dart';
+import '../../database/database.dart';
 import 'package:flutter/material.dart';
 
 var uuid = Uuid();
@@ -35,7 +35,6 @@ class PreviewScreen extends StatefulWidget {
 class _PreviewScreenState extends State<PreviewScreen> {
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: true,
@@ -76,10 +75,10 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                   pointId: moor.Value(widget.filePath),
                                   file: moor.Value(widget.filePath)));
                               print("SAVED IMAGE");
-                                  var nav = Navigator.of(context);
-                                  nav.pop();
-                                  nav.pop();                           
-                                   });
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                              //Navigator.popUntil(context, ModalRoute(''));
+                            });
                           },
                         ),
                       ])),

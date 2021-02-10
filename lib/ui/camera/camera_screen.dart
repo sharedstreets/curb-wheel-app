@@ -60,6 +60,28 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
+  Widget cameraWidget(context) {
+    var camera = cameraController.value;
+    // fetch screen size
+    final size = MediaQuery.of(context).size;
+        
+    // calculate scale depending on screen and camera ratios
+    // this is actually size.aspectRatio / (1 / camera.aspectRatio)
+    // because camera preview size is received as landscape
+    // but we're calculating for portrait orientation
+    var scale = size.aspectRatio * camera.aspectRatio;
+
+    // to prevent scaling down, invert the value
+    if (scale < 1) scale = 1 / scale;
+
+    return Transform.scale(
+      scale: scale,
+      child: Center(
+        child: CameraPreview(cameraController),
+      ),
+  );
+}
+
   /// Display camera preview
   Widget cameraPreview() {
     if (cameraController == null || !cameraController.value.isInitialized) {
@@ -140,10 +162,16 @@ class _CameraScreenState extends State<CameraScreen> {
       body: Container(
         child: Stack(
           children: <Widget>[
+            Expanded(
+              flex: 1,
+             child: cameraWidget(context),
+            ),
+            /*
             Align(
               alignment: Alignment.center,
               child: cameraPreview(),
             ),
+            */
             Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
@@ -158,7 +186,7 @@ class _CameraScreenState extends State<CameraScreen> {
     );
   }
 
-    @override
+  @override
   void dispose() {
     cameraController.dispose();
 

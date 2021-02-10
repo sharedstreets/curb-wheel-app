@@ -1,5 +1,5 @@
-import 'package:curbwheel/camera/camera_screen.dart';
-import 'package:curbwheel/camera/preview_screen.dart';
+import 'package:curbwheel/ui/camera/camera_screen.dart';
+import 'package:curbwheel/ui/camera/preview_screen.dart';
 import 'package:curbwheel/ui/features/features_screen.dart';
 import 'package:curbwheel/ui/map/map_screen.dart';
 import 'package:curbwheel/ui/projects/project_list_screen.dart';

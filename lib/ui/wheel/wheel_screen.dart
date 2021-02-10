@@ -107,8 +107,13 @@ class _WheelScreenState extends State<WheelScreen>
     _progress = _counter.getForwardCounter() / 10 / streetLength;
 
     if (this.listItem != null) {
+      this.incompleteSpans.add(this.listItem);
+      setState(() => this.listItem = null);
+      setState(() => this.incompleteSpans = incompleteSpans);
+      /*
       Future.delayed(
           Duration.zero, () => _photoDialog(incompleteSpans, listItem));
+      */
     }
 
     return Scaffold(
