@@ -50,6 +50,7 @@ class _WheelScreenState extends State<WheelScreen>
   @override
   void initState() {
     super.initState();
+    print("WHEEL INIT STATE");
     _tabController = TabController(length: 2, vsync: this);
     this.listItem = widget.listItem;
     this.incompleteSpans = widget.incompleteSpans;
@@ -100,11 +101,14 @@ class _WheelScreenState extends State<WheelScreen>
 
   @override
   Widget build(BuildContext context) {
+    print("WHEEL BUILD");
+
     _project = widget.project;
     _survey = widget.survey;
     _database = Provider.of<CurbWheelDatabase>(context);
     _counter = Provider.of<WheelCounter>(context);
     _progress = _counter.getForwardCounter() / 10 / streetLength;
+
 
     if (this.listItem != null) {
       this.incompleteSpans.add(this.listItem);

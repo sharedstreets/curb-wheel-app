@@ -53,7 +53,7 @@ class _IncompleteListState extends State<IncompleteList> {
               shrinkWrap: true,
               itemCount: widget.listItems.length,
               itemBuilder: (context, index) {
-                return ActiveCard(widget.surveyItemId, widget.listItems[index],
+                return ActiveCard(widget.listItems[index],
                     widget.progress, _completeItem);
               }),
     );
@@ -61,12 +61,11 @@ class _IncompleteListState extends State<IncompleteList> {
 }
 
 class ActiveCard extends StatefulWidget {
-  final String surveyItemId;
   final ListItem listItem;
   final double progress;
   final Function callback;
 
-  ActiveCard(this.surveyItemId, this.listItem, this.progress, this.callback);
+  ActiveCard(this.listItem, this.progress, this.callback);
 
   @override
   _ActiveCardState createState() => _ActiveCardState();
@@ -75,7 +74,6 @@ class ActiveCard extends StatefulWidget {
 class _ActiveCardState extends State<ActiveCard> {
   @override
   Widget build(BuildContext context) {
-    String _surveyItemId = widget.surveyItemId;
     double _progress = widget.progress;
     ListItem _listItem = widget.listItem;
     Function _callback = widget.callback;
@@ -128,7 +126,7 @@ class _ActiveCardState extends State<ActiveCard> {
                                 Navigator.pushNamed(
                                     context, CameraScreen.routeName,
                                     arguments: CameraScreenArguments(
-                                        surveyItemId: _surveyItemId, position: _progress))
+                                        surveyItemId: _listItem.surveyItemId, position: _progress))
                               })
                     ],
                   )

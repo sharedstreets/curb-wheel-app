@@ -29,7 +29,8 @@ class PreviewScreen extends StatefulWidget {
   final double position;
   final String pointId;
 
-  PreviewScreen({this.surveyItemId, this.filePath, this.position, this.pointId});
+  PreviewScreen(
+      {this.surveyItemId, this.filePath, this.position, this.pointId});
 
   @override
   _PreviewScreenState createState() => _PreviewScreenState();
@@ -79,20 +80,19 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                   context,
                                   listen: false);
                               String pointId = uuid.v4();
-                              await database.surveyPointDao.insertPoint(
-                                  SurveyPointsCompanion(
-                                      id: moor.Value(pointId),
-                                      surveyItemId: moor.Value(_surveyItemId),
-                                      position: moor.Value(_position)));
+                              SurveyPointsCompanion surveyPoint= SurveyPointsCompanion(
+                                  id: moor.Value(pointId),
+                                  surveyItemId: moor.Value(_surveyItemId),
+                                  position: moor.Value(_position));
+                              await database.surveyPointDao
+                                  .insertPoint(surveyPoint);
                               await database.photoDao.insertPhoto(
                                   PhotosCompanion(
                                       id: moor.Value(uuid.v4()),
                                       pointId: moor.Value(pointId),
                                       file: moor.Value(_filePath)));
-                              print("SAVED IMAGE");
                               Navigator.pop(context);
                               Navigator.pop(context);
-                              //Navigator.popUntil(context, ModalRoute(''));
                             });
                           },
                         ),
