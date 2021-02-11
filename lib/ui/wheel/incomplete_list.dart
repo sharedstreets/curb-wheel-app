@@ -8,11 +8,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class IncompleteList extends StatefulWidget {
-  final String surveyItemId;
+  final Survey survey;
   final List<ListItem> listItems;
-  final double progress;
+  final double currentWheelPosition;
 
-  IncompleteList(this.surveyItemId, this.listItems, this.progress);
+  IncompleteList(this.survey, this.listItems, this.currentWheelPosition);
 
   @override
   _IncompleteListState createState() => _IncompleteListState();
@@ -21,12 +21,12 @@ class IncompleteList extends StatefulWidget {
 class _IncompleteListState extends State<IncompleteList> {
   CurbWheelDatabase _database;
 
-  void _completeItem(ListItem listItem, double progress) async {
+  void _completeItem(ListItem listItem, double _wheelCounter) async {
     List<SurveyPointsCompanion> pointsCompanions;
     await _database.surveyItemDao
         .insertSurveyItem(listItem.toSurveyItemsCompanion());
     if (listItem.geometryType == 'line') {
-      listItem.span.stop = progress;
+      listItem.span.stop = _wheelCounter;
       await _database.surveySpanDao.insertSpan(listItem.toSpansCompanion());
       pointsCompanions = listItem.toPointsCompanion();
     } else {
@@ -53,19 +53,21 @@ class _IncompleteListState extends State<IncompleteList> {
               shrinkWrap: true,
               itemCount: widget.listItems.length,
               itemBuilder: (context, index) {
-                return ActiveCard(widget.listItems[index],
-                    widget.progress, _completeItem);
+                return ActiveCard(widget.survey, widget.listItems[index],
+                    widget.currentWheelPosition, _completeItem);
               }),
     );
   }
 }
 
 class ActiveCard extends StatefulWidget {
+  final Survey survey;
   final ListItem listItem;
-  final double progress;
+  final double currentWheelPosition;
   final Function callback;
 
-  ActiveCard(this.listItem, this.progress, this.callback);
+  ActiveCard(
+      this.survey, this.listItem, this.currentWheelPosition, this.callback);
 
   @override
   _ActiveCardState createState() => _ActiveCardState();
@@ -74,9 +76,19 @@ class ActiveCard extends StatefulWidget {
 class _ActiveCardState extends State<ActiveCard> {
   @override
   Widget build(BuildContext context) {
-    double _progress = widget.progress;
     ListItem _listItem = widget.listItem;
     Function _callback = widget.callback;
+
+    var _start = _listItem.geometryType == "line"
+        ? _listItem.span.start
+        : _listItem.points[0].position;
+    var _progress = _listItem.geometryType == "line"
+        ? widget.currentWheelPosition
+        : _listItem.points[0].position;
+    var _max = widget.survey.length;
+
+    // todo photo points aren't merging on incomplete items...
+    var _points = _listItem.points.map((p) => p.position).toList();
 
     final String assetName = _listItem.geometryType == 'line'
         ? 'assets/vector-line.svg'
@@ -101,20 +113,22 @@ class _ActiveCardState extends State<ActiveCard> {
                     Spacer(),
                     IconButton(
                       icon: Icon(Icons.check),
-                      onPressed: () => _callback(_listItem, _progress),
+                      onPressed: () =>
+                          _callback(_listItem, widget.currentWheelPosition),
                     )
                   ]),
                   Padding(
                       padding: EdgeInsets.all(2.0),
                       child: ProgressBar(
-                          start: _listItem.span.start,
+                          start: _start,
+                          max: _max,
                           progress: _progress,
                           progressColor: colorConvert(_listItem.color),
-                          points: _listItem.points
-                              .map((p) => p.position)
-                              .toList())),
-                  Text(
-                      "${(_listItem.span.start * 40).toStringAsFixed(1)}m-${(_progress * 40).toStringAsFixed(1)}m"),
+                          points: _points)),
+                  _listItem.geometryType == "line"
+                      ? Text(
+                          "${(_start).toStringAsFixed(1)}m-${(_progress).toStringAsFixed(1)}m")
+                      : Text("${(_start).toStringAsFixed(1)}m"),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -126,7 +140,8 @@ class _ActiveCardState extends State<ActiveCard> {
                                 Navigator.pushNamed(
                                     context, CameraScreen.routeName,
                                     arguments: CameraScreenArguments(
-                                        surveyItemId: _listItem.surveyItemId, position: _progress))
+                                        surveyItemId: _listItem.surveyItemId,
+                                        position: widget.currentWheelPosition))
                               })
                     ],
                   )

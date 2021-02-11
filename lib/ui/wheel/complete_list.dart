@@ -25,8 +25,7 @@ class _CompleteListState extends State<CompleteList> {
     _database = Provider.of<CurbWheelDatabase>(context);
     _survey = widget.survey;
     return Container(
-      child: 
-          StreamBuilder(
+        child: StreamBuilder(
             stream: _database.getListItemBySurveyId(_survey.id),
             builder: (context, AsyncSnapshot<List<ListItem>> snapshot) {
               if (snapshot.hasData) {
@@ -34,22 +33,21 @@ class _CompleteListState extends State<CompleteList> {
                   shrinkWrap: true,
                   itemCount: snapshot.data.length,
                   itemBuilder: (context, index) {
-                    return InactiveCard(snapshot.data[index]);
+                    return InactiveCard(snapshot.data[index], _survey);
                   },
                 );
               } else {
                 return Text("No items");
               }
-            })
-    );
+            }));
   }
 }
 
-
 class InactiveCard extends StatefulWidget {
   final ListItem listItem;
+  final Survey survey;
 
-  InactiveCard(this.listItem);
+  InactiveCard(this.listItem, this.survey);
 
   @override
   _InactiveCardState createState() => _InactiveCardState();
@@ -59,6 +57,17 @@ class _InactiveCardState extends State<InactiveCard> {
   @override
   Widget build(BuildContext context) {
     var _listItem = widget.listItem;
+    var _max = widget.survey.length;
+    var _stop = _listItem.geometryType == 'line'
+        ? _listItem.span.stop
+        : _listItem.points[0].position;
+    var _start = _listItem.geometryType == 'line'
+        ? _listItem.span.start
+        : _listItem.points[0].position;
+
+    List<double> _points = _listItem.points.map((p) {
+      return p.position;
+    }).toList();
 
     final String assetName = _listItem.geometryType == 'line'
         ? 'assets/vector-line.svg'
@@ -79,22 +88,21 @@ class _InactiveCardState extends State<InactiveCard> {
                 children: <Widget>[
                   Padding(
                     padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                    child: Row(
-                    children: [
-                    svgIcon,
-                    Text(_listItem.name),
-                    Spacer(),
-                  ]),
+                    child: Row(children: [
+                      svgIcon,
+                      Text(_listItem.name),
+                      Spacer(),
+                    ]),
                   ),
                   Padding(
                       padding: EdgeInsets.all(2.0),
                       child: ProgressBar(
-                          start: _listItem.span.start,
-                          progress: _listItem.span.stop,
+                          start: _start,
+                          progress: _stop,
+                          max: _max,
                           progressColor: colorConvert(_listItem.color),
-                          points: [])), //_span.points)),
-                  Text(
-                      "${_listItem.span.start * 40}m-${(_listItem.span.stop * 40).toStringAsFixed(1)}m"),
+                          points: _points)),
+                  Text("${_start}m-${(_stop).toStringAsFixed(1)}m"),
                 ],
               ),
             )));

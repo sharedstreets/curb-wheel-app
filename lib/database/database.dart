@@ -94,8 +94,10 @@ class CurbWheelDatabase extends _$CurbWheelDatabase {
 
   Stream<List<ListItem>> getListItemBySurveyId(String surveyId) {
     final query = (select(surveyItems).join([
-      leftOuterJoin(featureTypes, featureTypes.id.equalsExp(surveyItems.featureId)),
-      leftOuterJoin(surveySpans, surveySpans.surveyItemId.equalsExp(surveyItems.id)),
+      leftOuterJoin(
+          featureTypes, featureTypes.id.equalsExp(surveyItems.featureId)),
+      leftOuterJoin(
+          surveySpans, surveySpans.surveyItemId.equalsExp(surveyItems.id)),
     ]));
     final Stream<List<SurveyItemWithFeature>> surveyItemWithFeatureStream =
         query.watch().map((rows) {
@@ -136,16 +138,26 @@ class CurbWheelDatabase extends _$CurbWheelDatabase {
         var surveyItemId = surveyItem.surveyItem.id;
         final points =
             b?.where((point) => point.surveyItemId == surveyItemId)?.toList();
-        final span =
-            c?.where((span) => span.surveyItemId == surveyItemId)?.toList();
-        final listItem = ListItem(
-            surveyItemId: surveyItemId,
-            geometryType: surveyItem.feature.geometryType,
-            color: surveyItem.feature.color,
-            name: surveyItem.feature.name,
-            span: span[0],
-            points: points);
-        return listItem;
+        if (surveyItem.feature.geometryType == "line") {
+          final span =
+              c?.where((span) => span.surveyItemId == surveyItemId)?.toList();
+          final listItem = ListItem(
+              surveyItemId: surveyItemId,
+              geometryType: surveyItem.feature.geometryType,
+              color: surveyItem.feature.color,
+              name: surveyItem.feature.name,
+              span: span[0],
+              points: points);
+          return listItem;
+        } else {
+          final listItem = ListItem(
+              surveyItemId: surveyItemId,
+              geometryType: surveyItem.feature.geometryType,
+              color: surveyItem.feature.color,
+              name: surveyItem.feature.name,
+              points: points);
+          return listItem;
+        }
       }).toList();
     });
   }
