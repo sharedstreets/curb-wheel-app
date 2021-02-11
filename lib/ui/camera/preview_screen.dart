@@ -80,10 +80,11 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                   context,
                                   listen: false);
                               String pointId = uuid.v4();
-                              SurveyPointsCompanion surveyPoint= SurveyPointsCompanion(
-                                  id: moor.Value(pointId),
-                                  surveyItemId: moor.Value(_surveyItemId),
-                                  position: moor.Value(_position));
+                              SurveyPointsCompanion surveyPoint =
+                                  SurveyPointsCompanion(
+                                      id: moor.Value(pointId),
+                                      surveyItemId: moor.Value(_surveyItemId),
+                                      position: moor.Value(_position));
                               await database.surveyPointDao
                                   .insertPoint(surveyPoint);
                               await database.photoDao.insertPhoto(

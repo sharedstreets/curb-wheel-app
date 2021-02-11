@@ -137,6 +137,8 @@ class ProgressPainter extends CustomPainter {
 
 class ProgressBar extends StatefulWidget {
   final double start;
+  //final double min;
+  final double max;
   final double progress;
   final Color progressColor;
   final Color backgroundColor;
@@ -147,6 +149,8 @@ class ProgressBar extends StatefulWidget {
   ProgressBar(
       {Key key,
       this.start = 0,
+      //this.min = 0,
+      this.max = 1,
       this.progress,
       this.progressColor = Colors.blue,
       this.backgroundColor = Colors.grey,
@@ -166,6 +170,8 @@ class _ProgressBarState extends State<ProgressBar> {
         foregroundPainter: ProgressBarPainter(
             progress: widget.progress,
             start: widget.start,
+            max: widget.max,
+            //min: widget.min,
             progressColor: widget.progressColor,
             backgroundColor: widget.backgroundColor,
             progressStrokeWidth: widget.progressStrokeWidth,
@@ -183,6 +189,8 @@ class ProgressBarPainter extends CustomPainter {
   final Color backgroundColor;
   final Color progressColor;
   final double start;
+  final double min;
+  final double max;
   final double progress;
   final double progressStrokeWidth;
   final double backgroundStrokeWidth;
@@ -190,6 +198,8 @@ class ProgressBarPainter extends CustomPainter {
 
   ProgressBarPainter(
       {this.start,
+      this.min,
+      this.max,
       this.progress,
       this.progressColor,
       this.backgroundColor,
@@ -215,20 +225,21 @@ class ProgressBarPainter extends CustomPainter {
     final startOffset = Offset(0.0, size.height / 2);
     final endOffset = Offset(size.width, size.height / 2);
     canvas.drawLine(startOffset, endOffset, _paintBackground);
-    final xStart = size.width * start;
-    var cappedProgress = progress;
-    if (progress > 1) {
-      cappedProgress = 1.0;
+    final xStart = size.width * start / max;
+    var precentProgress = progress / max;
+    var cappedPercentProgress = precentProgress;
+    if (precentProgress > 1) {
+      cappedPercentProgress = 1.0;
     }
-    var xProgress = size.width * cappedProgress;
+    var xProgress = size.width * cappedPercentProgress;
     final progressStart = Offset(xStart, size.height / 2);
     canvas.drawLine(
         progressStart, Offset(xProgress, size.height / 2), _paintProgress);
     for (var point in points) {
-      var pointPos = size.width * point;
+      var pointPos = size.width * (point / max);
       final pointX = Offset(pointPos, size.height / 2);
       canvas.drawCircle(pointX, progressStrokeWidth * 0.75, _paintPoint);
-      canvas.drawCircle(pointX, progressStrokeWidth * 0.25,  _paintPointCenter);
+      canvas.drawCircle(pointX, progressStrokeWidth * 0.25, _paintPointCenter);
     }
   }
 

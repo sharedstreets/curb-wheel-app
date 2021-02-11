@@ -100,8 +100,7 @@ class FeatureCard extends StatelessWidget {
         ];
       }
 
-      Navigator.pushReplacementNamed(
-          context, WheelScreen.routeName,
+      Navigator.pushReplacementNamed(context, WheelScreen.routeName,
           arguments: WheelScreenArguments(project, survey, incompleteSpans,
               listItem: listItem));
     }

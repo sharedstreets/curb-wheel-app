@@ -406,28 +406,34 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.arrow_forward),
-                  onPressed: () async {
-                    String surveyId = uuid.v4();
-                    var surveysCompanion = db.SurveysCompanion(
-                        id: moor.Value(surveyId),
-                        shStRefId: moor.Value(_street.shStRefId),
-                        streetName: moor.Value(_street.streetName),
-                        length: moor.Value(_street.length),
-                        projectId: moor.Value(_project.id),
-                        startStreetName: moor.Value(_street.fromStreetName),
-                        endStreetName: moor.Value(_street.toStreetName),
-                        direction:
-                            moor.Value(_street.directionOfTravel.toString()),
-                        side: moor.Value(_street.sideOfStreet.toString()));
-                    await surveyDao.insertSurvey(surveysCompanion);
-                    db.Survey survey = await surveyDao.getSurveyById(surveyId);
-                    _counter.resetForwardCounter();
-                    Navigator.pushNamed(context, WheelScreen.routeName,
-                        arguments: WheelScreenArguments(_project, survey, []));
-                  },
-                )
+                _street != null
+                    ? IconButton(
+                        icon: Icon(Icons.arrow_forward),
+                        onPressed: () async {
+                          String surveyId = uuid.v4();
+                          var surveysCompanion = db.SurveysCompanion(
+                              id: moor.Value(surveyId),
+                              shStRefId: moor.Value(_street.shStRefId),
+                              streetName: moor.Value(_street.streetName),
+                              length: moor.Value(_street.length),
+                              projectId: moor.Value(_project.id),
+                              startStreetName:
+                                  moor.Value(_street.fromStreetName),
+                              endStreetName: moor.Value(_street.toStreetName),
+                              direction: moor.Value(
+                                  _street.directionOfTravel.toString()),
+                              side:
+                                  moor.Value(_street.sideOfStreet.toString()));
+                          await surveyDao.insertSurvey(surveysCompanion);
+                          db.Survey survey =
+                              await surveyDao.getSurveyById(surveyId);
+                          _counter.resetForwardCounter();
+                          Navigator.pushNamed(context, WheelScreen.routeName,
+                              arguments:
+                                  WheelScreenArguments(_project, survey, []));
+                        },
+                      )
+                    : SizedBox.shrink()
               ],
             ),
             _street != null
@@ -455,7 +461,7 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
                       ),
                     ),
                   )
-                : Text(""),
+                : SizedBox.shrink(),
             _street != null
                 ? Center(
                     child: Row(children: [
@@ -468,7 +474,7 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
                         icon: Icons.swap_vert,
                         callback: widget.toggleDirectionCallback),
                   ]))
-                : Text("")
+                : SizedBox.shrink()
           ],
         ),
       ),

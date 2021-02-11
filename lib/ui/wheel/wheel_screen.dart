@@ -44,8 +44,7 @@ class _WheelScreenState extends State<WheelScreen>
   ListItem listItem;
   Project _project;
   Survey _survey;
-  double _progress;
-  double streetLength = 40;
+  double _currentWheelPosition;
   TabController _tabController;
 
   @override
@@ -108,8 +107,7 @@ class _WheelScreenState extends State<WheelScreen>
     _survey = widget.survey;
     _database = Provider.of<CurbWheelDatabase>(context);
     _counter = Provider.of<WheelCounter>(context);
-    _progress = _counter.getForwardCounter() / 10 / streetLength;
-
+    _currentWheelPosition = _counter.getForwardCounter() / 10;
 
     if (this.listItem != null) {
       this.incompleteSpans.add(this.listItem);
@@ -133,7 +131,7 @@ class _WheelScreenState extends State<WheelScreen>
           onPressed: () => {
             Navigator.pushNamed(context, FeatureSelectScreen.routeName,
                 arguments: FeatureSelectScreenArguments(
-                    _project, _survey, incompleteSpans, _progress))
+                    _project, _survey, incompleteSpans, _currentWheelPosition))
           },
         ),
         body: Column(
@@ -141,7 +139,7 @@ class _WheelScreenState extends State<WheelScreen>
             Container(
                 child: Column(
               children: [
-                WheelHeader(_progress, _survey),
+                WheelHeader(_currentWheelPosition, _survey),
                 StreamBuilder(
                     stream: _database.getListItemBySurveyId(_survey.id),
                     builder: (_, AsyncSnapshot<List<ListItem>> snapshot) {
@@ -179,7 +177,8 @@ class _WheelScreenState extends State<WheelScreen>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  IncompleteList(_survey.id, this.incompleteSpans, _progress),
+                  IncompleteList(
+                      _survey, this.incompleteSpans, _currentWheelPosition),
                   CompleteList(_survey),
                 ],
               ),
@@ -190,10 +189,10 @@ class _WheelScreenState extends State<WheelScreen>
 }
 
 class WheelHeader extends StatefulWidget {
-  final double progress;
+  final double currentWheelPosition;
   final Survey survey;
 
-  WheelHeader(this.progress, this.survey);
+  WheelHeader(this.currentWheelPosition, this.survey);
 
   @override
   _WheelHeaderState createState() => _WheelHeaderState();
@@ -202,8 +201,9 @@ class WheelHeader extends StatefulWidget {
 class _WheelHeaderState extends State<WheelHeader> {
   @override
   Widget build(BuildContext context) {
-    var _progress = widget.progress;
     var _survey = widget.survey;
+    var _currentMeasurement = widget.currentWheelPosition;
+    var _max = widget.survey.length;
 
     return Container(
       color: Colors.white,
@@ -250,13 +250,14 @@ class _WheelHeaderState extends State<WheelHeader> {
             Padding(
               padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
               child: ProgressBar(
-                progress: _progress,
+                progress: _currentMeasurement,
+                max: _max,
                 progressColor: Color(0xff667ad2),
                 backgroundStrokeWidth: 10.0,
               ),
             ),
             Text(
-                "Surveyed ${(_progress * 40).toStringAsFixed(1)}m of ${_survey.length.toStringAsFixed(1)}m"),
+                "Surveyed ${_currentMeasurement.toStringAsFixed(1)}m of ${_survey.length.toStringAsFixed(1)}m"),
           ],
         ),
       ),
