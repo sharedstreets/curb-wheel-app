@@ -101,6 +101,7 @@ class _FullMapState extends State<FullMap> {
   MapboxMapController _mapController;
   MapboxMap _map;
   ProjectMapDatastore _projectMapData;
+  db.CurbWheelDatabase _database;
 
   LatLngBounds _lastBounds;
 
@@ -108,7 +109,12 @@ class _FullMapState extends State<FullMap> {
 
   List<_Line> _basemapLines = new List();
   List<_Line> _selectionLines = new List();
+  List<_Line> _surveyedLines = new List();
   List<_Symbol> _selectionSymbols = [];
+
+  Map<String, int> _surveyedStreets;
+
+  _Line _surveyedSelectedStreet;
 
   _FullMapState(this.project);
   Street _selectedStreet;
@@ -119,13 +125,33 @@ class _FullMapState extends State<FullMap> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadSurveyedLines(context);
+    });
     _projectMapData = Provider.of<ProjectMapDatastores>(context, listen: false)
         .getDatastore(project);
+  }
+
+  _loadSurveyedLines(context) async {
+    print("test");
+
+    List<db.Survey> surveys = await _database.surveyDao.getAllSurveys();
+
+    _surveyedStreets = Map();
+    for (db.Survey s in surveys) {
+      _surveyedStreets.putIfAbsent(s.shStRefId, () {
+        return 0;
+      });
+      _surveyedStreets[s.shStRefId] += 1;
+    }
   }
 
   _redrawMap() {
     _mapController.clearLines();
     for (_Line l in _basemapLines) {
+      _mapController.addLine(l.options, l.data);
+    }
+    for (_Line l in _surveyedLines) {
       _mapController.addLine(l.options, l.data);
     }
     for (_Line l in _selectionLines) {
@@ -270,6 +296,12 @@ class _FullMapState extends State<FullMap> {
 
     _selectionSymbols.add(s);
 
+    if (_surveyedSelectedStreet != null) {
+      _surveyedLines.add(_surveyedSelectedStreet);
+    }
+
+    _surveyedSelectedStreet = null;
+
     _redrawMap();
 
     setState(() {
@@ -301,6 +333,7 @@ class _FullMapState extends State<FullMap> {
       List<Feature<LineString>> features = data.getGeomsByBounds(bounds);
 
       _basemapLines = new List();
+      _surveyedLines = new List();
       for (Feature<LineString> f in features) {
         List<LatLng> mapboxGeom =
             await data.getMapboxGLGeomById(f.properties['id']);
@@ -315,6 +348,23 @@ class _FullMapState extends State<FullMap> {
 
         l.data = {"id": f.properties['id']};
         _basemapLines.add(l);
+
+        if (_surveyedStreets.containsKey(f.properties['forwardReferenceId']) ||
+            _surveyedStreets.containsKey(f.properties['bakcReferenceId'])) {
+          _Line l = new _Line();
+          l.options = new LineOptions(
+            geometry: mapboxGeom,
+            lineColor: "#ff0000",
+            lineWidth: 6.0,
+            lineOpacity: 0.5,
+          );
+          l.data = {"id": f.properties['id']};
+
+          if (_selectedStreet.shstGeomId != f.properties['id'])
+            _surveyedLines.add(l);
+          else
+            _surveyedSelectedStreet = l;
+        }
       }
 
       _redrawMap();
@@ -351,6 +401,8 @@ class _FullMapState extends State<FullMap> {
         trackCameraPosition: true,
         initialCameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
       );
+
+    _database = Provider.of<db.CurbWheelDatabase>(context);
 
     return new Scaffold(
         body: Column(children: [

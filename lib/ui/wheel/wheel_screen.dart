@@ -201,6 +201,7 @@ class WheelHeader extends StatefulWidget {
 class _WheelHeaderState extends State<WheelHeader> {
   @override
   Widget build(BuildContext context) {
+    CurbWheelDatabase _database = Provider.of<CurbWheelDatabase>(context);
     var _survey = widget.survey;
     var _currentMeasurement = widget.currentWheelPosition;
     var _max = widget.survey.length;
@@ -220,7 +221,12 @@ class _WheelHeaderState extends State<WheelHeader> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   ),
                 ),
-                IconButton(icon: Icon(Icons.check), onPressed: () => {}),
+                IconButton(
+                    icon: Icon(Icons.check),
+                    onPressed: () async {
+                      await _database.surveyDao
+                          .insertSurvey(_survey.toCompanion(true));
+                    }),
               ],
             ),
             Align(
