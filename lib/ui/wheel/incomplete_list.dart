@@ -30,8 +30,8 @@ class _IncompleteListState extends State<IncompleteList> {
     print(currentSpan.start);
     print(currentSpan.stop);
     print("CURRENT");
-    _database.surveySpanDao.updateSpan(currentSpan);
-    _database.surveyItemDao.updateSurveyItem(surveyItem);
+    await _database.surveySpanDao.updateSpan(currentSpan);
+    await _database.surveyItemDao.updateSurveyItem(surveyItem);
   }
 
   @override

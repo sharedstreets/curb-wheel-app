@@ -159,7 +159,7 @@ class CurbWheelDatabase extends _$CurbWheelDatabase {
         pointsQuery.watch().map((rows) {
       return rows.map((row) {
         return PointContainer(
-            surveyItemId: row.surveyItemId, position: row.position);
+            id: row.id, surveyItemId: row.surveyItemId, position: row.position);
       }).toList();
     });
 
@@ -168,7 +168,10 @@ class CurbWheelDatabase extends _$CurbWheelDatabase {
         spanQuery.watch().map((rows) {
       return rows.map((row) {
         return SpanContainer(
-            surveyItemId: row.surveyItemId, start: row.start, stop: row.stop);
+            id: row.id,
+            surveyItemId: row.surveyItemId,
+            start: row.start,
+            stop: row.stop);
       }).toList();
     });
 
