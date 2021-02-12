@@ -21,9 +21,9 @@ class SurveyItemDao extends DatabaseAccessor<CurbWheelDatabase>
   Future<SurveyItem> getSurveyItemsById(String id) =>
       (select(surveyItems)..where((s) => s.id.equals(id))).getSingle();
 
-  Future updateSurveyItems(SurveyItem surveyItem) =>
+  Future updateSurveyItem(SurveyItem surveyItem) =>
       update(surveyItems).replace(surveyItem);
 
-  Future deleteSurveyItems(SurveyItem surveyItem) =>
+  Future deleteSurveyItem(SurveyItem surveyItem) =>
       delete(surveyItems).delete(surveyItem);
 }
