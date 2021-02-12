@@ -1,7 +1,7 @@
 import 'database.dart';
 import 'package:moor_flutter/moor_flutter.dart';
 
-part 'point_dao.g.dart';
+part 'survey_point_dao.g.dart';
 
 @UseDao(tables: [SurveyPoints])
 class SurveyPointDao extends DatabaseAccessor<CurbWheelDatabase>

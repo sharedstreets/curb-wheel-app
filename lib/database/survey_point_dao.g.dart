@@ -1,11 +1,11 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'span_dao.dart';
+part of 'survey_point_dao.dart';
 
 // **************************************************************************
 // DaoGenerator
 // **************************************************************************
 
-mixin _$SurveySpanDaoMixin on DatabaseAccessor<CurbWheelDatabase> {
-  $SurveySpansTable get surveySpans => attachedDatabase.surveySpans;
+mixin _$SurveyPointDaoMixin on DatabaseAccessor<CurbWheelDatabase> {
+  $SurveyPointsTable get surveyPoints => attachedDatabase.surveyPoints;
 }

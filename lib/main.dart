@@ -46,7 +46,7 @@ class CurbWheel extends StatelessWidget {
           return MaterialPageRoute(
             builder: (context) {
               return WheelScreen(
-                  args.project, args.survey, args.incompleteSpans,
+                  args.project, args.survey,
                   listItem: args.listItem);
             },
           );

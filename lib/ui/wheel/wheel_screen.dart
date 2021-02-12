@@ -16,21 +16,18 @@ enum PhotoOptions { addPhoto, noPhoto }
 class WheelScreenArguments {
   final Project project;
   final Survey survey;
-  final List<ListItem> incompleteSpans;
   final ListItem listItem;
 
-  WheelScreenArguments(this.project, this.survey, this.incompleteSpans,
-      {this.listItem});
+  WheelScreenArguments(this.project, this.survey, {this.listItem});
 }
 
 class WheelScreen extends StatefulWidget {
   static const routeName = '/wheel';
   final Project project;
   final Survey survey;
-  final List<ListItem> incompleteSpans;
   final ListItem listItem;
 
-  WheelScreen(this.project, this.survey, this.incompleteSpans, {this.listItem});
+  WheelScreen(this.project, this.survey, {this.listItem});
 
   @override
   _WheelScreenState createState() => _WheelScreenState();
@@ -50,10 +47,8 @@ class _WheelScreenState extends State<WheelScreen>
   @override
   void initState() {
     super.initState();
-    print("WHEEL INIT STATE");
     _tabController = TabController(length: 2, vsync: this);
     this.listItem = widget.listItem;
-    this.incompleteSpans = widget.incompleteSpans;
   }
 
   @override
@@ -62,47 +57,8 @@ class _WheelScreenState extends State<WheelScreen>
     _tabController.dispose();
   }
 
-  Future<void> _photoDialog(incompleteSpans, listItem) async {
-    switch (await showDialog<PhotoOptions>(
-        useRootNavigator: false,
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            children: <Widget>[
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context, PhotoOptions.addPhoto);
-                  Navigator.pop(context);
-                },
-                child: const Text('Add a photo'),
-              ),
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context, PhotoOptions.addPhoto);
-                  Navigator.pop(context);
-                },
-                child: const Text('Continue surveying'),
-              ),
-            ],
-          );
-        })) {
-      case PhotoOptions.addPhoto:
-        this.incompleteSpans.add(this.listItem);
-        setState(() => this.listItem = null);
-        setState(() => this.incompleteSpans = incompleteSpans);
-        break;
-      case PhotoOptions.noPhoto:
-        this.incompleteSpans.add(this.listItem);
-        setState(() => this.listItem = null);
-        setState(() => this.incompleteSpans = incompleteSpans);
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    print("WHEEL BUILD");
-
     _project = widget.project;
     _survey = widget.survey;
     _database = Provider.of<CurbWheelDatabase>(context);
@@ -110,13 +66,12 @@ class _WheelScreenState extends State<WheelScreen>
     _currentWheelPosition = _counter.getForwardCounter() / 10;
 
     if (this.listItem != null) {
-      this.incompleteSpans.add(this.listItem);
+      _database.surveyItemDao
+          .insertSurveyItem(listItem.toSurveyItemsCompanion());
+      if (this.listItem.geometryType == 'line') {
+        _database.surveySpanDao.insertSpan(listItem.toSpansCompanion());
+      }
       setState(() => this.listItem = null);
-      setState(() => this.incompleteSpans = incompleteSpans);
-      /*
-      Future.delayed(
-          Duration.zero, () => _photoDialog(incompleteSpans, listItem));
-      */
     }
 
     return Scaffold(
@@ -131,7 +86,7 @@ class _WheelScreenState extends State<WheelScreen>
           onPressed: () => {
             Navigator.pushNamed(context, FeatureSelectScreen.routeName,
                 arguments: FeatureSelectScreenArguments(
-                    _project, _survey, incompleteSpans, _currentWheelPosition))
+                    _project, _survey, _currentWheelPosition))
           },
         ),
         body: Column(
@@ -141,11 +96,13 @@ class _WheelScreenState extends State<WheelScreen>
               children: [
                 WheelHeader(_currentWheelPosition, _survey),
                 StreamBuilder(
-                    stream: _database.getListItemBySurveyId(_survey.id),
-                    builder: (_, AsyncSnapshot<List<ListItem>> snapshot) {
-                      int completeLength = 0;
+                    stream: _database.getListItemCounts(_survey.id),
+                    builder: (_, AsyncSnapshot<Count> snapshot) {
+                      int completeCount = 0;
+                      int activeCount = 0;
                       if (snapshot.hasData) {
-                        completeLength = snapshot.data.length;
+                        completeCount = snapshot.data.completeCount;
+                        activeCount = snapshot.data.activeCount;
                       }
                       return Container(
                           height: 48,
@@ -162,11 +119,10 @@ class _WheelScreenState extends State<WheelScreen>
                             unselectedLabelColor: Colors.black,
                             tabs: [
                               Tab(
-                                text:
-                                    'Active features(${incompleteSpans.length})',
+                                text: 'Active features($activeCount)',
                               ),
                               Tab(
-                                text: 'Completed features ($completeLength)',
+                                text: 'Completed features ($completeCount)',
                               ),
                             ],
                           ));
@@ -177,8 +133,7 @@ class _WheelScreenState extends State<WheelScreen>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  IncompleteList(
-                      _survey, this.incompleteSpans, _currentWheelPosition),
+                  IncompleteList(_survey, _currentWheelPosition),
                   CompleteList(_survey),
                 ],
               ),
