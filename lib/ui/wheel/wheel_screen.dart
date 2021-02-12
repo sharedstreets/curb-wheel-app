@@ -70,6 +70,12 @@ class _WheelScreenState extends State<WheelScreen>
           .insertSurveyItem(listItem.toSurveyItemsCompanion());
       if (this.listItem.geometryType == 'line') {
         _database.surveySpanDao.insertSpan(listItem.toSpansCompanion());
+      } else {
+        var points = listItem.toPointsCompanion();
+        for (var p in points) {
+          _database.surveyPointDao.insertPoint(p);
+        }
+        
       }
       setState(() => this.listItem = null);
     }
