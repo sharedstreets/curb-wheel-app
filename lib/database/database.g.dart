@@ -392,7 +392,7 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Project map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -737,7 +737,7 @@ class $FeatureTypesTable extends FeatureTypes
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   FeatureType map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -1293,7 +1293,7 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Survey map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -1310,18 +1310,25 @@ class SurveyItem extends DataClass implements Insertable<SurveyItem> {
   final String id;
   final String surveyId;
   final String featureId;
+  final bool complete;
   SurveyItem(
-      {@required this.id, @required this.surveyId, @required this.featureId});
+      {@required this.id,
+      @required this.surveyId,
+      @required this.featureId,
+      @required this.complete});
   factory SurveyItem.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final stringType = db.typeSystem.forDartType<String>();
+    final boolType = db.typeSystem.forDartType<bool>();
     return SurveyItem(
       id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       surveyId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}survey_id']),
       featureId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}feature_id']),
+      complete:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}complete']),
     );
   }
   @override
@@ -1336,6 +1343,9 @@ class SurveyItem extends DataClass implements Insertable<SurveyItem> {
     if (!nullToAbsent || featureId != null) {
       map['feature_id'] = Variable<String>(featureId);
     }
+    if (!nullToAbsent || complete != null) {
+      map['complete'] = Variable<bool>(complete);
+    }
     return map;
   }
 
@@ -1348,6 +1358,9 @@ class SurveyItem extends DataClass implements Insertable<SurveyItem> {
       featureId: featureId == null && nullToAbsent
           ? const Value.absent()
           : Value(featureId),
+      complete: complete == null && nullToAbsent
+          ? const Value.absent()
+          : Value(complete),
     );
   }
 
@@ -1358,6 +1371,7 @@ class SurveyItem extends DataClass implements Insertable<SurveyItem> {
       id: serializer.fromJson<String>(json['id']),
       surveyId: serializer.fromJson<String>(json['surveyId']),
       featureId: serializer.fromJson<String>(json['featureId']),
+      complete: serializer.fromJson<bool>(json['complete']),
     );
   }
   @override
@@ -1367,71 +1381,86 @@ class SurveyItem extends DataClass implements Insertable<SurveyItem> {
       'id': serializer.toJson<String>(id),
       'surveyId': serializer.toJson<String>(surveyId),
       'featureId': serializer.toJson<String>(featureId),
+      'complete': serializer.toJson<bool>(complete),
     };
   }
 
-  SurveyItem copyWith({String id, String surveyId, String featureId}) =>
+  SurveyItem copyWith(
+          {String id, String surveyId, String featureId, bool complete}) =>
       SurveyItem(
         id: id ?? this.id,
         surveyId: surveyId ?? this.surveyId,
         featureId: featureId ?? this.featureId,
+        complete: complete ?? this.complete,
       );
   @override
   String toString() {
     return (StringBuffer('SurveyItem(')
           ..write('id: $id, ')
           ..write('surveyId: $surveyId, ')
-          ..write('featureId: $featureId')
+          ..write('featureId: $featureId, ')
+          ..write('complete: $complete')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(surveyId.hashCode, featureId.hashCode)));
+  int get hashCode => $mrjf($mrjc(id.hashCode,
+      $mrjc(surveyId.hashCode, $mrjc(featureId.hashCode, complete.hashCode))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is SurveyItem &&
           other.id == this.id &&
           other.surveyId == this.surveyId &&
-          other.featureId == this.featureId);
+          other.featureId == this.featureId &&
+          other.complete == this.complete);
 }
 
 class SurveyItemsCompanion extends UpdateCompanion<SurveyItem> {
   final Value<String> id;
   final Value<String> surveyId;
   final Value<String> featureId;
+  final Value<bool> complete;
   const SurveyItemsCompanion({
     this.id = const Value.absent(),
     this.surveyId = const Value.absent(),
     this.featureId = const Value.absent(),
+    this.complete = const Value.absent(),
   });
   SurveyItemsCompanion.insert({
     @required String id,
     @required String surveyId,
     @required String featureId,
+    @required bool complete,
   })  : id = Value(id),
         surveyId = Value(surveyId),
-        featureId = Value(featureId);
+        featureId = Value(featureId),
+        complete = Value(complete);
   static Insertable<SurveyItem> custom({
     Expression<String> id,
     Expression<String> surveyId,
     Expression<String> featureId,
+    Expression<bool> complete,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (surveyId != null) 'survey_id': surveyId,
       if (featureId != null) 'feature_id': featureId,
+      if (complete != null) 'complete': complete,
     });
   }
 
   SurveyItemsCompanion copyWith(
-      {Value<String> id, Value<String> surveyId, Value<String> featureId}) {
+      {Value<String> id,
+      Value<String> surveyId,
+      Value<String> featureId,
+      Value<bool> complete}) {
     return SurveyItemsCompanion(
       id: id ?? this.id,
       surveyId: surveyId ?? this.surveyId,
       featureId: featureId ?? this.featureId,
+      complete: complete ?? this.complete,
     );
   }
 
@@ -1447,6 +1476,9 @@ class SurveyItemsCompanion extends UpdateCompanion<SurveyItem> {
     if (featureId.present) {
       map['feature_id'] = Variable<String>(featureId.value);
     }
+    if (complete.present) {
+      map['complete'] = Variable<bool>(complete.value);
+    }
     return map;
   }
 
@@ -1455,7 +1487,8 @@ class SurveyItemsCompanion extends UpdateCompanion<SurveyItem> {
     return (StringBuffer('SurveyItemsCompanion(')
           ..write('id: $id, ')
           ..write('surveyId: $surveyId, ')
-          ..write('featureId: $featureId')
+          ..write('featureId: $featureId, ')
+          ..write('complete: $complete')
           ..write(')'))
         .toString();
   }
@@ -1502,8 +1535,20 @@ class $SurveyItemsTable extends SurveyItems
     );
   }
 
+  final VerificationMeta _completeMeta = const VerificationMeta('complete');
+  GeneratedBoolColumn _complete;
   @override
-  List<GeneratedColumn> get $columns => [id, surveyId, featureId];
+  GeneratedBoolColumn get complete => _complete ??= _constructComplete();
+  GeneratedBoolColumn _constructComplete() {
+    return GeneratedBoolColumn(
+      'complete',
+      $tableName,
+      false,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, surveyId, featureId, complete];
   @override
   $SurveyItemsTable get asDslTable => this;
   @override
@@ -1532,11 +1577,17 @@ class $SurveyItemsTable extends SurveyItems
     } else if (isInserting) {
       context.missing(_featureIdMeta);
     }
+    if (data.containsKey('complete')) {
+      context.handle(_completeMeta,
+          complete.isAcceptableOrUnknown(data['complete'], _completeMeta));
+    } else if (isInserting) {
+      context.missing(_completeMeta);
+    }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   SurveyItem map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -1830,7 +1881,7 @@ class $SurveySpansTable extends SurveySpans
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   SurveySpan map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -2074,7 +2125,7 @@ class $SurveyPointsTable extends SurveyPoints
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   SurveyPoint map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
@@ -2311,7 +2362,7 @@ class $PhotosTable extends Photos with TableInfo<$PhotosTable, Photo> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Photo map(Map<String, dynamic> data, {String tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;

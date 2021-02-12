@@ -12,11 +12,9 @@ var uuid = Uuid();
 class FeatureSelectScreenArguments {
   final Project project;
   final Survey survey;
-  final List<ListItem> incompleteSpans;
   final double position;
 
-  FeatureSelectScreenArguments(
-      this.project, this.survey, this.incompleteSpans, this.position);
+  FeatureSelectScreenArguments(this.project, this.survey, this.position);
 }
 
 class FeatureSelectScreen extends StatefulWidget {
@@ -36,7 +34,6 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
         ModalRoute.of(context).settings.arguments;
     final Project project = args.project;
     final Survey survey = args.survey;
-    final List<ListItem> incompleteSpans = args.incompleteSpans;
     final double position = args.position;
     Future<List<FeatureType>> features =
         _database.featureTypeDao.getAllFeaturesByProject(survey.projectId);
@@ -58,8 +55,8 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
                 child: ListView.builder(
                     itemCount: features.length,
                     itemBuilder: (context, index) {
-                      return FeatureCard(features[index], project, survey,
-                          position, incompleteSpans);
+                      return FeatureCard(
+                          features[index], project, survey, position);
                     }),
               ),
             );
@@ -75,10 +72,8 @@ class FeatureCard extends StatelessWidget {
   final Project project;
   final Survey survey;
   final double position;
-  final List<ListItem> incompleteSpans;
 
-  FeatureCard(this.feature, this.project, this.survey, this.position,
-      this.incompleteSpans);
+  FeatureCard(this.feature, this.project, this.survey, this.position);
 
   @override
   Widget build(BuildContext context) {
@@ -92,17 +87,18 @@ class FeatureCard extends StatelessWidget {
           name: feature.name,
           color: feature.color);
       if (this.feature.geometryType == 'line') {
-        listItem.span = SpanContainer(start: position, stop: position);
+        listItem.span =
+            SpanContainer(id: uuid.v4(), start: position, stop: position);
         listItem.points = [];
       } else {
         listItem.points = [
-          PointContainer(surveyItemId: surveyItemId, position: position)
+          PointContainer(
+              id: uuid.v4(), surveyItemId: surveyItemId, position: position)
         ];
       }
 
       Navigator.pushReplacementNamed(context, WheelScreen.routeName,
-          arguments: WheelScreenArguments(project, survey, incompleteSpans,
-              listItem: listItem));
+          arguments: WheelScreenArguments(project, survey, listItem: listItem));
     }
 
     final String assetName = feature.geometryType == 'line'

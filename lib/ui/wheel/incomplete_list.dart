@@ -9,10 +9,9 @@ import 'package:provider/provider.dart';
 
 class IncompleteList extends StatefulWidget {
   final Survey survey;
-  final List<ListItem> listItems;
   final double currentWheelPosition;
 
-  IncompleteList(this.survey, this.listItems, this.currentWheelPosition);
+  IncompleteList(this.survey, this.currentWheelPosition);
 
   @override
   _IncompleteListState createState() => _IncompleteListState();
@@ -22,41 +21,50 @@ class _IncompleteListState extends State<IncompleteList> {
   CurbWheelDatabase _database;
 
   void _completeItem(ListItem listItem, double _wheelCounter) async {
-    List<SurveyPointsCompanion> pointsCompanions;
-    await _database.surveyItemDao
-        .insertSurveyItem(listItem.toSurveyItemsCompanion());
-    if (listItem.geometryType == 'line') {
-      listItem.span.stop = _wheelCounter;
-      await _database.surveySpanDao.insertSpan(listItem.toSpansCompanion());
-      pointsCompanions = listItem.toPointsCompanion();
-    } else {
-      pointsCompanions = listItem.toPointsCompanion();
-    }
-    for (var pointsCompanion in pointsCompanions) {
-      await _database.surveyPointDao.insertPoint(pointsCompanion);
-    }
-    setState(() => widget.listItems.remove(listItem));
+    print(_wheelCounter);
+    listItem.span.stop = _wheelCounter;
+    listItem.complete = true;
+    SurveySpan currentSpan = listItem.toSurveySpan();
+    SurveyItem surveyItem = listItem.toSurveyItem();
+    print("CURRENT");
+    print(currentSpan.start);
+    print(currentSpan.stop);
+    print("CURRENT");
+    await _database.surveySpanDao.updateSpan(currentSpan);
+    await _database.surveyItemDao.updateSurveyItem(surveyItem);
   }
 
   @override
   Widget build(BuildContext context) {
+    Survey _survey = widget.survey;
+
     _database = Provider.of<CurbWheelDatabase>(context);
     return Container(
-      padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-      child: widget.listItems.isEmpty
-          ? Center(
-              child: Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: Text('No active items',
-                      style: TextStyle(color: Colors.black, fontSize: 20))))
-          : ListView.builder(
-              shrinkWrap: true,
-              itemCount: widget.listItems.length,
-              itemBuilder: (context, index) {
-                return ActiveCard(widget.survey, widget.listItems[index],
-                    widget.currentWheelPosition, _completeItem);
-              }),
-    );
+        child: StreamBuilder(
+            stream: _database.getListItemBySurveyId(_survey.id, false),
+            builder: (context, AsyncSnapshot<List<ListItem>> snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data.length == 0) {
+                  return Center(
+                      child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Text('No active items',
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 20))));
+                } else {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return ActiveCard(_survey, snapshot.data[index],
+                          widget.currentWheelPosition, _completeItem);
+                    },
+                  );
+                }
+              } else {
+                return Text("No data");
+              }
+            }));
   }
 }
 

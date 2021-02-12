@@ -482,7 +482,7 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
                           _counter.resetForwardCounter();
                           Navigator.pushNamed(context, WheelScreen.routeName,
                               arguments:
-                                  WheelScreenArguments(_project, survey, []));
+                                  WheelScreenArguments(_project, survey));
                         },
                       )
                     : SizedBox.shrink()

@@ -25,21 +25,23 @@ class _CompleteListState extends State<CompleteList> {
     _database = Provider.of<CurbWheelDatabase>(context);
     _survey = widget.survey;
     return Container(
-        child: StreamBuilder(
-            stream: _database.getListItemBySurveyId(_survey.id),
-            builder: (context, AsyncSnapshot<List<ListItem>> snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    return InactiveCard(snapshot.data[index], _survey);
-                  },
-                );
-              } else {
-                return Text("No items");
-              }
-            }));
+      child: StreamBuilder(
+          stream: _database.getListItemBySurveyId(_survey.id, true),
+          builder: (context, AsyncSnapshot<List<ListItem>> snapshot) {
+            if (snapshot.hasData) {
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, index) {
+                  return InactiveCard(snapshot.data[index], _survey);
+                },
+              );
+            } else {
+              return Text("");
+            }
+          }
+        )
+      );
   }
 }
 
@@ -68,7 +70,6 @@ class _InactiveCardState extends State<InactiveCard> {
     List<double> _points = _listItem.points.map((p) {
       return p.position;
     }).toList();
-
     final String assetName = _listItem.geometryType == 'line'
         ? 'assets/vector-line.svg'
         : 'assets/map-marker.svg';
