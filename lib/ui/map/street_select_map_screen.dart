@@ -246,12 +246,20 @@ class _FullMapState extends State<FullMap> {
 
     List<LatLng> mapboxGeom = await getMapboxGLGeom(visualizationFeature);
 
+    double sideOfStreetStreetOffset = 4;
+    if (sideOfStreet == SideOfStreet.Left &&
+        direction == DirectionOfTravel.Forward)
+      sideOfStreetStreetOffset = -4;
+    else if (sideOfStreet == SideOfStreet.Left &&
+        direction == DirectionOfTravel.Backward) sideOfStreetStreetOffset = -4;
+
     _selectionLines = new List();
     _Line l = new _Line();
     l.options = new LineOptions(
       geometry: mapboxGeom,
       lineColor: "#667ad2",
-      lineWidth: 8.0,
+      lineWidth: 4.0,
+      lineOffset: sideOfStreetStreetOffset,
       lineOpacity: 1.0,
     );
     l.data = {"id": f.properties['id']};
@@ -261,12 +269,13 @@ class _FullMapState extends State<FullMap> {
     double b = bearing(Point(coordinates: geomCoords[0]), p);
     LatLng latLng = new LatLng(p.coordinates.lat, p.coordinates.lng);
 
-    double sideOfStreetOffset = 0.25;
+    double sideOfStreetSymbolOffset = 0.25;
     if (sideOfStreet == SideOfStreet.Left &&
         direction == DirectionOfTravel.Forward)
-      sideOfStreetOffset = -1.75;
+      sideOfStreetSymbolOffset = -1.75;
     else if (sideOfStreet == SideOfStreet.Right &&
-        direction == DirectionOfTravel.Backward) sideOfStreetOffset = -1.75;
+        direction == DirectionOfTravel.Backward)
+      sideOfStreetSymbolOffset = -1.75;
 
     double rotationOffset = b - 90;
     double paddingOffset = 2;
@@ -285,7 +294,7 @@ class _FullMapState extends State<FullMap> {
       textRotate: rotationOffset,
       textSize: 14,
       textMaxWidth: 30,
-      textOffset: Offset(paddingOffset, sideOfStreetOffset),
+      textOffset: Offset(paddingOffset, sideOfStreetSymbolOffset),
       textAnchor: 'top',
       textColor: '#667ad2',
       textHaloBlur: 1,
@@ -296,11 +305,11 @@ class _FullMapState extends State<FullMap> {
 
     _selectionSymbols.add(s);
 
-    if (_surveyedSelectedStreet != null) {
-      _surveyedLines.add(_surveyedSelectedStreet);
-    }
+    // if (_surveyedSelectedStreet != null) {
+    //   _surveyedLines.add(_surveyedSelectedStreet);
+    // }
 
-    _surveyedSelectedStreet = null;
+    // _surveyedSelectedStreet = null;
 
     _redrawMap();
 
@@ -349,21 +358,42 @@ class _FullMapState extends State<FullMap> {
         l.data = {"id": f.properties['id']};
         _basemapLines.add(l);
 
-        if (_surveyedStreets.containsKey(f.properties['forwardReferenceId']) ||
-            _surveyedStreets.containsKey(f.properties['bakcReferenceId'])) {
+        if (_surveyedStreets.containsKey(f.properties['forwardReferenceId'])) {
           _Line l = new _Line();
           l.options = new LineOptions(
             geometry: mapboxGeom,
             lineColor: "#ff0000",
-            lineWidth: 6.0,
+            lineWidth: 4.0,
+            lineOffset: 4,
             lineOpacity: 0.5,
           );
           l.data = {"id": f.properties['id']};
+          _surveyedLines.add(l);
 
-          if (_selectedStreet.shstGeomId != f.properties['id'])
-            _surveyedLines.add(l);
-          else
-            _surveyedSelectedStreet = l;
+          // if (_selectedStreet != null &&
+          //     _selectedStreet.shStRefId != f.properties['id'])
+          //
+          // else
+          //   _surveyedSelectedStreet = l;
+        }
+
+        if (_surveyedStreets.containsKey(f.properties['bakcReferenceId'])) {
+          _Line l = new _Line();
+          l.options = new LineOptions(
+            geometry: mapboxGeom,
+            lineColor: "#ff0000",
+            lineWidth: 4.0,
+            lineOffset: 4,
+            lineOpacity: 0.5,
+          );
+          l.data = {"id": f.properties['id']};
+          _surveyedLines.add(l);
+
+          // if (_selectedStreet != null &&
+          //     _selectedStreet.shStRefId != f.properties['id'])
+          //
+          // else
+          //   _surveyedSelectedStreet = l;
         }
       }
 
