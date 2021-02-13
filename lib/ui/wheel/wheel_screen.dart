@@ -75,7 +75,6 @@ class _WheelScreenState extends State<WheelScreen>
         for (var p in points) {
           _database.surveyPointDao.insertPoint(p);
         }
-        
       }
       setState(() => this.listItem = null);
     }
@@ -185,8 +184,9 @@ class _WheelHeaderState extends State<WheelHeader> {
                 IconButton(
                     icon: Icon(Icons.check),
                     onPressed: () async {
-                      await _database.surveyDao
-                          .insertSurvey(_survey.toCompanion(true));
+                      var completeSurvey = _survey.copyWith(
+                          complete: true, endTimestamp: DateTime.now());
+                      await _database.surveyDao.updateSurvey(completeSurvey);
                     }),
               ],
             ),

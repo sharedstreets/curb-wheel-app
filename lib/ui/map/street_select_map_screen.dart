@@ -112,7 +112,7 @@ class _FullMapState extends State<FullMap> {
   List<_Line> _surveyedLines = new List();
   List<_Symbol> _selectionSymbols = [];
 
-  Map<String, int> _surveyedStreets;
+  Map<String, List<db.Survey>> _surveyedStreets;
 
   _Line _surveyedSelectedStreet;
 
@@ -140,9 +140,9 @@ class _FullMapState extends State<FullMap> {
     _surveyedStreets = Map();
     for (db.Survey s in surveys) {
       _surveyedStreets.putIfAbsent(s.shStRefId, () {
-        return 0;
+        return List();
       });
-      _surveyedStreets[s.shStRefId] += 1;
+      _surveyedStreets[s.shStRefId].add(s);
     }
   }
 
@@ -359,41 +359,39 @@ class _FullMapState extends State<FullMap> {
         _basemapLines.add(l);
 
         if (_surveyedStreets.containsKey(f.properties['forwardReferenceId'])) {
-          _Line l = new _Line();
-          l.options = new LineOptions(
-            geometry: mapboxGeom,
-            lineColor: "#ff0000",
-            lineWidth: 4.0,
-            lineOffset: 4,
-            lineOpacity: 0.5,
-          );
-          l.data = {"id": f.properties['id']};
-          _surveyedLines.add(l);
-
-          // if (_selectedStreet != null &&
-          //     _selectedStreet.shStRefId != f.properties['id'])
-          //
-          // else
-          //   _surveyedSelectedStreet = l;
+          for (db.Survey s
+              in _surveyedStreets[f.properties['forwardReferenceId']]) {
+            double offset = 4;
+            _Line l = new _Line();
+            if (s.side == SideOfStreet.Left.toString()) offset = -4;
+            l.options = new LineOptions(
+              geometry: mapboxGeom,
+              lineColor: "#ff0000",
+              lineWidth: 4.0,
+              lineOffset: offset,
+              lineOpacity: 0.5,
+            );
+            l.data = {"id": f.properties['id']};
+            _surveyedLines.add(l);
+          }
         }
 
         if (_surveyedStreets.containsKey(f.properties['bakcReferenceId'])) {
-          _Line l = new _Line();
-          l.options = new LineOptions(
-            geometry: mapboxGeom,
-            lineColor: "#ff0000",
-            lineWidth: 4.0,
-            lineOffset: 4,
-            lineOpacity: 0.5,
-          );
-          l.data = {"id": f.properties['id']};
-          _surveyedLines.add(l);
-
-          // if (_selectedStreet != null &&
-          //     _selectedStreet.shStRefId != f.properties['id'])
-          //
-          // else
-          //   _surveyedSelectedStreet = l;
+          for (db.Survey s
+              in _surveyedStreets[f.properties['forwardReferenceId']]) {
+            double offset = -4;
+            _Line l = new _Line();
+            if (s.side == SideOfStreet.Left.toString()) offset = 4;
+            l.options = new LineOptions(
+              geometry: mapboxGeom,
+              lineColor: "#ff0000",
+              lineWidth: 4.0,
+              lineOffset: offset,
+              lineOpacity: 0.5,
+            );
+            l.data = {"id": f.properties['id']};
+            _surveyedLines.add(l);
+          }
         }
       }
 

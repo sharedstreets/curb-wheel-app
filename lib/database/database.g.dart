@@ -760,6 +760,8 @@ class Survey extends DataClass implements Insertable<Survey> {
   final String endStreetName;
   final String direction;
   final String side;
+  final bool complete;
+  final DateTime endTimestamp;
   Survey(
       {@required this.id,
       @required this.projectId,
@@ -769,12 +771,16 @@ class Survey extends DataClass implements Insertable<Survey> {
       @required this.startStreetName,
       @required this.endStreetName,
       @required this.direction,
-      @required this.side});
+      @required this.side,
+      this.complete,
+      this.endTimestamp});
   factory Survey.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final stringType = db.typeSystem.forDartType<String>();
     final doubleType = db.typeSystem.forDartType<double>();
+    final boolType = db.typeSystem.forDartType<bool>();
+    final dateTimeType = db.typeSystem.forDartType<DateTime>();
     return Survey(
       id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       projectId: stringType
@@ -792,6 +798,10 @@ class Survey extends DataClass implements Insertable<Survey> {
       direction: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}direction']),
       side: stringType.mapFromDatabaseResponse(data['${effectivePrefix}side']),
+      complete:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}complete']),
+      endTimestamp: dateTimeType
+          .mapFromDatabaseResponse(data['${effectivePrefix}end_timestamp']),
     );
   }
   @override
@@ -824,6 +834,12 @@ class Survey extends DataClass implements Insertable<Survey> {
     if (!nullToAbsent || side != null) {
       map['side'] = Variable<String>(side);
     }
+    if (!nullToAbsent || complete != null) {
+      map['complete'] = Variable<bool>(complete);
+    }
+    if (!nullToAbsent || endTimestamp != null) {
+      map['end_timestamp'] = Variable<DateTime>(endTimestamp);
+    }
     return map;
   }
 
@@ -851,6 +867,12 @@ class Survey extends DataClass implements Insertable<Survey> {
           ? const Value.absent()
           : Value(direction),
       side: side == null && nullToAbsent ? const Value.absent() : Value(side),
+      complete: complete == null && nullToAbsent
+          ? const Value.absent()
+          : Value(complete),
+      endTimestamp: endTimestamp == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endTimestamp),
     );
   }
 
@@ -867,6 +889,8 @@ class Survey extends DataClass implements Insertable<Survey> {
       endStreetName: serializer.fromJson<String>(json['endStreetName']),
       direction: serializer.fromJson<String>(json['direction']),
       side: serializer.fromJson<String>(json['side']),
+      complete: serializer.fromJson<bool>(json['complete']),
+      endTimestamp: serializer.fromJson<DateTime>(json['endTimestamp']),
     );
   }
   @override
@@ -882,6 +906,8 @@ class Survey extends DataClass implements Insertable<Survey> {
       'endStreetName': serializer.toJson<String>(endStreetName),
       'direction': serializer.toJson<String>(direction),
       'side': serializer.toJson<String>(side),
+      'complete': serializer.toJson<bool>(complete),
+      'endTimestamp': serializer.toJson<DateTime>(endTimestamp),
     };
   }
 
@@ -894,7 +920,9 @@ class Survey extends DataClass implements Insertable<Survey> {
           String startStreetName,
           String endStreetName,
           String direction,
-          String side}) =>
+          String side,
+          bool complete,
+          DateTime endTimestamp}) =>
       Survey(
         id: id ?? this.id,
         projectId: projectId ?? this.projectId,
@@ -905,6 +933,8 @@ class Survey extends DataClass implements Insertable<Survey> {
         endStreetName: endStreetName ?? this.endStreetName,
         direction: direction ?? this.direction,
         side: side ?? this.side,
+        complete: complete ?? this.complete,
+        endTimestamp: endTimestamp ?? this.endTimestamp,
       );
   @override
   String toString() {
@@ -917,7 +947,9 @@ class Survey extends DataClass implements Insertable<Survey> {
           ..write('startStreetName: $startStreetName, ')
           ..write('endStreetName: $endStreetName, ')
           ..write('direction: $direction, ')
-          ..write('side: $side')
+          ..write('side: $side, ')
+          ..write('complete: $complete, ')
+          ..write('endTimestamp: $endTimestamp')
           ..write(')'))
         .toString();
   }
@@ -935,8 +967,14 @@ class Survey extends DataClass implements Insertable<Survey> {
                       length.hashCode,
                       $mrjc(
                           startStreetName.hashCode,
-                          $mrjc(endStreetName.hashCode,
-                              $mrjc(direction.hashCode, side.hashCode)))))))));
+                          $mrjc(
+                              endStreetName.hashCode,
+                              $mrjc(
+                                  direction.hashCode,
+                                  $mrjc(
+                                      side.hashCode,
+                                      $mrjc(complete.hashCode,
+                                          endTimestamp.hashCode)))))))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -949,7 +987,9 @@ class Survey extends DataClass implements Insertable<Survey> {
           other.startStreetName == this.startStreetName &&
           other.endStreetName == this.endStreetName &&
           other.direction == this.direction &&
-          other.side == this.side);
+          other.side == this.side &&
+          other.complete == this.complete &&
+          other.endTimestamp == this.endTimestamp);
 }
 
 class SurveysCompanion extends UpdateCompanion<Survey> {
@@ -962,6 +1002,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
   final Value<String> endStreetName;
   final Value<String> direction;
   final Value<String> side;
+  final Value<bool> complete;
+  final Value<DateTime> endTimestamp;
   const SurveysCompanion({
     this.id = const Value.absent(),
     this.projectId = const Value.absent(),
@@ -972,6 +1014,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     this.endStreetName = const Value.absent(),
     this.direction = const Value.absent(),
     this.side = const Value.absent(),
+    this.complete = const Value.absent(),
+    this.endTimestamp = const Value.absent(),
   });
   SurveysCompanion.insert({
     @required String id,
@@ -983,6 +1027,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     @required String endStreetName,
     @required String direction,
     @required String side,
+    this.complete = const Value.absent(),
+    this.endTimestamp = const Value.absent(),
   })  : id = Value(id),
         projectId = Value(projectId),
         shStRefId = Value(shStRefId),
@@ -1002,6 +1048,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     Expression<String> endStreetName,
     Expression<String> direction,
     Expression<String> side,
+    Expression<bool> complete,
+    Expression<DateTime> endTimestamp,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1013,6 +1061,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
       if (endStreetName != null) 'end_street_name': endStreetName,
       if (direction != null) 'direction': direction,
       if (side != null) 'side': side,
+      if (complete != null) 'complete': complete,
+      if (endTimestamp != null) 'end_timestamp': endTimestamp,
     });
   }
 
@@ -1025,7 +1075,9 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
       Value<String> startStreetName,
       Value<String> endStreetName,
       Value<String> direction,
-      Value<String> side}) {
+      Value<String> side,
+      Value<bool> complete,
+      Value<DateTime> endTimestamp}) {
     return SurveysCompanion(
       id: id ?? this.id,
       projectId: projectId ?? this.projectId,
@@ -1036,6 +1088,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
       endStreetName: endStreetName ?? this.endStreetName,
       direction: direction ?? this.direction,
       side: side ?? this.side,
+      complete: complete ?? this.complete,
+      endTimestamp: endTimestamp ?? this.endTimestamp,
     );
   }
 
@@ -1069,6 +1123,12 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     if (side.present) {
       map['side'] = Variable<String>(side.value);
     }
+    if (complete.present) {
+      map['complete'] = Variable<bool>(complete.value);
+    }
+    if (endTimestamp.present) {
+      map['end_timestamp'] = Variable<DateTime>(endTimestamp.value);
+    }
     return map;
   }
 
@@ -1083,7 +1143,9 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
           ..write('startStreetName: $startStreetName, ')
           ..write('endStreetName: $endStreetName, ')
           ..write('direction: $direction, ')
-          ..write('side: $side')
+          ..write('side: $side, ')
+          ..write('complete: $complete, ')
+          ..write('endTimestamp: $endTimestamp')
           ..write(')'))
         .toString();
   }
@@ -1205,6 +1267,32 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
     );
   }
 
+  final VerificationMeta _completeMeta = const VerificationMeta('complete');
+  GeneratedBoolColumn _complete;
+  @override
+  GeneratedBoolColumn get complete => _complete ??= _constructComplete();
+  GeneratedBoolColumn _constructComplete() {
+    return GeneratedBoolColumn(
+      'complete',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _endTimestampMeta =
+      const VerificationMeta('endTimestamp');
+  GeneratedDateTimeColumn _endTimestamp;
+  @override
+  GeneratedDateTimeColumn get endTimestamp =>
+      _endTimestamp ??= _constructEndTimestamp();
+  GeneratedDateTimeColumn _constructEndTimestamp() {
+    return GeneratedDateTimeColumn(
+      'end_timestamp',
+      $tableName,
+      true,
+    );
+  }
+
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -1215,7 +1303,9 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
         startStreetName,
         endStreetName,
         direction,
-        side
+        side,
+        complete,
+        endTimestamp
       ];
   @override
   $SurveysTable get asDslTable => this;
@@ -1288,6 +1378,16 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
           _sideMeta, side.isAcceptableOrUnknown(data['side'], _sideMeta));
     } else if (isInserting) {
       context.missing(_sideMeta);
+    }
+    if (data.containsKey('complete')) {
+      context.handle(_completeMeta,
+          complete.isAcceptableOrUnknown(data['complete'], _completeMeta));
+    }
+    if (data.containsKey('end_timestamp')) {
+      context.handle(
+          _endTimestampMeta,
+          endTimestamp.isAcceptableOrUnknown(
+              data['end_timestamp'], _endTimestampMeta));
     }
     return context;
   }
