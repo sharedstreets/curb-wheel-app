@@ -77,7 +77,12 @@ class _InactiveCardState extends State<InactiveCard> {
         _listItem.geometryType == 'line' ? 'line type' : 'point type';
     final Widget svgIcon = SvgPicture.asset(assetName,
         color: Colors.black, semanticsLabel: semanticsLabel);
-
+    var positionString;
+    if (_listItem.geometryType == "line") {
+      positionString = "${_start}m-${(_stop).toStringAsFixed(1)}m";
+    } else {
+      positionString = "${_start}m";
+    }
     return Padding(
         padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
         child: Card(
@@ -103,7 +108,7 @@ class _InactiveCardState extends State<InactiveCard> {
                           max: _max,
                           progressColor: colorConvert(_listItem.color),
                           points: _points)),
-                  Text("${_start}m-${(_stop).toStringAsFixed(1)}m"),
+                  Text(positionString),
                 ],
               ),
             )));

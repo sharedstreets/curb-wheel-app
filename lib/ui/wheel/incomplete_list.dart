@@ -21,17 +21,16 @@ class _IncompleteListState extends State<IncompleteList> {
   CurbWheelDatabase _database;
 
   void _completeItem(ListItem listItem, double _wheelCounter) async {
-    print(_wheelCounter);
-    listItem.span.stop = _wheelCounter;
+    if (listItem.geometryType == 'line') {
+      listItem.span.stop = _wheelCounter;
+    }
     listItem.complete = true;
-    SurveySpan currentSpan = listItem.toSurveySpan();
     SurveyItem surveyItem = listItem.toSurveyItem();
-    print("CURRENT");
-    print(currentSpan.start);
-    print(currentSpan.stop);
-    print("CURRENT");
-    await _database.surveySpanDao.updateSpan(currentSpan);
     await _database.surveyItemDao.updateSurveyItem(surveyItem);
+    if (listItem.geometryType == 'line') {
+      SurveySpan currentSpan = listItem.toSurveySpan();
+      await _database.surveySpanDao.updateSpan(currentSpan);
+    }
   }
 
   @override
