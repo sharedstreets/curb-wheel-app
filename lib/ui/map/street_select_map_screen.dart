@@ -101,6 +101,7 @@ class _FullMapState extends State<FullMap> {
   MapboxMapController _mapController;
   MapboxMap _map;
   ProjectMapDatastore _projectMapData;
+  db.CurbWheelDatabase _database;
 
   LatLngBounds _lastBounds;
 
@@ -108,7 +109,12 @@ class _FullMapState extends State<FullMap> {
 
   List<_Line> _basemapLines = new List();
   List<_Line> _selectionLines = new List();
+  List<_Line> _surveyedLines = new List();
   List<_Symbol> _selectionSymbols = [];
+
+  Map<String, List<db.Survey>> _surveyedStreets;
+
+  _Line _surveyedSelectedStreet;
 
   _FullMapState(this.project);
   Street _selectedStreet;
@@ -119,13 +125,33 @@ class _FullMapState extends State<FullMap> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadSurveyedLines(context);
+    });
     _projectMapData = Provider.of<ProjectMapDatastores>(context, listen: false)
         .getDatastore(project);
+  }
+
+  _loadSurveyedLines(context) async {
+    print("test");
+
+    List<db.Survey> surveys = await _database.surveyDao.getAllSurveys();
+
+    _surveyedStreets = Map();
+    for (db.Survey s in surveys) {
+      _surveyedStreets.putIfAbsent(s.shStRefId, () {
+        return List();
+      });
+      _surveyedStreets[s.shStRefId].add(s);
+    }
   }
 
   _redrawMap() {
     _mapController.clearLines();
     for (_Line l in _basemapLines) {
+      _mapController.addLine(l.options, l.data);
+    }
+    for (_Line l in _surveyedLines) {
       _mapController.addLine(l.options, l.data);
     }
     for (_Line l in _selectionLines) {
@@ -220,12 +246,20 @@ class _FullMapState extends State<FullMap> {
 
     List<LatLng> mapboxGeom = await getMapboxGLGeom(visualizationFeature);
 
+    double sideOfStreetStreetOffset = 4;
+    if (sideOfStreet == SideOfStreet.Left &&
+        direction == DirectionOfTravel.Forward)
+      sideOfStreetStreetOffset = -4;
+    else if (sideOfStreet == SideOfStreet.Left &&
+        direction == DirectionOfTravel.Backward) sideOfStreetStreetOffset = -4;
+
     _selectionLines = new List();
     _Line l = new _Line();
     l.options = new LineOptions(
       geometry: mapboxGeom,
       lineColor: "#667ad2",
-      lineWidth: 8.0,
+      lineWidth: 4.0,
+      lineOffset: sideOfStreetStreetOffset,
       lineOpacity: 1.0,
     );
     l.data = {"id": f.properties['id']};
@@ -235,12 +269,13 @@ class _FullMapState extends State<FullMap> {
     double b = bearing(Point(coordinates: geomCoords[0]), p);
     LatLng latLng = new LatLng(p.coordinates.lat, p.coordinates.lng);
 
-    double sideOfStreetOffset = 0.25;
+    double sideOfStreetSymbolOffset = 0.25;
     if (sideOfStreet == SideOfStreet.Left &&
         direction == DirectionOfTravel.Forward)
-      sideOfStreetOffset = -1.75;
+      sideOfStreetSymbolOffset = -1.75;
     else if (sideOfStreet == SideOfStreet.Right &&
-        direction == DirectionOfTravel.Backward) sideOfStreetOffset = -1.75;
+        direction == DirectionOfTravel.Backward)
+      sideOfStreetSymbolOffset = -1.75;
 
     double rotationOffset = b - 90;
     double paddingOffset = 2;
@@ -259,7 +294,7 @@ class _FullMapState extends State<FullMap> {
       textRotate: rotationOffset,
       textSize: 14,
       textMaxWidth: 30,
-      textOffset: Offset(paddingOffset, sideOfStreetOffset),
+      textOffset: Offset(paddingOffset, sideOfStreetSymbolOffset),
       textAnchor: 'top',
       textColor: '#667ad2',
       textHaloBlur: 1,
@@ -269,6 +304,12 @@ class _FullMapState extends State<FullMap> {
     s.data = {"id": f.properties['id']};
 
     _selectionSymbols.add(s);
+
+    // if (_surveyedSelectedStreet != null) {
+    //   _surveyedLines.add(_surveyedSelectedStreet);
+    // }
+
+    // _surveyedSelectedStreet = null;
 
     _redrawMap();
 
@@ -301,6 +342,7 @@ class _FullMapState extends State<FullMap> {
       List<Feature<LineString>> features = data.getGeomsByBounds(bounds);
 
       _basemapLines = new List();
+      _surveyedLines = new List();
       for (Feature<LineString> f in features) {
         List<LatLng> mapboxGeom =
             await data.getMapboxGLGeomById(f.properties['id']);
@@ -315,6 +357,42 @@ class _FullMapState extends State<FullMap> {
 
         l.data = {"id": f.properties['id']};
         _basemapLines.add(l);
+
+        if (_surveyedStreets.containsKey(f.properties['forwardReferenceId'])) {
+          for (db.Survey s
+              in _surveyedStreets[f.properties['forwardReferenceId']]) {
+            double offset = 4;
+            _Line l = new _Line();
+            if (s.side == SideOfStreet.Left.toString()) offset = -4;
+            l.options = new LineOptions(
+              geometry: mapboxGeom,
+              lineColor: "#ff0000",
+              lineWidth: 4.0,
+              lineOffset: offset,
+              lineOpacity: 0.5,
+            );
+            l.data = {"id": f.properties['id']};
+            _surveyedLines.add(l);
+          }
+        }
+
+        if (_surveyedStreets.containsKey(f.properties['bakcReferenceId'])) {
+          for (db.Survey s
+              in _surveyedStreets[f.properties['forwardReferenceId']]) {
+            double offset = -4;
+            _Line l = new _Line();
+            if (s.side == SideOfStreet.Left.toString()) offset = 4;
+            l.options = new LineOptions(
+              geometry: mapboxGeom,
+              lineColor: "#ff0000",
+              lineWidth: 4.0,
+              lineOffset: offset,
+              lineOpacity: 0.5,
+            );
+            l.data = {"id": f.properties['id']};
+            _surveyedLines.add(l);
+          }
+        }
       }
 
       _redrawMap();
@@ -351,6 +429,8 @@ class _FullMapState extends State<FullMap> {
         trackCameraPosition: true,
         initialCameraPosition: const CameraPosition(target: LatLng(0.0, 0.0)),
       );
+
+    _database = Provider.of<db.CurbWheelDatabase>(context);
 
     return new Scaffold(
         body: Column(children: [

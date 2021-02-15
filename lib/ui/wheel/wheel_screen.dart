@@ -75,7 +75,6 @@ class _WheelScreenState extends State<WheelScreen>
         for (var p in points) {
           _database.surveyPointDao.insertPoint(p);
         }
-        
       }
       setState(() => this.listItem = null);
     }
@@ -162,6 +161,7 @@ class WheelHeader extends StatefulWidget {
 class _WheelHeaderState extends State<WheelHeader> {
   @override
   Widget build(BuildContext context) {
+    CurbWheelDatabase _database = Provider.of<CurbWheelDatabase>(context);
     var _survey = widget.survey;
     var _currentMeasurement = widget.currentWheelPosition;
     var _max = widget.survey.length;
@@ -181,7 +181,13 @@ class _WheelHeaderState extends State<WheelHeader> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   ),
                 ),
-                IconButton(icon: Icon(Icons.check), onPressed: () => {}),
+                IconButton(
+                    icon: Icon(Icons.check),
+                    onPressed: () async {
+                      var completeSurvey = _survey.copyWith(
+                          complete: true, endTimestamp: DateTime.now());
+                      await _database.surveyDao.updateSurvey(completeSurvey);
+                    }),
               ],
             ),
             Align(

@@ -34,6 +34,8 @@ class Surveys extends Table {
   TextColumn get endStreetName => text()();
   TextColumn get direction => text()();
   TextColumn get side => text()();
+  BoolColumn get complete => boolean().nullable()();
+  DateTimeColumn get endTimestamp => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
