@@ -50,7 +50,7 @@ class BleWheel {
 
   Future<void> connect() async {
     // skip if already connected to same device
-    if (_device != null && isConnected()) {
+    if (_device != null && isConnected() || isConnecting()) {
       return;
     }
 
@@ -189,15 +189,17 @@ class BleConnection extends ChangeNotifier {
     });
 
     _flutterBlue.scanResults.listen((results) async {
+      // todo neeed to clean up wheels that are no longer visible
       for (ScanResult r in results) {
-        BleWheel wheel = new BleWheel(r.device);
-
+        BleWheel wheel;
         bool newWheel = true;
         for (BleWheel w in _visbleWheels) {
-          if (w.getId() == wheel.getId()) newWheel = false;
+          if (w.getId() == r.device.id.id) newWheel = false;
+          wheel = w;
         }
 
         if (newWheel) {
+          wheel = new BleWheel(r.device);
           wheel._stateStreamController.stream
               .listen((WheelStatus status) async {
             if (status == WheelStatus.CONNECTED) {
@@ -213,16 +215,17 @@ class BleConnection extends ChangeNotifier {
 
               _wheelConnectionStreamController.add(wheel);
             } else if (status == WheelStatus.DISCONNECTED) {
+              if (_currentWheel == wheel) _currentWheel = null;
               _startRescaning();
             }
             notifyListeners();
           });
 
           _visbleWheels.add(wheel);
-          // autoconnect previously seen wheel
-          if (_currentWheel == null && wheel.getId() == _previousWheelId) {
-            wheel.connect();
-          }
+        }
+        // autoconnect previously seen wheel
+        if (_currentWheel == null && wheel.getId() == _previousWheelId) {
+          wheel.connect();
         }
 
         notifyListeners();
@@ -235,6 +238,13 @@ class BleConnection extends ChangeNotifier {
   initConnection() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _previousWheelId = prefs.getString('previousWheelId');
+
+    List<BluetoothDevice> connectedDevices =
+        await _flutterBlue.connectedDevices;
+
+    for (BluetoothDevice cd in connectedDevices) {
+      cd.disconnect();
+    }
 
     _startRescaning();
   }
@@ -270,15 +280,8 @@ class BleConnection extends ChangeNotifier {
 
       await _flutterBlue.stopScan();
 
-      _visbleWheels = [];
-      _currentWheel = null;
-
-      List<BluetoothDevice> connectedDevices =
-          await _flutterBlue.connectedDevices;
-
-      for (BluetoothDevice cd in connectedDevices) {
-        cd.disconnect();
-      }
+      //_visbleWheels = [];
+      //_currentWheel = null;
 
       _flutterBlue.startScan(
           timeout: Duration(seconds: 4), withServices: [WHEEL_SERVICE_UUID]);
