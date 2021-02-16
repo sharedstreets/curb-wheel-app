@@ -11,6 +11,17 @@ class Count {
   Count({this.completeCount, this.activeCount});
 }
 
+class PhotoWithParents {
+  final Photo photo;
+  final SurveyPoint point;
+  final SurveyItem surveyItem;
+  final Survey survey;
+  final Project project;
+
+  PhotoWithParents(
+      {this.photo, this.point, this.surveyItem, this.survey, this.project});
+}
+
 class SurveyItemWithFeature {
   SurveyItemWithFeature(this.surveyItem, this.feature);
 
@@ -69,8 +80,7 @@ class ListItem {
         id: this.span.id,
         surveyItemId: this.surveyItemId,
         start: this.span.start,
-        stop: this.span.stop
-      );
+        stop: this.span.stop);
   }
 
   List<SurveyPointsCompanion> toPointsCompanion() {
