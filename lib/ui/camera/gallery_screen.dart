@@ -7,14 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class GalleryScreenArguments {
-  final Project project;
-  final Survey survey;
-  final SurveyItem surveyItem;
+  final String projectId;
+  final String surveyId;
+  final String surveyItemId;
 
-  GalleryScreenArguments({this.project, this.survey, this.surveyItem});
+  GalleryScreenArguments({this.projectId, this.surveyId, this.surveyItemId});
 }
 
 class GalleryScreen extends StatefulWidget {
+
+  static const routeName = '/gallery';
+
+
   @override
   _GalleryScreenState createState() => _GalleryScreenState();
 }
@@ -24,17 +28,17 @@ class _GalleryScreenState extends State<GalleryScreen> {
   Widget build(BuildContext context) {
     final GalleryScreenArguments args =
         ModalRoute.of(context).settings.arguments;
-    final Project _project = args.project;
-    final Survey _survey = args.survey;
-    final SurveyItem _surveyItem = args.surveyItem;
+    final String _projectId = args.projectId;
+    final String _surveyId = args.surveyId;
+    final String _surveyItemId = args.surveyItemId;
     CurbWheelDatabase _database = Provider.of<CurbWheelDatabase>(context);
     Stream<List<PhotoWithParents>> _photos;
-    if (_project != null) {
-      _photos = _database.photoDao.watchPhotosByProject(_project);
-    } else if (_survey != null) {
-      _photos = _database.photoDao.watchPhotosBySurvey(_survey);
-    } else if (_surveyItem != null) {
-      _photos = _database.photoDao.watchPhotosBySurveyItem(_surveyItem);
+    if (_projectId != null) {
+      _photos = _database.photoDao.watchPhotosByProject(_projectId);
+    } else if (_surveyId != null) {
+      _photos = _database.photoDao.watchPhotosBySurvey(_surveyId);
+    } else if (_surveyItemId != null) {
+      _photos = _database.photoDao.watchPhotosBySurveyItem(_surveyItemId);
     } else {
       _photos = _database.photoDao.watchAllPhotos();
     }

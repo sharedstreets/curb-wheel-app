@@ -33,7 +33,7 @@ class PhotoDao extends DatabaseAccessor<CurbWheelDatabase> with _$PhotoDaoMixin 
             .toList();
     }));
 
-  Stream<List<PhotoWithParents>> watchPhotosByProject(Project project) => (select(photos).join([
+  Stream<List<PhotoWithParents>> watchPhotosByProject(String projectId) => (select(photos).join([
       leftOuterJoin(
           surveyPoints, surveyPoints.id.equalsExp(photos.pointId)),
       leftOuterJoin(
@@ -52,11 +52,11 @@ class PhotoDao extends DatabaseAccessor<CurbWheelDatabase> with _$PhotoDaoMixin 
                 project: row.readTable(projects),
               );
             })
-            .where((item) => item.project == project)
+            .where((item) => item.project.id == projectId)
             .toList();
     }));
 
-  Stream<List<PhotoWithParents>> watchPhotosBySurvey(Survey survey) => (select(photos).join([
+  Stream<List<PhotoWithParents>> watchPhotosBySurvey(String surveyId) => (select(photos).join([
       leftOuterJoin(
           surveyPoints, surveyPoints.id.equalsExp(photos.pointId)),
       leftOuterJoin(
@@ -75,11 +75,11 @@ class PhotoDao extends DatabaseAccessor<CurbWheelDatabase> with _$PhotoDaoMixin 
                 project: row.readTable(projects),
               );
             })
-            .where((item) => item.survey == survey)
+            .where((item) => item.survey.id == surveyId)
             .toList();
     }));
 
-  Stream<List<PhotoWithParents>> watchPhotosBySurveyItem(SurveyItem surveyItem) => (select(photos).join([
+  Stream<List<PhotoWithParents>> watchPhotosBySurveyItem(String surveyItemId) => (select(photos).join([
       leftOuterJoin(
           surveyPoints, surveyPoints.id.equalsExp(photos.pointId)),
       leftOuterJoin(
@@ -98,7 +98,7 @@ class PhotoDao extends DatabaseAccessor<CurbWheelDatabase> with _$PhotoDaoMixin 
                 project: row.readTable(projects),
               );
             })
-            .where((item) => item.surveyItem == surveyItem)
+            .where((item) => item.surveyItem.id == surveyItemId)
             .toList();
     }));
 

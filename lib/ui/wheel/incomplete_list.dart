@@ -1,6 +1,7 @@
 import 'package:curbwheel/database/database.dart';
 import 'package:curbwheel/database/models.dart';
 import 'package:curbwheel/ui/camera/camera_screen.dart';
+import 'package:curbwheel/ui/camera/gallery_screen.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
 import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:flutter/material.dart';
@@ -140,20 +141,108 @@ class _ActiveCardState extends State<ActiveCard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                          icon: Icon(Icons.more_horiz), onPressed: () => {}),
+                        icon: Icon(Icons.more_horiz),
+                        onPressed: () {
+                          showModalBottomSheet(
+                            
+                              context: context,
+                              builder: (context) =>  Wrap(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Row(children: [
+                                          svgIcon,
+                                          Text(_listItem.name),
+                                        ],
+                                    ),
+                                        
+                                        ),
+                                        FlatButton(
+                                          onPressed: () => {
+                                            Navigator.pushNamed(
+                                              context, GalleryScreen.routeName,
+                                              arguments: GalleryScreenArguments(
+                                                surveyItemId: _listItem.surveyItemId                                              )
+                                            )
+                                          },
+                                          padding: EdgeInsets.all(10.0),
+                                          child: Row(
+                                            children: <Widget>[
+                                              Icon(Icons.image_sharp),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child:Text("View photos")
+                                                )
+                                            ],
+                                          ),
+                                         ),
+                                        FlatButton(
+                                          onPressed: () => {},
+                                          padding: EdgeInsets.all(10.0),
+                                          child: Row(
+                                            children: <Widget>[
+                                              Icon(Icons.delete),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child:Text("Delete")
+                                                )
+                                            ],
+                                          ),
+                                         ),
+                                         Padding(
+                                           padding: EdgeInsets.fromLTRB(8.0,0.0,8.0,0.0),
+                                            child:Divider(
+                                            thickness: 1.0,
+                                            color: Colors.grey
+                                            ),
+                                         ),
+                                         
+                                         FlatButton(
+                                          onPressed: () => {
+                                            Navigator.pop(context)
+                                          },
+                                          padding: EdgeInsets.all(10.0),
+                                          child: Row(
+                                            children: <Widget>[
+                                              Icon(Icons.close),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child:Text("Cancel")
+                                                )
+                                            ],
+                                          ),
+                                         ),
+
+                                      ],
+                                )
+                              );
+                        },
+                      ),
                       IconButton(
-                          icon: Icon(Icons.camera_alt),
-                          onPressed: () => {
-                                Navigator.pushNamed(
-                                    context, CameraScreen.routeName,
-                                    arguments: CameraScreenArguments(
-                                        surveyItemId: _listItem.surveyItemId,
-                                        position: widget.currentWheelPosition))
-                              })
+                        icon: Icon(Icons.camera_alt),
+                        onPressed: () => {
+                              Navigator.pushNamed(
+                                  context, CameraScreen.routeName,
+                                  arguments: CameraScreenArguments(
+                                      surveyItemId: _listItem.surveyItemId,
+                                      position: widget.currentWheelPosition))
+                        }
+                      )
                     ],
                   )
                 ],
               ),
             )));
+  }
+}
+
+class ItemBottomSheet extends StatelessWidget {
+  final SurveyItem surveyItem;
+
+  ItemBottomSheet(this.surveyItem);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
