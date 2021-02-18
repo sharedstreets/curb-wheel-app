@@ -85,7 +85,7 @@ class _WheelScreenState extends State<WheelScreen>
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.white)),
             actions: [BleStatusButton()]),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton:  FloatingActionButton(
           child: Icon(Icons.add),
           backgroundColor: Colors.black,
           onPressed: () => {

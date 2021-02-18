@@ -126,7 +126,7 @@ class _CameraScreenState extends State<CameraScreen> {
       final path = "${p.path}/$name.png";
       try {
         XFile img = await cameraController.takePicture();
-        img.saveTo(path);
+        await img.saveTo(path);
         Navigator.pushNamed(context, PreviewScreen.routeName,
             arguments: PreviewScreenArguments(widget.surveyItemId, path,
                 position: _position, pointId: _pointId));
@@ -161,6 +161,9 @@ class _CameraScreenState extends State<CameraScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+          automaticallyImplyLeading: true,
+        ),
       backgroundColor: Colors.black,
       body: Container(
         child: Stack(
