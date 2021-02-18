@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:curbwheel/ui/camera/camera_screen.dart';
-import 'package:curbwheel/ui/wheel/wheel_screen.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:uuid/uuid.dart';
 import '../../database/database.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 
 var uuid = Uuid();
 
@@ -87,11 +87,16 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                       position: moor.Value(_position));
                               await database.surveyPointDao
                                   .insertPoint(surveyPoint);
+                              final directory = await getApplicationDocumentsDirectory();
+                              String filename = basename(File(_filePath).path);
+                              final _newPath = "${directory.path}/$filename";
+                              await File(_filePath)
+                                  .rename(_newPath);
                               await database.photoDao.insertPhoto(
                                   PhotosCompanion(
                                       id: moor.Value(uuid.v4()),
                                       pointId: moor.Value(pointId),
-                                      file: moor.Value(_filePath)));
+                                      file: moor.Value(_newPath)));
                               Navigator.pop(context);
                               Navigator.pop(context);
                             });
