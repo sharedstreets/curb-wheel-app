@@ -755,7 +755,8 @@ class Survey extends DataClass implements Insertable<Survey> {
   final String projectId;
   final String shStRefId;
   final String streetName;
-  final double length;
+  final double mapLength;
+  final double measuredLength;
   final String startStreetName;
   final String endStreetName;
   final String direction;
@@ -767,7 +768,8 @@ class Survey extends DataClass implements Insertable<Survey> {
       @required this.projectId,
       @required this.shStRefId,
       @required this.streetName,
-      @required this.length,
+      @required this.mapLength,
+      this.measuredLength,
       @required this.startStreetName,
       @required this.endStreetName,
       @required this.direction,
@@ -789,8 +791,10 @@ class Survey extends DataClass implements Insertable<Survey> {
           .mapFromDatabaseResponse(data['${effectivePrefix}sh_st_ref_id']),
       streetName: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}street_name']),
-      length:
-          doubleType.mapFromDatabaseResponse(data['${effectivePrefix}length']),
+      mapLength: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}map_length']),
+      measuredLength: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}measured_length']),
       startStreetName: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}start_street_name']),
       endStreetName: stringType
@@ -819,8 +823,11 @@ class Survey extends DataClass implements Insertable<Survey> {
     if (!nullToAbsent || streetName != null) {
       map['street_name'] = Variable<String>(streetName);
     }
-    if (!nullToAbsent || length != null) {
-      map['length'] = Variable<double>(length);
+    if (!nullToAbsent || mapLength != null) {
+      map['map_length'] = Variable<double>(mapLength);
+    }
+    if (!nullToAbsent || measuredLength != null) {
+      map['measured_length'] = Variable<double>(measuredLength);
     }
     if (!nullToAbsent || startStreetName != null) {
       map['start_street_name'] = Variable<String>(startStreetName);
@@ -855,8 +862,12 @@ class Survey extends DataClass implements Insertable<Survey> {
       streetName: streetName == null && nullToAbsent
           ? const Value.absent()
           : Value(streetName),
-      length:
-          length == null && nullToAbsent ? const Value.absent() : Value(length),
+      mapLength: mapLength == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mapLength),
+      measuredLength: measuredLength == null && nullToAbsent
+          ? const Value.absent()
+          : Value(measuredLength),
       startStreetName: startStreetName == null && nullToAbsent
           ? const Value.absent()
           : Value(startStreetName),
@@ -884,7 +895,8 @@ class Survey extends DataClass implements Insertable<Survey> {
       projectId: serializer.fromJson<String>(json['projectId']),
       shStRefId: serializer.fromJson<String>(json['shStRefId']),
       streetName: serializer.fromJson<String>(json['streetName']),
-      length: serializer.fromJson<double>(json['length']),
+      mapLength: serializer.fromJson<double>(json['mapLength']),
+      measuredLength: serializer.fromJson<double>(json['measuredLength']),
       startStreetName: serializer.fromJson<String>(json['startStreetName']),
       endStreetName: serializer.fromJson<String>(json['endStreetName']),
       direction: serializer.fromJson<String>(json['direction']),
@@ -901,7 +913,8 @@ class Survey extends DataClass implements Insertable<Survey> {
       'projectId': serializer.toJson<String>(projectId),
       'shStRefId': serializer.toJson<String>(shStRefId),
       'streetName': serializer.toJson<String>(streetName),
-      'length': serializer.toJson<double>(length),
+      'mapLength': serializer.toJson<double>(mapLength),
+      'measuredLength': serializer.toJson<double>(measuredLength),
       'startStreetName': serializer.toJson<String>(startStreetName),
       'endStreetName': serializer.toJson<String>(endStreetName),
       'direction': serializer.toJson<String>(direction),
@@ -916,7 +929,8 @@ class Survey extends DataClass implements Insertable<Survey> {
           String projectId,
           String shStRefId,
           String streetName,
-          double length,
+          double mapLength,
+          double measuredLength,
           String startStreetName,
           String endStreetName,
           String direction,
@@ -928,7 +942,8 @@ class Survey extends DataClass implements Insertable<Survey> {
         projectId: projectId ?? this.projectId,
         shStRefId: shStRefId ?? this.shStRefId,
         streetName: streetName ?? this.streetName,
-        length: length ?? this.length,
+        mapLength: mapLength ?? this.mapLength,
+        measuredLength: measuredLength ?? this.measuredLength,
         startStreetName: startStreetName ?? this.startStreetName,
         endStreetName: endStreetName ?? this.endStreetName,
         direction: direction ?? this.direction,
@@ -943,7 +958,8 @@ class Survey extends DataClass implements Insertable<Survey> {
           ..write('projectId: $projectId, ')
           ..write('shStRefId: $shStRefId, ')
           ..write('streetName: $streetName, ')
-          ..write('length: $length, ')
+          ..write('mapLength: $mapLength, ')
+          ..write('measuredLength: $measuredLength, ')
           ..write('startStreetName: $startStreetName, ')
           ..write('endStreetName: $endStreetName, ')
           ..write('direction: $direction, ')
@@ -964,17 +980,19 @@ class Survey extends DataClass implements Insertable<Survey> {
               $mrjc(
                   streetName.hashCode,
                   $mrjc(
-                      length.hashCode,
+                      mapLength.hashCode,
                       $mrjc(
-                          startStreetName.hashCode,
+                          measuredLength.hashCode,
                           $mrjc(
-                              endStreetName.hashCode,
+                              startStreetName.hashCode,
                               $mrjc(
-                                  direction.hashCode,
+                                  endStreetName.hashCode,
                                   $mrjc(
-                                      side.hashCode,
-                                      $mrjc(complete.hashCode,
-                                          endTimestamp.hashCode)))))))))));
+                                      direction.hashCode,
+                                      $mrjc(
+                                          side.hashCode,
+                                          $mrjc(complete.hashCode,
+                                              endTimestamp.hashCode))))))))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -983,7 +1001,8 @@ class Survey extends DataClass implements Insertable<Survey> {
           other.projectId == this.projectId &&
           other.shStRefId == this.shStRefId &&
           other.streetName == this.streetName &&
-          other.length == this.length &&
+          other.mapLength == this.mapLength &&
+          other.measuredLength == this.measuredLength &&
           other.startStreetName == this.startStreetName &&
           other.endStreetName == this.endStreetName &&
           other.direction == this.direction &&
@@ -997,7 +1016,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
   final Value<String> projectId;
   final Value<String> shStRefId;
   final Value<String> streetName;
-  final Value<double> length;
+  final Value<double> mapLength;
+  final Value<double> measuredLength;
   final Value<String> startStreetName;
   final Value<String> endStreetName;
   final Value<String> direction;
@@ -1009,7 +1029,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     this.projectId = const Value.absent(),
     this.shStRefId = const Value.absent(),
     this.streetName = const Value.absent(),
-    this.length = const Value.absent(),
+    this.mapLength = const Value.absent(),
+    this.measuredLength = const Value.absent(),
     this.startStreetName = const Value.absent(),
     this.endStreetName = const Value.absent(),
     this.direction = const Value.absent(),
@@ -1022,7 +1043,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     @required String projectId,
     @required String shStRefId,
     @required String streetName,
-    @required double length,
+    @required double mapLength,
+    this.measuredLength = const Value.absent(),
     @required String startStreetName,
     @required String endStreetName,
     @required String direction,
@@ -1033,7 +1055,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
         projectId = Value(projectId),
         shStRefId = Value(shStRefId),
         streetName = Value(streetName),
-        length = Value(length),
+        mapLength = Value(mapLength),
         startStreetName = Value(startStreetName),
         endStreetName = Value(endStreetName),
         direction = Value(direction),
@@ -1043,7 +1065,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     Expression<String> projectId,
     Expression<String> shStRefId,
     Expression<String> streetName,
-    Expression<double> length,
+    Expression<double> mapLength,
+    Expression<double> measuredLength,
     Expression<String> startStreetName,
     Expression<String> endStreetName,
     Expression<String> direction,
@@ -1056,7 +1079,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
       if (projectId != null) 'project_id': projectId,
       if (shStRefId != null) 'sh_st_ref_id': shStRefId,
       if (streetName != null) 'street_name': streetName,
-      if (length != null) 'length': length,
+      if (mapLength != null) 'map_length': mapLength,
+      if (measuredLength != null) 'measured_length': measuredLength,
       if (startStreetName != null) 'start_street_name': startStreetName,
       if (endStreetName != null) 'end_street_name': endStreetName,
       if (direction != null) 'direction': direction,
@@ -1071,7 +1095,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
       Value<String> projectId,
       Value<String> shStRefId,
       Value<String> streetName,
-      Value<double> length,
+      Value<double> mapLength,
+      Value<double> measuredLength,
       Value<String> startStreetName,
       Value<String> endStreetName,
       Value<String> direction,
@@ -1083,7 +1108,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
       projectId: projectId ?? this.projectId,
       shStRefId: shStRefId ?? this.shStRefId,
       streetName: streetName ?? this.streetName,
-      length: length ?? this.length,
+      mapLength: mapLength ?? this.mapLength,
+      measuredLength: measuredLength ?? this.measuredLength,
       startStreetName: startStreetName ?? this.startStreetName,
       endStreetName: endStreetName ?? this.endStreetName,
       direction: direction ?? this.direction,
@@ -1108,8 +1134,11 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     if (streetName.present) {
       map['street_name'] = Variable<String>(streetName.value);
     }
-    if (length.present) {
-      map['length'] = Variable<double>(length.value);
+    if (mapLength.present) {
+      map['map_length'] = Variable<double>(mapLength.value);
+    }
+    if (measuredLength.present) {
+      map['measured_length'] = Variable<double>(measuredLength.value);
     }
     if (startStreetName.present) {
       map['start_street_name'] = Variable<String>(startStreetName.value);
@@ -1139,7 +1168,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
           ..write('projectId: $projectId, ')
           ..write('shStRefId: $shStRefId, ')
           ..write('streetName: $streetName, ')
-          ..write('length: $length, ')
+          ..write('mapLength: $mapLength, ')
+          ..write('measuredLength: $measuredLength, ')
           ..write('startStreetName: $startStreetName, ')
           ..write('endStreetName: $endStreetName, ')
           ..write('direction: $direction, ')
@@ -1203,15 +1233,29 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
     );
   }
 
-  final VerificationMeta _lengthMeta = const VerificationMeta('length');
-  GeneratedRealColumn _length;
+  final VerificationMeta _mapLengthMeta = const VerificationMeta('mapLength');
+  GeneratedRealColumn _mapLength;
   @override
-  GeneratedRealColumn get length => _length ??= _constructLength();
-  GeneratedRealColumn _constructLength() {
+  GeneratedRealColumn get mapLength => _mapLength ??= _constructMapLength();
+  GeneratedRealColumn _constructMapLength() {
     return GeneratedRealColumn(
-      'length',
+      'map_length',
       $tableName,
       false,
+    );
+  }
+
+  final VerificationMeta _measuredLengthMeta =
+      const VerificationMeta('measuredLength');
+  GeneratedRealColumn _measuredLength;
+  @override
+  GeneratedRealColumn get measuredLength =>
+      _measuredLength ??= _constructMeasuredLength();
+  GeneratedRealColumn _constructMeasuredLength() {
+    return GeneratedRealColumn(
+      'measured_length',
+      $tableName,
+      true,
     );
   }
 
@@ -1299,7 +1343,8 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
         projectId,
         shStRefId,
         streetName,
-        length,
+        mapLength,
+        measuredLength,
         startStreetName,
         endStreetName,
         direction,
@@ -1345,11 +1390,17 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
     } else if (isInserting) {
       context.missing(_streetNameMeta);
     }
-    if (data.containsKey('length')) {
-      context.handle(_lengthMeta,
-          length.isAcceptableOrUnknown(data['length'], _lengthMeta));
+    if (data.containsKey('map_length')) {
+      context.handle(_mapLengthMeta,
+          mapLength.isAcceptableOrUnknown(data['map_length'], _mapLengthMeta));
     } else if (isInserting) {
-      context.missing(_lengthMeta);
+      context.missing(_mapLengthMeta);
+    }
+    if (data.containsKey('measured_length')) {
+      context.handle(
+          _measuredLengthMeta,
+          measuredLength.isAcceptableOrUnknown(
+              data['measured_length'], _measuredLengthMeta));
     }
     if (data.containsKey('start_street_name')) {
       context.handle(

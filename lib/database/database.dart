@@ -29,7 +29,8 @@ class Surveys extends Table {
   TextColumn get projectId => text()();
   TextColumn get shStRefId => text()();
   TextColumn get streetName => text()();
-  RealColumn get length => real()();
+  RealColumn get mapLength => real()();
+  RealColumn get measuredLength => real().nullable()();
   TextColumn get startStreetName => text()();
   TextColumn get endStreetName => text()();
   TextColumn get direction => text()();

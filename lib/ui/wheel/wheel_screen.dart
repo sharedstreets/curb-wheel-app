@@ -164,7 +164,7 @@ class _WheelHeaderState extends State<WheelHeader> {
     CurbWheelDatabase _database = Provider.of<CurbWheelDatabase>(context);
     var _survey = widget.survey;
     var _currentMeasurement = widget.currentWheelPosition;
-    var _max = widget.survey.length;
+    var _max = widget.survey.mapLength;
 
     return Container(
       color: Colors.white,
@@ -185,7 +185,9 @@ class _WheelHeaderState extends State<WheelHeader> {
                     icon: Icon(Icons.check),
                     onPressed: () async {
                       var completeSurvey = _survey.copyWith(
-                          complete: true, endTimestamp: DateTime.now());
+                          measuredLength: _currentMeasurement,
+                          complete: true,
+                          endTimestamp: DateTime.now());
                       await _database.surveyDao.updateSurvey(completeSurvey);
                     }),
               ],
@@ -224,7 +226,7 @@ class _WheelHeaderState extends State<WheelHeader> {
               ),
             ),
             Text(
-                "Surveyed ${_currentMeasurement.toStringAsFixed(1)}m of ${_survey.length.toStringAsFixed(1)}m"),
+                "Surveyed ${_currentMeasurement.toStringAsFixed(1)}m of ${_survey.mapLength.toStringAsFixed(1)}m"),
           ],
         ),
       ),

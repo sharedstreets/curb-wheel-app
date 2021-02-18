@@ -24,6 +24,7 @@ class _IncompleteListState extends State<IncompleteList> {
     if (listItem.geometryType == 'line') {
       listItem.span.stop = _wheelCounter;
     }
+
     listItem.complete = true;
     SurveyItem surveyItem = listItem.toSurveyItem();
     await _database.surveyItemDao.updateSurveyItem(surveyItem);
@@ -92,7 +93,7 @@ class _ActiveCardState extends State<ActiveCard> {
     var _progress = _listItem.geometryType == "line"
         ? widget.currentWheelPosition
         : _listItem.points[0].position;
-    var _max = widget.survey.length;
+    var _max = widget.survey.mapLength;
 
     // todo photo points aren't merging on incomplete items...
     var _points = _listItem.points.map((p) => p.position).toList();

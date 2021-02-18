@@ -22,13 +22,13 @@ class ConfigClient {
       final body = response.body;
       return body;
     } else
-    throw Exception("Failed to load json data.");
+      throw Exception("Failed to load json data.");
   }
 
   getConfig(String url) async {
     var configJson = await _getJson(url);
-      Config config = new Config.fromJson(configJson);
-      return config;
+    Config config = new Config.fromJson(configJson);
+    return config;
   }
 
   getMapData(Config config) async {

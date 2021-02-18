@@ -26,7 +26,7 @@ class StreetSelectMapScreenArguments {
 }
 
 class StreetSelectMapScreen extends StatefulWidget {
-  static const routeName = '/map';
+  static const routeName = '/map/select';
 
   final db.Project project;
 
@@ -135,7 +135,8 @@ class _FullMapState extends State<FullMap> {
   _loadSurveyedLines(context) async {
     print("test");
 
-    List<db.Survey> surveys = await _database.surveyDao.getAllSurveys();
+    List<db.Survey> surveys =
+        await _database.surveyDao.getAllSurveysByProjectId(project.id);
 
     _surveyedStreets = Map();
     for (db.Survey s in surveys) {
@@ -338,7 +339,6 @@ class _FullMapState extends State<FullMap> {
 
       _lastBounds = bounds;
 
-      // ick is this the rigfh way to handle async object initialization?
       List<Feature<LineString>> features = data.getGeomsByBounds(bounds);
 
       _basemapLines = new List();
@@ -495,7 +495,7 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
                               id: moor.Value(surveyId),
                               shStRefId: moor.Value(_street.shStRefId),
                               streetName: moor.Value(_street.streetName),
-                              length: moor.Value(_street.length),
+                              mapLength: moor.Value(_street.length),
                               projectId: moor.Value(_project.id),
                               startStreetName:
                                   moor.Value(_street.fromStreetName),

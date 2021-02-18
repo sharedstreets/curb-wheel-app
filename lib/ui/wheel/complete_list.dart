@@ -25,23 +25,21 @@ class _CompleteListState extends State<CompleteList> {
     _database = Provider.of<CurbWheelDatabase>(context);
     _survey = widget.survey;
     return Container(
-      child: StreamBuilder(
-          stream: _database.getListItemBySurveyId(_survey.id, true),
-          builder: (context, AsyncSnapshot<List<ListItem>> snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: snapshot.data.length,
-                itemBuilder: (context, index) {
-                  return InactiveCard(snapshot.data[index], _survey);
-                },
-              );
-            } else {
-              return Text("");
-            }
-          }
-        )
-      );
+        child: StreamBuilder(
+            stream: _database.getListItemBySurveyId(_survey.id, true),
+            builder: (context, AsyncSnapshot<List<ListItem>> snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) {
+                    return InactiveCard(snapshot.data[index], _survey);
+                  },
+                );
+              } else {
+                return Text("");
+              }
+            }));
   }
 }
 
@@ -59,7 +57,7 @@ class _InactiveCardState extends State<InactiveCard> {
   @override
   Widget build(BuildContext context) {
     var _listItem = widget.listItem;
-    var _max = widget.survey.length;
+    var _max = widget.survey.mapLength;
     var _stop = _listItem.geometryType == 'line'
         ? _listItem.span.stop
         : _listItem.points[0].position;
