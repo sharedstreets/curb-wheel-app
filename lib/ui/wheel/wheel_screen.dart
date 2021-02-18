@@ -6,6 +6,7 @@ import 'package:curbwheel/service/bluetooth_service.dart';
 import 'package:curbwheel/ui/ble/ble_selector.dart';
 import 'package:curbwheel/ui/features/features_screen.dart';
 import 'package:curbwheel/ui/map/street_select_map_screen.dart';
+import 'package:curbwheel/ui/shared/utils.dart';
 import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -168,15 +169,14 @@ class _WheelHeaderState extends State<WheelHeader> {
     var _survey = widget.survey;
     var _currentMeasurement = widget.currentWheelPosition;
     var _max = widget.survey.length;
-    var _color = Colors.blue;
+    Color _color = Colors.blue;
 
-    if (_currentMeasurement / _max >= 0.98 && _currentMeasurement / _max < 1) {
-      _color = Colors.orange;
-      HapticFeedback.vibrate();
-    }
-
-    if (_currentMeasurement / _max >= 1.0) {
-      _color = Colors.red;
+    if (_currentMeasurement / _max >= 0.98) {
+      double _val = ((_currentMeasurement / _max) - 0.98) / (1 - 0.98);
+      _val = _val > 1 ? 1.0 : _val;
+      Color _colorValue = Color.lerp(Colors.orange, Colors.red, _val);
+      _color = colorConvert(
+          '#${_colorValue.toString().split('(0x')[1].split(')')[0]}');
       HapticFeedback.vibrate();
     }
 
