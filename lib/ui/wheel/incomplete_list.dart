@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:curbwheel/database/database.dart';
 import 'package:curbwheel/database/models.dart';
 import 'package:curbwheel/ui/camera/camera_screen.dart';
+import 'package:curbwheel/ui/camera/gallery_screen.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
 import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +36,59 @@ class _IncompleteListState extends State<IncompleteList> {
     }
   }
 
+  Future<void> _showDeleteDialog(ListItem listItem) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete item?'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to delete this survey item?'),
+                Text('This cannot be undone.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            TextButton(
+                child: Text('Delete'),
+                onPressed: () {
+                  _deleteItem(listItem);
+                  Navigator.pop(context);
+                }),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteItem(ListItem listItem) async {
+    SurveyItem surveyItem = listItem.toSurveyItem();
+    await _database.surveyItemDao.deleteSurveyItem(surveyItem);
+    SurveySpan span =
+        await _database.surveySpanDao.getSpansBySurveyItemId(surveyItem.id);
+    await _database.surveySpanDao.deleteSpan(span);
+    List<SurveyPoint> points =
+        await _database.surveyPointDao.getPointsBySurveyItemId(surveyItem.id);
+    for (SurveyPoint point in points) {
+      await _database.surveyPointDao.deletePoint(point);
+    }
+    List<Photo> photos =
+        await _database.photoDao.getPhotosBySurveyItemId(surveyItem.id);
+    for (Photo photo in photos) {
+      await _database.photoDao.deletePhoto(photo);
+      File file = File(photo.file);
+      file.deleteSync();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Survey _survey = widget.survey;
@@ -55,8 +111,12 @@ class _IncompleteListState extends State<IncompleteList> {
                     shrinkWrap: true,
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index) {
-                      return ActiveCard(_survey, snapshot.data[index],
-                          widget.currentWheelPosition, _completeItem);
+                      return ActiveCard(
+                          _survey,
+                          snapshot.data[index],
+                          widget.currentWheelPosition,
+                          _completeItem,
+                          _showDeleteDialog);
                     },
                   );
                 }
@@ -71,10 +131,11 @@ class ActiveCard extends StatefulWidget {
   final Survey survey;
   final ListItem listItem;
   final double currentWheelPosition;
-  final Function callback;
+  final Function completeCallback;
+  final Function deleteCallback;
 
-  ActiveCard(
-      this.survey, this.listItem, this.currentWheelPosition, this.callback);
+  ActiveCard(this.survey, this.listItem, this.currentWheelPosition,
+      this.completeCallback, this.deleteCallback);
 
   @override
   _ActiveCardState createState() => _ActiveCardState();
@@ -84,7 +145,8 @@ class _ActiveCardState extends State<ActiveCard> {
   @override
   Widget build(BuildContext context) {
     ListItem _listItem = widget.listItem;
-    Function _callback = widget.callback;
+    Function _completeCallback = widget.completeCallback;
+    Function _deleteCallback = widget.deleteCallback;
 
     var _start = _listItem.geometryType == "line"
         ? _listItem.span.start
@@ -94,7 +156,6 @@ class _ActiveCardState extends State<ActiveCard> {
         : _listItem.points[0].position;
     var _max = widget.survey.length;
 
-    // todo photo points aren't merging on incomplete items...
     var _points = _listItem.points.map((p) => p.position).toList();
 
     final String assetName = _listItem.geometryType == 'line'
@@ -120,8 +181,8 @@ class _ActiveCardState extends State<ActiveCard> {
                     Spacer(),
                     IconButton(
                       icon: Icon(Icons.check),
-                      onPressed: () =>
-                          _callback(_listItem, widget.currentWheelPosition),
+                      onPressed: () => _completeCallback(
+                          _listItem, widget.currentWheelPosition),
                     )
                   ]),
                   Padding(
@@ -140,7 +201,77 @@ class _ActiveCardState extends State<ActiveCard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                          icon: Icon(Icons.more_horiz), onPressed: () => {}),
+                        icon: Icon(Icons.more_horiz),
+                        onPressed: () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (context) => Wrap(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Row(
+                                          children: [
+                                            svgIcon,
+                                            Text(_listItem.name),
+                                          ],
+                                        ),
+                                      ),
+                                      FlatButton(
+                                        onPressed: () => {
+                                          Navigator.pushNamed(
+                                              context, GalleryScreen.routeName,
+                                              arguments: GalleryScreenArguments(
+                                                  surveyItemId:
+                                                      _listItem.surveyItemId))
+                                        },
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Icon(Icons.image_sharp),
+                                            Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text("View photos"))
+                                          ],
+                                        ),
+                                      ),
+                                      FlatButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          return _deleteCallback(_listItem);
+                                        },
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Icon(Icons.delete),
+                                            Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text("Delete"))
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.fromLTRB(
+                                            8.0, 0.0, 8.0, 0.0),
+                                        child: Divider(
+                                            thickness: 1.0, color: Colors.grey),
+                                      ),
+                                      FlatButton(
+                                        onPressed: () =>
+                                            {Navigator.pop(context)},
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Icon(Icons.close),
+                                            Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text("Cancel"))
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ));
+                        },
+                      ),
                       IconButton(
                           icon: Icon(Icons.camera_alt),
                           onPressed: () => {
@@ -155,5 +286,16 @@ class _ActiveCardState extends State<ActiveCard> {
                 ],
               ),
             )));
+  }
+}
+
+class ItemBottomSheet extends StatelessWidget {
+  final SurveyItem surveyItem;
+
+  ItemBottomSheet(this.surveyItem);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }

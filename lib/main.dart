@@ -1,4 +1,6 @@
 import 'package:curbwheel/ui/camera/camera_screen.dart';
+import 'package:curbwheel/ui/camera/gallery_screen.dart';
+import 'package:curbwheel/ui/camera/image_view_screen.dart';
 import 'package:curbwheel/ui/camera/preview_screen.dart';
 import 'package:curbwheel/ui/features/features_screen.dart';
 import 'package:curbwheel/ui/map/street_select_map_screen.dart';
@@ -98,6 +100,8 @@ class CurbWheel extends StatelessWidget {
         SplashScreen.routeName: (context) => SplashScreen(),
         ProjectListScreen.routeName: (context) => ProjectListScreen(),
         FeatureSelectScreen.routeName: (context) => FeatureSelectScreen(),
+        GalleryScreen.routeName: (context) => GalleryScreen(),
+        ImageViewScreen.routeName: (context) => ImageViewScreen(),
       },
     );
   }
