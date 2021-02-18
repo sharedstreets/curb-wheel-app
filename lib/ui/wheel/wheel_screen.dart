@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:curbwheel/database/database.dart';
 import 'package:curbwheel/database/models.dart';
 import 'package:curbwheel/service/bluetooth_service.dart';
@@ -6,6 +8,7 @@ import 'package:curbwheel/ui/features/features_screen.dart';
 import 'package:curbwheel/ui/map/street_select_map_screen.dart';
 import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'complete_list.dart';
@@ -165,6 +168,17 @@ class _WheelHeaderState extends State<WheelHeader> {
     var _survey = widget.survey;
     var _currentMeasurement = widget.currentWheelPosition;
     var _max = widget.survey.length;
+    var _color = Colors.blue;
+
+    if (_currentMeasurement / _max >= 0.98 && _currentMeasurement / _max < 1) {
+      _color = Colors.orange;
+      HapticFeedback.vibrate();
+    }
+
+    if (_currentMeasurement / _max >= 1.0) {
+      _color = Colors.red;
+      HapticFeedback.vibrate();
+    }
 
     return Container(
       color: Colors.white,
@@ -219,7 +233,7 @@ class _WheelHeaderState extends State<WheelHeader> {
               child: ProgressBar(
                 progress: _currentMeasurement,
                 max: _max,
-                progressColor: Color(0xff667ad2),
+                progressColor: _color,
                 backgroundStrokeWidth: 10.0,
               ),
             ),

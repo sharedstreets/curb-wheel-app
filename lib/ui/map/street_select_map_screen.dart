@@ -133,7 +133,6 @@ class _FullMapState extends State<FullMap> {
   }
 
   _loadSurveyedLines(context) async {
-    print("test");
 
     List<db.Survey> surveys = await _database.surveyDao.getAllSurveys();
 

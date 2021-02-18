@@ -46,10 +46,13 @@ class _IncompleteListState extends State<IncompleteList> {
                 if (snapshot.data.length == 0) {
                   return Center(
                       child: Padding(
-                          padding: EdgeInsets.all(20.0),
-                          child: Text('No active items',
-                              style: TextStyle(
-                                  color: Colors.black, fontSize: 20))));
+                        padding: EdgeInsets.all(20.0),
+                        child: Text('No active items',
+                          style: TextStyle(
+                              color: Colors.black, fontSize: 20)
+                            )
+                      )
+                    );
                 } else {
                   return ListView.builder(
                     shrinkWrap: true,
@@ -63,7 +66,9 @@ class _IncompleteListState extends State<IncompleteList> {
               } else {
                 return Text("No data");
               }
-            }));
+            }
+          )
+        );
   }
 }
 
