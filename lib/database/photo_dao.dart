@@ -97,6 +97,7 @@ class PhotoDao extends DatabaseAccessor<CurbWheelDatabase>
           ])
           .watch()
           .map((rows) {
+            print(rows);
             return rows
                 .map((row) {
                   return PhotoWithParents(
@@ -113,12 +114,14 @@ class PhotoDao extends DatabaseAccessor<CurbWheelDatabase>
 
   Future<List<Photo>> getPhotosBySurveyItemId(String surveyItemId) =>
       (select(photos)
-        ..where((t) => surveyItems.id.equals(surveyItemId))
-        ..join([
-          innerJoin(surveyPoints, surveyPoints.id.equalsExp(photos.pointId)),
-          innerJoin(
-              surveyItems, surveyItems.id.equalsExp(surveyPoints.surveyItemId))
-        ])).get();
+            ..where((t) => surveyItems.id.equals(surveyItemId))
+            ..join([
+              innerJoin(
+                  surveyPoints, surveyPoints.id.equalsExp(photos.pointId)),
+              innerJoin(surveyItems,
+                  surveyItems.id.equalsExp(surveyPoints.surveyItemId))
+            ]))
+          .get();
 
   Future insertPhoto(PhotosCompanion photo) => into(photos).insert(photo);
 

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:curbwheel/database/models.dart';
+import 'package:curbwheel/ui/camera/image_view_screen.dart';
 
 import '../../database/database.dart';
 import 'package:flutter/material.dart';
@@ -50,12 +51,14 @@ class _GalleryScreenState extends State<GalleryScreen> {
           return Column(
             children: <Widget>[
               Expanded(
-                child: GridView.builder(
+                child: snapshot.hasData ? 
+                snapshot.data.length == 0 ? Center(child: Text("No photos"),) : GridView.builder(
                     itemCount: snapshot.data.length,
                     gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2),
                     itemBuilder: (BuildContext context, int index) {
                       return new GestureDetector(
+                        onTap: () => Navigator.pushNamed(context, ImageViewScreen.routeName, arguments: ImageViewScreenArguments(snapshot.data[index].photo.file)),
                         child: new Card(
                           elevation: 5.0,
                           child: Image.file(
@@ -64,7 +67,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                           ),
                         ),
                       );
-                    }),
+                    }) : Center(child: Text("Loading")),
               ),
             ],
           );

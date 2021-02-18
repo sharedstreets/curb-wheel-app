@@ -45,9 +45,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
     String _pointId = widget.pointId;
 
     return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-        ),
         body: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -66,9 +63,18 @@ class _PreviewScreenState extends State<PreviewScreen> {
                   height: 60,
                   color: Colors.black,
                   child: new Center(
-                      child: new Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                      child:Padding(
+                        padding:EdgeInsets.fromLTRB(16.0, 0.0,16.0,0.0),
+                        child:Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
+                        IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          icon: Icon(
+                            Icons.backspace_rounded,
+                            color: Colors.white,
+                          ),
+                        ),
                         IconButton(
                           icon: Icon(
                             Icons.save,
@@ -87,27 +93,31 @@ class _PreviewScreenState extends State<PreviewScreen> {
                                       position: moor.Value(_position));
                               await database.surveyPointDao
                                   .insertPoint(surveyPoint);
-                              final directory = await getApplicationDocumentsDirectory();
+                              final directory =
+                                  await getApplicationDocumentsDirectory();
                               String filename = basename(File(_filePath).path);
                               final _newPath = "${directory.path}/$filename";
-                              await File(_filePath)
-                                  .rename(_newPath);
-                              await database.photoDao.insertPhoto(
-                                  PhotosCompanion(
-                                      id: moor.Value(uuid.v4()),
-                                      pointId: moor.Value(pointId),
-                                      file: moor.Value(_newPath)));
+                              await File(_filePath).rename(_newPath);
+                              final PhotosCompanion photo = PhotosCompanion(
+                                  id: moor.Value(uuid.v4()),
+                                  pointId: moor.Value(pointId),
+                                  file: moor.Value(_newPath));
+                              await database.photoDao.insertPhoto(photo);
                               Navigator.pop(context);
                               Navigator.pop(context);
                             });
                           },
                         ),
-                      ])),
+                      ])
+                      
+                      
+                      ) ),
                 ),
               )
             ],
           ),
-        ));
+        )
+    );
   }
 
   Future getBytes() async {
