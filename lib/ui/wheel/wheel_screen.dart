@@ -64,7 +64,12 @@ class _WheelScreenState extends State<WheelScreen>
     _database = Provider.of<CurbWheelDatabase>(context);
     _counter = Provider.of<WheelCounter>(context);
     _currentWheelPosition = _counter.getForwardCounter() / 10;
-
+    BleConnection _bleService = Provider.of<BleConnection>(context);
+    if (_bleService.currentWheel() == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await showAlertDialog(context);
+      });
+    }
     if (this.listItem != null) {
       _database.surveyItemDao
           .insertSurveyItem(listItem.toSurveyItemsCompanion());
@@ -85,7 +90,7 @@ class _WheelScreenState extends State<WheelScreen>
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.white)),
             actions: [BleStatusButton()]),
-        floatingActionButton:  FloatingActionButton(
+        floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           backgroundColor: Colors.black,
           onPressed: () => {
@@ -146,6 +151,35 @@ class _WheelScreenState extends State<WheelScreen>
           ],
         ));
   }
+}
+
+showAlertDialog(BuildContext context) {
+  Widget okButton = FlatButton(
+    child: Text("Go to connection screen"),
+    onPressed: () {
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => BleListDisplay())); 
+    },
+  );
+
+  AlertDialog alert = AlertDialog(
+    title: Text("Bluetooth Not Connected"),
+    content: Text(
+        "You are not connected to a CurbWheel, go to the connection screen to find a nearby CurbWheel connection before surveying."),
+    actions: [
+      okButton,
+    ],
+  );
+
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }
 
 class WheelHeader extends StatefulWidget {
