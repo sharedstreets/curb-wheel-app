@@ -1,4 +1,5 @@
 import 'package:curbwheel/database/database.dart' as db;
+import 'package:curbwheel/database/models.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:curbwheel/database/survey_dao.dart';
 import 'package:curbwheel/service/bluetooth_service.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:turf/turf.dart';
 import 'package:uuid/uuid.dart';
 import 'map_database.dart';
@@ -113,6 +115,7 @@ class _FullMapState extends State<FullMap> {
   _FullMapState(this.project);
 
   bool _zoomInToTap = true;
+  db.Survey _selectedSurvey;
 
   @override
   void initState() {
@@ -138,6 +141,90 @@ class _FullMapState extends State<FullMap> {
       });
       _surveyedStreets[s.shStRefId].add(s);
     }
+  }
+
+  void _onLineTapped(Line tappedLine) async {
+    Future<List<db.Survey>> _refServeys = _database.surveyDao
+        .getAllSurveysByProjectIdAndReferenceIds(project.id, [
+      tappedLine.data['forwardReferenceId'],
+      tappedLine.data['backReferenceId']
+    ]);
+
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return ListView(children: <Widget>[
+            ListTile(
+                title: Text(
+              "Completed Surveys",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )),
+            FutureBuilder<List<db.Survey>>(
+                future: _refServeys,
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<db.Survey>> snapshot) {
+                  return ListView.separated(
+                    separatorBuilder: (context, index) => Divider(
+                      color: Colors.black,
+                    ),
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedSurvey = snapshot.data[index];
+                            });
+                          },
+                          child: ListTile(
+                              leading: Icon(Icons.map),
+                              title: Text(
+                                snapshot.data[index].streetName,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 5, 10, 10),
+                                    child: RichText(
+                                      text: TextSpan(
+                                        text: '',
+                                        style:
+                                            DefaultTextStyle.of(context).style,
+                                        children: <TextSpan>[
+                                          TextSpan(
+                                              text: snapshot.data[index].side ==
+                                                      SideOfStreet.Left
+                                                          .toString()
+                                                  ? "Left side"
+                                                  : "Right side",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          TextSpan(text: " from "),
+                                          TextSpan(
+                                              text:
+                                                  '${snapshot.data[index].startStreetName}',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          TextSpan(text: ' to '),
+                                          TextSpan(
+                                              text:
+                                                  '${snapshot.data[index].endStreetName}',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          TextSpan(
+                                              text:
+                                                  "\n\nSurveyed by Kevin at 9:30am on 2/18/2021 ",
+                                              style: TextStyle(
+                                                  fontStyle: FontStyle.italic)),
+                                        ],
+                                      ),
+                                    ),
+                                  ))));
+                    },
+                  );
+                })
+          ]);
+        });
   }
 
   _redrawMap() {
@@ -186,12 +273,16 @@ class _FullMapState extends State<FullMap> {
               lineOffset: offset,
               lineOpacity: 0.5,
             );
-            l.data = {"id": f.properties['id']};
+            l.data = {
+              "id": f.properties['id'],
+              "forwardReferenceId": f.properties['forwardReferenceId'],
+              "backReferenceId": f.properties['backReferenceId']
+            };
             _surveyedLines.add(l);
           }
         }
 
-        if (_surveyedStreets.containsKey(f.properties['bakcReferenceId'])) {
+        if (_surveyedStreets.containsKey(f.properties['backReferenceId'])) {
           for (db.Survey s
               in _surveyedStreets[f.properties['forwardReferenceId']]) {
             double offset = -4;
@@ -204,7 +295,11 @@ class _FullMapState extends State<FullMap> {
               lineOffset: offset,
               lineOpacity: 0.5,
             );
-            l.data = {"id": f.properties['id']};
+            l.data = {
+              "id": f.properties['id'],
+              "forwardReferenceId": f.properties['forwardReferenceId'],
+              "backReferenceId": f.properties['backReferenceId']
+            };
             _surveyedLines.add(l);
           }
         }
@@ -226,6 +321,7 @@ class _FullMapState extends State<FullMap> {
       CameraUpdate cameraUpdate = CameraUpdate.newLatLngZoom(newLatLng, 12);
       _mapController.moveCamera(cameraUpdate);
       _mapController.addListener(_onMapChanged);
+      _mapController.onLineTapped.add(_onLineTapped);
     }
   }
 
@@ -248,7 +344,7 @@ class _FullMapState extends State<FullMap> {
 
     return new Scaffold(
         body: Column(children: [
-      ReviewStreetHeader(project, _zoomInToTap, null),
+      ReviewStreetHeader(project, _zoomInToTap, _selectedSurvey),
       Expanded(child: _map),
     ]));
   }
@@ -257,9 +353,9 @@ class _FullMapState extends State<FullMap> {
 class ReviewStreetHeader extends StatefulWidget {
   final db.Project project;
   final bool zoomInToTap;
-  final Street street;
+  final db.Survey survey;
 
-  ReviewStreetHeader(this.project, this.zoomInToTap, this.street);
+  ReviewStreetHeader(this.project, this.zoomInToTap, this.survey);
 
   @override
   _ReviewStreetHeader createState() => _ReviewStreetHeader();
@@ -268,18 +364,12 @@ class ReviewStreetHeader extends StatefulWidget {
 class _ReviewStreetHeader extends State<ReviewStreetHeader> {
   @override
   Widget build(BuildContext context) {
-    WheelCounter _counter = Provider.of<WheelCounter>(context);
-    db.CurbWheelDatabase _database = Provider.of<db.CurbWheelDatabase>(context);
-    SurveyDao surveyDao = _database.surveyDao;
-
-    var _project = widget.project;
-    var _street = this.widget.street;
-
-    String streetName = _street != null
-        ? _street.streetName
+    db.Survey _survey = this.widget.survey;
+    String streetName = _survey != null
+        ? _survey.streetName
         : widget.zoomInToTap == null || widget.zoomInToTap == true
-            ? "Zoom in to select street"
-            : "Zoom in to select a street";
+            ? "Zoom in to select a street"
+            : "Select street";
 
     return Container(
       color: Colors.white,
@@ -296,37 +386,9 @@ class _ReviewStreetHeader extends State<ReviewStreetHeader> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   ),
                 ),
-                _street != null
-                    ? IconButton(
-                        icon: Icon(Icons.arrow_forward),
-                        onPressed: () async {
-                          String surveyId = uuid.v4();
-                          var surveysCompanion = db.SurveysCompanion(
-                              id: moor.Value(surveyId),
-                              shStRefId: moor.Value(_street.shStRefId),
-                              streetName: moor.Value(_street.streetName),
-                              mapLength: moor.Value(_street.length),
-                              projectId: moor.Value(_project.id),
-                              startStreetName:
-                                  moor.Value(_street.fromStreetName),
-                              endStreetName: moor.Value(_street.toStreetName),
-                              direction: moor.Value(
-                                  _street.directionOfTravel.toString()),
-                              side:
-                                  moor.Value(_street.sideOfStreet.toString()));
-                          await surveyDao.insertSurvey(surveysCompanion);
-                          db.Survey survey =
-                              await surveyDao.getSurveyById(surveyId);
-                          _counter.resetForwardCounter();
-                          Navigator.pushNamed(context, WheelScreen.routeName,
-                              arguments:
-                                  WheelScreenArguments(_project, survey));
-                        },
-                      )
-                    : SizedBox.shrink()
               ],
             ),
-            _street != null
+            _survey != null
                 ? Align(
                     alignment: Alignment.centerLeft,
                     child: RichText(
@@ -335,17 +397,17 @@ class _ReviewStreetHeader extends State<ReviewStreetHeader> {
                         style: DefaultTextStyle.of(context).style,
                         children: <TextSpan>[
                           TextSpan(
-                              text: _street.sideOfStreet == SideOfStreet.Left
+                              text: _survey.side == SideOfStreet.Left.toString()
                                   ? "Left side"
                                   : "Right side",
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           TextSpan(text: " between "),
                           TextSpan(
-                              text: '${_street.fromStreetName}',
+                              text: '${_survey.startStreetName}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           TextSpan(text: ' and '),
                           TextSpan(
-                              text: '${_street.toStreetName}',
+                              text: '${_survey.endStreetName}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ],
                       ),

@@ -376,7 +376,7 @@ class _FullMapState extends State<FullMap> {
           }
         }
 
-        if (_surveyedStreets.containsKey(f.properties['bakcReferenceId'])) {
+        if (_surveyedStreets.containsKey(f.properties['backReferenceId'])) {
           for (db.Survey s
               in _surveyedStreets[f.properties['forwardReferenceId']]) {
             double offset = -4;

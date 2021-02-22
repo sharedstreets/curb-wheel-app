@@ -36,21 +36,81 @@ class ProjectCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              leading: GestureDetector(
-                  child: Icon(Icons.map),
-                  onTap: () {
-                    Navigator.pushNamed(
-                        context, StreetReviewMapScreen.routeName,
-                        arguments: StreetReviewMapScreenArguments(project));
-                  }),
+              leading: Icon(Icons.location_city_sharp),
               trailing: GestureDetector(
-                child: Icon(Icons.delete),
+                child: Icon(Icons.more_horiz),
                 onTap: () {
-                  try {
-                    _database.projectDao.deleteProject(project);
-                  } catch (e) {
-                    print(e);
-                  }
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Column(children: <Widget>[
+                          ListTile(
+                              title: Text(
+                            project.name,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          )),
+                          GestureDetector(
+                              child: ListTile(
+                                  leading: Icon(Icons.list_alt),
+                                  title: Text("Review completed surveys")),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                Navigator.pushNamed(
+                                    context, StreetReviewMapScreen.routeName,
+                                    arguments: StreetReviewMapScreenArguments(
+                                        project));
+                              }),
+                          ListTile(
+                              leading: Icon(Icons.sync_alt),
+                              title: Text("Sync data")),
+                          GestureDetector(
+                              child: ListTile(
+                                  leading: Icon(Icons.delete_forever),
+                                  title: Text("Delete project")),
+                              onTap: () {
+                                // set up the buttons
+
+                                Widget cancelButton = FlatButton(
+                                  child: Text("Cancel"),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  },
+                                );
+                                Widget continueButton = FlatButton(
+                                  child: Text("Delete"),
+                                  onPressed: () {
+                                    try {
+                                      _database.projectDao
+                                          .deleteProject(project);
+                                    } catch (e) {
+                                      print(e);
+                                    }
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  },
+                                );
+
+                                AlertDialog alert = AlertDialog(
+                                  title: Text("Delete Project"),
+                                  content: Text(
+                                      "Are you sure you want to perminately delete this project and all related data from this phone?"),
+                                  actions: [
+                                    cancelButton,
+                                    continueButton,
+                                  ],
+                                );
+
+                                // show the dialog
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return alert;
+                                  },
+                                );
+                              }),
+                        ]);
+                      });
                 },
               ),
               title: Text(
@@ -61,7 +121,8 @@ class ProjectCard extends StatelessWidget {
                   future: _surveys,
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Survey>> snapshot) {
-                    if (snapshot.data.length != null &&
+                    if (snapshot.data != null &&
+                        snapshot.data.length != null &&
                         snapshot.data.length > 0)
                       return Text(snapshot.data.length.toString() +
                           " streets surveyed");
