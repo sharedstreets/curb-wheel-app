@@ -86,12 +86,12 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
         projectId: moor.Value(projectId),
         geometryType: moor.Value(featureType.geometryType),
         color: moor.Value(featureType.color),
+        label: moor.Value(featureType.label),
         name: moor.Value(featureType.value),
       );
       await _database.featureTypeDao.insertFeature(_feature);
     }
     //await FileUtils.writeFile(_config.projectId, 'map.json', _mapData.toString());
-
 
     Navigator.pop(context);
   }
