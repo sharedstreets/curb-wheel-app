@@ -202,7 +202,7 @@ class _WheelHeaderState extends State<WheelHeader> {
     CurbWheelDatabase _database = Provider.of<CurbWheelDatabase>(context);
     var _survey = widget.survey;
     var _currentMeasurement = widget.currentWheelPosition;
-    var _max = widget.survey.length;
+    var _max = widget.survey.mapLength;
     Color _color = Colors.blue;
 
     if (_currentMeasurement / _max >= 0.98) {
