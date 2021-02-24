@@ -8,4 +8,6 @@ part of 'survey_point_dao.dart';
 
 mixin _$SurveyPointDaoMixin on DatabaseAccessor<CurbWheelDatabase> {
   $SurveyPointsTable get surveyPoints => attachedDatabase.surveyPoints;
+  $SurveyItemsTable get surveyItems => attachedDatabase.surveyItems;
+  $SurveysTable get surveys => attachedDatabase.surveys;
 }
