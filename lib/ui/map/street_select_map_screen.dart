@@ -1,4 +1,5 @@
 import 'package:curbwheel/database/database.dart' as db;
+import 'package:curbwheel/ui/ble/ble_selector.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:curbwheel/database/survey_dao.dart';
 import 'package:curbwheel/service/bluetooth_service.dart';
@@ -47,8 +48,8 @@ class _StreetSelectMapScreenState extends State<StreetSelectMapScreen> {
     return Scaffold(
         appBar: AppBar(
             title: Text("Select street",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.white))),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+            actions: [BleStatusButton()]),
         body: FullMap(project));
   }
 }
