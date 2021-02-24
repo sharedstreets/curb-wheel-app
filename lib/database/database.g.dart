@@ -411,12 +411,14 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
   final String geometryType;
   final String color;
   final String name;
+  final String label;
   FeatureType(
       {@required this.id,
       @required this.projectId,
       @required this.geometryType,
       @required this.color,
-      @required this.name});
+      @required this.name,
+      @required this.label});
   factory FeatureType.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -430,6 +432,8 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
       color:
           stringType.mapFromDatabaseResponse(data['${effectivePrefix}color']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
+      label:
+          stringType.mapFromDatabaseResponse(data['${effectivePrefix}label']),
     );
   }
   @override
@@ -450,6 +454,9 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
     if (!nullToAbsent || name != null) {
       map['name'] = Variable<String>(name);
     }
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
     return map;
   }
 
@@ -465,6 +472,8 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
       color:
           color == null && nullToAbsent ? const Value.absent() : Value(color),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      label:
+          label == null && nullToAbsent ? const Value.absent() : Value(label),
     );
   }
 
@@ -477,6 +486,7 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
       geometryType: serializer.fromJson<String>(json['geometryType']),
       color: serializer.fromJson<String>(json['color']),
       name: serializer.fromJson<String>(json['name']),
+      label: serializer.fromJson<String>(json['label']),
     );
   }
   @override
@@ -488,6 +498,7 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
       'geometryType': serializer.toJson<String>(geometryType),
       'color': serializer.toJson<String>(color),
       'name': serializer.toJson<String>(name),
+      'label': serializer.toJson<String>(label),
     };
   }
 
@@ -496,13 +507,15 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
           String projectId,
           String geometryType,
           String color,
-          String name}) =>
+          String name,
+          String label}) =>
       FeatureType(
         id: id ?? this.id,
         projectId: projectId ?? this.projectId,
         geometryType: geometryType ?? this.geometryType,
         color: color ?? this.color,
         name: name ?? this.name,
+        label: label ?? this.label,
       );
   @override
   String toString() {
@@ -511,7 +524,8 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
           ..write('projectId: $projectId, ')
           ..write('geometryType: $geometryType, ')
           ..write('color: $color, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('label: $label')
           ..write(')'))
         .toString();
   }
@@ -519,8 +533,10 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
   @override
   int get hashCode => $mrjf($mrjc(
       id.hashCode,
-      $mrjc(projectId.hashCode,
-          $mrjc(geometryType.hashCode, $mrjc(color.hashCode, name.hashCode)))));
+      $mrjc(
+          projectId.hashCode,
+          $mrjc(geometryType.hashCode,
+              $mrjc(color.hashCode, $mrjc(name.hashCode, label.hashCode))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -529,7 +545,8 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
           other.projectId == this.projectId &&
           other.geometryType == this.geometryType &&
           other.color == this.color &&
-          other.name == this.name);
+          other.name == this.name &&
+          other.label == this.label);
 }
 
 class FeatureTypesCompanion extends UpdateCompanion<FeatureType> {
@@ -538,12 +555,14 @@ class FeatureTypesCompanion extends UpdateCompanion<FeatureType> {
   final Value<String> geometryType;
   final Value<String> color;
   final Value<String> name;
+  final Value<String> label;
   const FeatureTypesCompanion({
     this.id = const Value.absent(),
     this.projectId = const Value.absent(),
     this.geometryType = const Value.absent(),
     this.color = const Value.absent(),
     this.name = const Value.absent(),
+    this.label = const Value.absent(),
   });
   FeatureTypesCompanion.insert({
     @required String id,
@@ -551,17 +570,20 @@ class FeatureTypesCompanion extends UpdateCompanion<FeatureType> {
     @required String geometryType,
     @required String color,
     @required String name,
+    @required String label,
   })  : id = Value(id),
         projectId = Value(projectId),
         geometryType = Value(geometryType),
         color = Value(color),
-        name = Value(name);
+        name = Value(name),
+        label = Value(label);
   static Insertable<FeatureType> custom({
     Expression<String> id,
     Expression<String> projectId,
     Expression<String> geometryType,
     Expression<String> color,
     Expression<String> name,
+    Expression<String> label,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -569,6 +591,7 @@ class FeatureTypesCompanion extends UpdateCompanion<FeatureType> {
       if (geometryType != null) 'geometry_type': geometryType,
       if (color != null) 'color': color,
       if (name != null) 'name': name,
+      if (label != null) 'label': label,
     });
   }
 
@@ -577,13 +600,15 @@ class FeatureTypesCompanion extends UpdateCompanion<FeatureType> {
       Value<String> projectId,
       Value<String> geometryType,
       Value<String> color,
-      Value<String> name}) {
+      Value<String> name,
+      Value<String> label}) {
     return FeatureTypesCompanion(
       id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       geometryType: geometryType ?? this.geometryType,
       color: color ?? this.color,
       name: name ?? this.name,
+      label: label ?? this.label,
     );
   }
 
@@ -605,6 +630,9 @@ class FeatureTypesCompanion extends UpdateCompanion<FeatureType> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
     return map;
   }
 
@@ -615,7 +643,8 @@ class FeatureTypesCompanion extends UpdateCompanion<FeatureType> {
           ..write('projectId: $projectId, ')
           ..write('geometryType: $geometryType, ')
           ..write('color: $color, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('label: $label')
           ..write(')'))
         .toString();
   }
@@ -688,9 +717,21 @@ class $FeatureTypesTable extends FeatureTypes
     );
   }
 
+  final VerificationMeta _labelMeta = const VerificationMeta('label');
+  GeneratedTextColumn _label;
+  @override
+  GeneratedTextColumn get label => _label ??= _constructLabel();
+  GeneratedTextColumn _constructLabel() {
+    return GeneratedTextColumn(
+      'label',
+      $tableName,
+      false,
+    );
+  }
+
   @override
   List<GeneratedColumn> get $columns =>
-      [id, projectId, geometryType, color, name];
+      [id, projectId, geometryType, color, name, label];
   @override
   $FeatureTypesTable get asDslTable => this;
   @override
@@ -733,6 +774,12 @@ class $FeatureTypesTable extends FeatureTypes
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    if (data.containsKey('label')) {
+      context.handle(
+          _labelMeta, label.isAcceptableOrUnknown(data['label'], _labelMeta));
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
     return context;
   }
 
@@ -763,6 +810,7 @@ class Survey extends DataClass implements Insertable<Survey> {
   final String side;
   final bool complete;
   final DateTime endTimestamp;
+  final bool synced;
   Survey(
       {@required this.id,
       @required this.projectId,
@@ -775,7 +823,8 @@ class Survey extends DataClass implements Insertable<Survey> {
       @required this.direction,
       @required this.side,
       this.complete,
-      this.endTimestamp});
+      this.endTimestamp,
+      this.synced});
   factory Survey.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -806,6 +855,8 @@ class Survey extends DataClass implements Insertable<Survey> {
           boolType.mapFromDatabaseResponse(data['${effectivePrefix}complete']),
       endTimestamp: dateTimeType
           .mapFromDatabaseResponse(data['${effectivePrefix}end_timestamp']),
+      synced:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}synced']),
     );
   }
   @override
@@ -847,6 +898,9 @@ class Survey extends DataClass implements Insertable<Survey> {
     if (!nullToAbsent || endTimestamp != null) {
       map['end_timestamp'] = Variable<DateTime>(endTimestamp);
     }
+    if (!nullToAbsent || synced != null) {
+      map['synced'] = Variable<bool>(synced);
+    }
     return map;
   }
 
@@ -884,6 +938,8 @@ class Survey extends DataClass implements Insertable<Survey> {
       endTimestamp: endTimestamp == null && nullToAbsent
           ? const Value.absent()
           : Value(endTimestamp),
+      synced:
+          synced == null && nullToAbsent ? const Value.absent() : Value(synced),
     );
   }
 
@@ -903,6 +959,7 @@ class Survey extends DataClass implements Insertable<Survey> {
       side: serializer.fromJson<String>(json['side']),
       complete: serializer.fromJson<bool>(json['complete']),
       endTimestamp: serializer.fromJson<DateTime>(json['endTimestamp']),
+      synced: serializer.fromJson<bool>(json['synced']),
     );
   }
   @override
@@ -921,6 +978,7 @@ class Survey extends DataClass implements Insertable<Survey> {
       'side': serializer.toJson<String>(side),
       'complete': serializer.toJson<bool>(complete),
       'endTimestamp': serializer.toJson<DateTime>(endTimestamp),
+      'synced': serializer.toJson<bool>(synced),
     };
   }
 
@@ -936,7 +994,8 @@ class Survey extends DataClass implements Insertable<Survey> {
           String direction,
           String side,
           bool complete,
-          DateTime endTimestamp}) =>
+          DateTime endTimestamp,
+          bool synced}) =>
       Survey(
         id: id ?? this.id,
         projectId: projectId ?? this.projectId,
@@ -950,6 +1009,7 @@ class Survey extends DataClass implements Insertable<Survey> {
         side: side ?? this.side,
         complete: complete ?? this.complete,
         endTimestamp: endTimestamp ?? this.endTimestamp,
+        synced: synced ?? this.synced,
       );
   @override
   String toString() {
@@ -965,7 +1025,8 @@ class Survey extends DataClass implements Insertable<Survey> {
           ..write('direction: $direction, ')
           ..write('side: $side, ')
           ..write('complete: $complete, ')
-          ..write('endTimestamp: $endTimestamp')
+          ..write('endTimestamp: $endTimestamp, ')
+          ..write('synced: $synced')
           ..write(')'))
         .toString();
   }
@@ -991,8 +1052,10 @@ class Survey extends DataClass implements Insertable<Survey> {
                                       direction.hashCode,
                                       $mrjc(
                                           side.hashCode,
-                                          $mrjc(complete.hashCode,
-                                              endTimestamp.hashCode))))))))))));
+                                          $mrjc(
+                                              complete.hashCode,
+                                              $mrjc(endTimestamp.hashCode,
+                                                  synced.hashCode)))))))))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -1008,7 +1071,8 @@ class Survey extends DataClass implements Insertable<Survey> {
           other.direction == this.direction &&
           other.side == this.side &&
           other.complete == this.complete &&
-          other.endTimestamp == this.endTimestamp);
+          other.endTimestamp == this.endTimestamp &&
+          other.synced == this.synced);
 }
 
 class SurveysCompanion extends UpdateCompanion<Survey> {
@@ -1024,6 +1088,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
   final Value<String> side;
   final Value<bool> complete;
   final Value<DateTime> endTimestamp;
+  final Value<bool> synced;
   const SurveysCompanion({
     this.id = const Value.absent(),
     this.projectId = const Value.absent(),
@@ -1037,6 +1102,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     this.side = const Value.absent(),
     this.complete = const Value.absent(),
     this.endTimestamp = const Value.absent(),
+    this.synced = const Value.absent(),
   });
   SurveysCompanion.insert({
     @required String id,
@@ -1051,6 +1117,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     @required String side,
     this.complete = const Value.absent(),
     this.endTimestamp = const Value.absent(),
+    this.synced = const Value.absent(),
   })  : id = Value(id),
         projectId = Value(projectId),
         shStRefId = Value(shStRefId),
@@ -1073,6 +1140,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     Expression<String> side,
     Expression<bool> complete,
     Expression<DateTime> endTimestamp,
+    Expression<bool> synced,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1087,6 +1155,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
       if (side != null) 'side': side,
       if (complete != null) 'complete': complete,
       if (endTimestamp != null) 'end_timestamp': endTimestamp,
+      if (synced != null) 'synced': synced,
     });
   }
 
@@ -1102,7 +1171,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
       Value<String> direction,
       Value<String> side,
       Value<bool> complete,
-      Value<DateTime> endTimestamp}) {
+      Value<DateTime> endTimestamp,
+      Value<bool> synced}) {
     return SurveysCompanion(
       id: id ?? this.id,
       projectId: projectId ?? this.projectId,
@@ -1116,6 +1186,7 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
       side: side ?? this.side,
       complete: complete ?? this.complete,
       endTimestamp: endTimestamp ?? this.endTimestamp,
+      synced: synced ?? this.synced,
     );
   }
 
@@ -1158,6 +1229,9 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
     if (endTimestamp.present) {
       map['end_timestamp'] = Variable<DateTime>(endTimestamp.value);
     }
+    if (synced.present) {
+      map['synced'] = Variable<bool>(synced.value);
+    }
     return map;
   }
 
@@ -1175,7 +1249,8 @@ class SurveysCompanion extends UpdateCompanion<Survey> {
           ..write('direction: $direction, ')
           ..write('side: $side, ')
           ..write('complete: $complete, ')
-          ..write('endTimestamp: $endTimestamp')
+          ..write('endTimestamp: $endTimestamp, ')
+          ..write('synced: $synced')
           ..write(')'))
         .toString();
   }
@@ -1337,6 +1412,18 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
     );
   }
 
+  final VerificationMeta _syncedMeta = const VerificationMeta('synced');
+  GeneratedBoolColumn _synced;
+  @override
+  GeneratedBoolColumn get synced => _synced ??= _constructSynced();
+  GeneratedBoolColumn _constructSynced() {
+    return GeneratedBoolColumn(
+      'synced',
+      $tableName,
+      true,
+    );
+  }
+
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -1350,7 +1437,8 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
         direction,
         side,
         complete,
-        endTimestamp
+        endTimestamp,
+        synced
       ];
   @override
   $SurveysTable get asDslTable => this;
@@ -1439,6 +1527,10 @@ class $SurveysTable extends Surveys with TableInfo<$SurveysTable, Survey> {
           _endTimestampMeta,
           endTimestamp.isAcceptableOrUnknown(
               data['end_timestamp'], _endTimestampMeta));
+    }
+    if (data.containsKey('synced')) {
+      context.handle(_syncedMeta,
+          synced.isAcceptableOrUnknown(data['synced'], _syncedMeta));
     }
     return context;
   }
@@ -2293,16 +2385,24 @@ class Photo extends DataClass implements Insertable<Photo> {
   final String id;
   final String pointId;
   final String file;
-  Photo({@required this.id, @required this.pointId, @required this.file});
+  final bool synced;
+  Photo(
+      {@required this.id,
+      @required this.pointId,
+      @required this.file,
+      this.synced});
   factory Photo.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final stringType = db.typeSystem.forDartType<String>();
+    final boolType = db.typeSystem.forDartType<bool>();
     return Photo(
       id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       pointId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}point_id']),
       file: stringType.mapFromDatabaseResponse(data['${effectivePrefix}file']),
+      synced:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}synced']),
     );
   }
   @override
@@ -2317,6 +2417,9 @@ class Photo extends DataClass implements Insertable<Photo> {
     if (!nullToAbsent || file != null) {
       map['file'] = Variable<String>(file);
     }
+    if (!nullToAbsent || synced != null) {
+      map['synced'] = Variable<bool>(synced);
+    }
     return map;
   }
 
@@ -2327,6 +2430,8 @@ class Photo extends DataClass implements Insertable<Photo> {
           ? const Value.absent()
           : Value(pointId),
       file: file == null && nullToAbsent ? const Value.absent() : Value(file),
+      synced:
+          synced == null && nullToAbsent ? const Value.absent() : Value(synced),
     );
   }
 
@@ -2337,6 +2442,7 @@ class Photo extends DataClass implements Insertable<Photo> {
       id: serializer.fromJson<String>(json['id']),
       pointId: serializer.fromJson<String>(json['pointId']),
       file: serializer.fromJson<String>(json['file']),
+      synced: serializer.fromJson<bool>(json['synced']),
     );
   }
   @override
@@ -2346,49 +2452,57 @@ class Photo extends DataClass implements Insertable<Photo> {
       'id': serializer.toJson<String>(id),
       'pointId': serializer.toJson<String>(pointId),
       'file': serializer.toJson<String>(file),
+      'synced': serializer.toJson<bool>(synced),
     };
   }
 
-  Photo copyWith({String id, String pointId, String file}) => Photo(
+  Photo copyWith({String id, String pointId, String file, bool synced}) =>
+      Photo(
         id: id ?? this.id,
         pointId: pointId ?? this.pointId,
         file: file ?? this.file,
+        synced: synced ?? this.synced,
       );
   @override
   String toString() {
     return (StringBuffer('Photo(')
           ..write('id: $id, ')
           ..write('pointId: $pointId, ')
-          ..write('file: $file')
+          ..write('file: $file, ')
+          ..write('synced: $synced')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(pointId.hashCode, file.hashCode)));
+  int get hashCode => $mrjf($mrjc(id.hashCode,
+      $mrjc(pointId.hashCode, $mrjc(file.hashCode, synced.hashCode))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Photo &&
           other.id == this.id &&
           other.pointId == this.pointId &&
-          other.file == this.file);
+          other.file == this.file &&
+          other.synced == this.synced);
 }
 
 class PhotosCompanion extends UpdateCompanion<Photo> {
   final Value<String> id;
   final Value<String> pointId;
   final Value<String> file;
+  final Value<bool> synced;
   const PhotosCompanion({
     this.id = const Value.absent(),
     this.pointId = const Value.absent(),
     this.file = const Value.absent(),
+    this.synced = const Value.absent(),
   });
   PhotosCompanion.insert({
     @required String id,
     @required String pointId,
     @required String file,
+    this.synced = const Value.absent(),
   })  : id = Value(id),
         pointId = Value(pointId),
         file = Value(file);
@@ -2396,20 +2510,26 @@ class PhotosCompanion extends UpdateCompanion<Photo> {
     Expression<String> id,
     Expression<String> pointId,
     Expression<String> file,
+    Expression<bool> synced,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (pointId != null) 'point_id': pointId,
       if (file != null) 'file': file,
+      if (synced != null) 'synced': synced,
     });
   }
 
   PhotosCompanion copyWith(
-      {Value<String> id, Value<String> pointId, Value<String> file}) {
+      {Value<String> id,
+      Value<String> pointId,
+      Value<String> file,
+      Value<bool> synced}) {
     return PhotosCompanion(
       id: id ?? this.id,
       pointId: pointId ?? this.pointId,
       file: file ?? this.file,
+      synced: synced ?? this.synced,
     );
   }
 
@@ -2425,6 +2545,9 @@ class PhotosCompanion extends UpdateCompanion<Photo> {
     if (file.present) {
       map['file'] = Variable<String>(file.value);
     }
+    if (synced.present) {
+      map['synced'] = Variable<bool>(synced.value);
+    }
     return map;
   }
 
@@ -2433,7 +2556,8 @@ class PhotosCompanion extends UpdateCompanion<Photo> {
     return (StringBuffer('PhotosCompanion(')
           ..write('id: $id, ')
           ..write('pointId: $pointId, ')
-          ..write('file: $file')
+          ..write('file: $file, ')
+          ..write('synced: $synced')
           ..write(')'))
         .toString();
   }
@@ -2479,8 +2603,20 @@ class $PhotosTable extends Photos with TableInfo<$PhotosTable, Photo> {
     );
   }
 
+  final VerificationMeta _syncedMeta = const VerificationMeta('synced');
+  GeneratedBoolColumn _synced;
   @override
-  List<GeneratedColumn> get $columns => [id, pointId, file];
+  GeneratedBoolColumn get synced => _synced ??= _constructSynced();
+  GeneratedBoolColumn _constructSynced() {
+    return GeneratedBoolColumn(
+      'synced',
+      $tableName,
+      true,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, pointId, file, synced];
   @override
   $PhotosTable get asDslTable => this;
   @override
@@ -2508,6 +2644,10 @@ class $PhotosTable extends Photos with TableInfo<$PhotosTable, Photo> {
           _fileMeta, file.isAcceptableOrUnknown(data['file'], _fileMeta));
     } else if (isInserting) {
       context.missing(_fileMeta);
+    }
+    if (data.containsKey('synced')) {
+      context.handle(_syncedMeta,
+          synced.isAcceptableOrUnknown(data['synced'], _syncedMeta));
     }
     return context;
   }

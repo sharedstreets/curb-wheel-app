@@ -110,6 +110,7 @@ class _FullMapState extends State<FullMap> {
   final db.Project project;
 
   List<_Line> _surveyedLines = new List();
+  List<_Line> _surveySpans = new List();
   Map<String, List<db.Survey>> _surveyedStreets;
 
   _FullMapState(this.project);
@@ -167,12 +168,15 @@ class _FullMapState extends State<FullMap> {
                     separatorBuilder: (context, index) => Divider(
                       color: Colors.black,
                     ),
+                    shrinkWrap: true,
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
                           onTap: () {
                             setState(() {
                               _selectedSurvey = snapshot.data[index];
+                              _onMapChanged();
+                              Navigator.of(context).pop();
                             });
                           },
                           child: ListTile(
@@ -228,13 +232,18 @@ class _FullMapState extends State<FullMap> {
   }
 
   _redrawMap() {
+    _mapController.clearLines();
     for (_Line l in _surveyedLines) {
+      _mapController.addLine(l.options, l.data);
+    }
+
+    for (_Line l in _surveySpans) {
       _mapController.addLine(l.options, l.data);
     }
   }
 
   void _onMapChanged() async {
-    MapData data = await _projectMapData.mapData;
+    MapData mapData = await _projectMapData.mapData;
 
     // not performant on a iphone 6s below z15
     // suggests importance of switching to geojson overlay
@@ -245,67 +254,101 @@ class _FullMapState extends State<FullMap> {
       });
       LatLngBounds bounds = await _mapController.getVisibleRegion();
 
-      // TOOD need to filter filter for box contains?
-      if (_lastBounds != null) {
-        if (contains(_lastBounds, bounds.northeast) &&
-            contains(_lastBounds, bounds.southwest)) return;
-      }
-
-      _lastBounds = bounds;
-
-      List<Feature<LineString>> features = data.getGeomsByBounds(bounds);
-
       _surveyedLines = new List();
-      for (Feature<LineString> f in features) {
-        List<LatLng> mapboxGeom =
-            await data.getMapboxGLGeomById(f.properties['id']);
+      _surveySpans = new List();
 
-        if (_surveyedStreets.containsKey(f.properties['forwardReferenceId'])) {
-          for (db.Survey s
-              in _surveyedStreets[f.properties['forwardReferenceId']]) {
-            double offset = 4;
-            _Line l = new _Line();
-            if (s.side == SideOfStreet.Left.toString()) offset = -4;
-            l.options = new LineOptions(
-              geometry: mapboxGeom,
-              lineColor: "#ff0000",
-              lineWidth: 4.0,
-              lineOffset: offset,
-              lineOpacity: 0.5,
-            );
-            l.data = {
-              "id": f.properties['id'],
-              "forwardReferenceId": f.properties['forwardReferenceId'],
-              "backReferenceId": f.properties['backReferenceId']
-            };
-            _surveyedLines.add(l);
-          }
+      if (_selectedSurvey == null) {
+        // TOOD need to filter filter for box contains?
+        if (_lastBounds != null) {
+          if (contains(_lastBounds, bounds.northeast) &&
+              contains(_lastBounds, bounds.southwest)) return;
         }
 
-        if (_surveyedStreets.containsKey(f.properties['backReferenceId'])) {
-          for (db.Survey s
-              in _surveyedStreets[f.properties['forwardReferenceId']]) {
-            double offset = -4;
-            _Line l = new _Line();
-            if (s.side == SideOfStreet.Left.toString()) offset = 4;
-            l.options = new LineOptions(
-              geometry: mapboxGeom,
-              lineColor: "#ff0000",
-              lineWidth: 4.0,
-              lineOffset: offset,
-              lineOpacity: 0.5,
-            );
-            l.data = {
-              "id": f.properties['id'],
-              "forwardReferenceId": f.properties['forwardReferenceId'],
-              "backReferenceId": f.properties['backReferenceId']
-            };
-            _surveyedLines.add(l);
+        _lastBounds = bounds;
+
+        List<Feature<LineString>> features = mapData.getGeomsByBounds(bounds);
+
+        for (Feature<LineString> f in features) {
+          List<LatLng> mapboxGeom =
+              await mapData.getMapboxGLGeomById(f.properties['id']);
+
+          if (_surveyedStreets
+              .containsKey(f.properties['forwardReferenceId'])) {
+            for (db.Survey s
+                in _surveyedStreets[f.properties['forwardReferenceId']]) {
+              double offset = 4;
+              _Line l = new _Line();
+              if (s.side == SideOfStreet.Left.toString()) offset = -4;
+              l.options = new LineOptions(
+                geometry: mapboxGeom,
+                lineColor: "#ff0000",
+                lineWidth: 4.0,
+                lineOffset: offset,
+                lineOpacity: 0.5,
+              );
+              l.data = {
+                "id": f.properties['id'],
+                "forwardReferenceId": f.properties['forwardReferenceId'],
+                "backReferenceId": f.properties['backReferenceId']
+              };
+              _surveyedLines.add(l);
+            }
+          }
+
+          if (_surveyedStreets.containsKey(f.properties['backReferenceId'])) {
+            for (db.Survey s
+                in _surveyedStreets[f.properties['forwardReferenceId']]) {
+              double offset = -4;
+              _Line l = new _Line();
+              if (s.side == SideOfStreet.Left.toString()) offset = 4;
+              l.options = new LineOptions(
+                geometry: mapboxGeom,
+                lineColor: "#ff0000",
+                lineWidth: 4.0,
+                lineOffset: offset,
+                lineOpacity: 0.5,
+              );
+              l.data = {
+                "id": f.properties['id'],
+                "forwardReferenceId": f.properties['forwardReferenceId'],
+                "backReferenceId": f.properties['backReferenceId']
+              };
+              _surveyedLines.add(l);
+            }
           }
         }
+        _redrawMap();
+      } else {
+        List<db.SurveyItem> items = await _database.surveyItemDao
+            .getSurveyItemsBySurveyId(_selectedSurvey.id);
+
+        Feature<LineString> visualizationFeature =
+            mapData.getDirectionalGeomByRefId(_selectedSurvey.shStRefId);
+        for (db.SurveyItem item in items) {
+          db.FeatureType ft =
+              await _database.featureTypeDao.getFeatureById(item.featureId);
+          if (ft.geometryType == "line") {
+            List<db.SurveySpan> spans =
+                await _database.surveySpanDao.getSpansBySurveyItemId(item.id);
+            for (db.SurveySpan span in spans) {
+              Feature<LineString> spanFeature =
+                  lineSliceAlong(visualizationFeature, span.start, span.stop);
+              List<LatLng> mapboxGeom = await getMapboxGLGeom(spanFeature);
+              _Line l = new _Line();
+              l.options = new LineOptions(
+                geometry: mapboxGeom,
+                lineColor: ft.color,
+                lineWidth: 4.0,
+                lineOffset: 5.0,
+                lineOpacity: 1.0,
+              );
+              _surveySpans.add(l);
+            }
+          } else if (ft.geometryType == "point") {}
+        }
+
+        _redrawMap();
       }
-
-      _redrawMap();
     }
   }
 

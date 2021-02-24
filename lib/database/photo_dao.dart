@@ -12,6 +12,9 @@ class PhotoDao extends DatabaseAccessor<CurbWheelDatabase>
 
   Future<List<Photo>> getAllPhotos() => select(photos).get();
 
+  Future<List<Photo>> getAllPhotosByPointId(String pointId) =>
+      (select(photos)..where((p) => p.pointId.equals(pointId))).get();
+
   Stream<List<PhotoWithParents>> watchAllPhotos() => (select(photos)
       .join([
         leftOuterJoin(surveyPoints, surveyPoints.id.equalsExp(photos.pointId)),

@@ -73,9 +73,11 @@ class _IncompleteListState extends State<IncompleteList> {
   void _deleteItem(ListItem listItem) async {
     SurveyItem surveyItem = listItem.toSurveyItem();
     await _database.surveyItemDao.deleteSurveyItem(surveyItem);
-    SurveySpan span =
+    List<SurveySpan> spans =
         await _database.surveySpanDao.getSpansBySurveyItemId(surveyItem.id);
-    await _database.surveySpanDao.deleteSpan(span);
+    for (SurveySpan span in spans) {
+      await _database.surveySpanDao.deleteSpan(span);
+    }
     List<SurveyPoint> points =
         await _database.surveyPointDao.getPointsBySurveyItemId(surveyItem.id);
     for (SurveyPoint point in points) {

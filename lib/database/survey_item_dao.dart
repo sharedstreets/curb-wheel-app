@@ -18,6 +18,9 @@ class SurveyItemDao extends DatabaseAccessor<CurbWheelDatabase>
   Future<int> insertSurveyItem(SurveyItemsCompanion surveyItem) =>
       into(surveyItems).insert(surveyItem);
 
+  Future<List<SurveyItem>> getSurveyItemsBySurveyId(String id) =>
+      (select(surveyItems)..where((s) => s.surveyId.equals(id))).get();
+
   Future<SurveyItem> getSurveyItemsById(String id) =>
       (select(surveyItems)..where((s) => s.id.equals(id))).getSingle();
 

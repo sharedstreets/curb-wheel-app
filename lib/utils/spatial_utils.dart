@@ -236,7 +236,9 @@ along(line, double distance, {var options = turf.Unit.meters}) {
 //  * //addToMap
 //  * var addToMap = [line, start, stop, sliced]
 //  */
-lineSliceAlong(line, startDist, stopDist, {options}) {
+
+turf.Feature<turf.LineString> lineSliceAlong(line, startDist, stopDist,
+    {options}) {
   // Optional parameters
   if (options == null) options = {"units": turf.Unit.meters};
 
