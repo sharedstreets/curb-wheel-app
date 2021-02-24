@@ -95,14 +95,17 @@ class MapData {
   }
 
   Map<String, String> get refIndex {
-    _refIndex = new Map();
+    if (_refIndex == null) {
+      _refIndex = new Map();
 
-    for (Feature<LineString> feature in _featureCollection.features) {
-      _refIndex.putIfAbsent(
-          feature.properties['forwardRefId'], () => feature.properties['id']);
-      _refIndex.putIfAbsent(
-          feature.properties['backwardRefId'], () => feature.properties['id']);
+      for (Feature<LineString> feature in _featureCollection.features) {
+        _refIndex.putIfAbsent(feature.properties['forwardReferenceId'],
+            () => feature.properties['id']);
+        _refIndex.putIfAbsent(feature.properties['backReferenceId'],
+            () => feature.properties['id']);
+      }
     }
+    return _refIndex;
   }
 
   Map<String, Feature<LineString>> get geomIndex {
@@ -114,6 +117,26 @@ class MapData {
       }
     }
     return _geomIndex;
+  }
+
+  Feature<LineString> getDirectionalGeomByRefId(String refId) {
+    String geomId = refIndex[refId];
+    if (geomIndex[geomId].properties['forwardReferenceId'] == refId)
+      return this.geomIndex[geomId];
+    else {
+      List<Position> geomCoords =
+          List<Position>.from(geomIndex[geomId].geometry.coordinates)
+              .reversed
+              .toList();
+
+      Feature<LineString> reversedFeature = Feature<LineString>(
+          properties: geomIndex[geomId].properties,
+          geometry: LineString(
+            coordinates: geomCoords,
+          ));
+
+      return reversedFeature;
+    }
   }
 
   RTree<Feature<LineString>> get spatialIndex {

@@ -27,6 +27,7 @@ class _IncompleteListState extends State<IncompleteList> {
     if (listItem.geometryType == 'line') {
       listItem.span.stop = _wheelCounter;
     }
+
     listItem.complete = true;
     SurveyItem surveyItem = listItem.toSurveyItem();
     await _database.surveyItemDao.updateSurveyItem(surveyItem);
@@ -72,9 +73,11 @@ class _IncompleteListState extends State<IncompleteList> {
   void _deleteItem(ListItem listItem) async {
     SurveyItem surveyItem = listItem.toSurveyItem();
     await _database.surveyItemDao.deleteSurveyItem(surveyItem);
-    SurveySpan span =
+    List<SurveySpan> spans =
         await _database.surveySpanDao.getSpansBySurveyItemId(surveyItem.id);
-    await _database.surveySpanDao.deleteSpan(span);
+    for (SurveySpan span in spans) {
+      await _database.surveySpanDao.deleteSpan(span);
+    }
     List<SurveyPoint> points =
         await _database.surveyPointDao.getPointsBySurveyItemId(surveyItem.id);
     for (SurveyPoint point in points) {
@@ -154,7 +157,7 @@ class _ActiveCardState extends State<ActiveCard> {
     var _progress = _listItem.geometryType == "line"
         ? widget.currentWheelPosition
         : _listItem.points[0].position;
-    var _max = widget.survey.length;
+    var _max = widget.survey.mapLength;
 
     var _points = _listItem.points.map((p) => p.position).toList();
 
