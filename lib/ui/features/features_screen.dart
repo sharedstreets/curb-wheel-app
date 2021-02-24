@@ -99,7 +99,6 @@ class FeatureCard extends StatelessWidget {
       Navigator.pop(context);
       Navigator.pushReplacementNamed(context, WheelScreen.routeName,
           arguments: WheelScreenArguments(project, survey, listItem: listItem));
-      
     }
 
     final String assetName = feature.geometryType == 'line'

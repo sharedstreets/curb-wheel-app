@@ -23,8 +23,6 @@ class SplashScreen extends StatefulWidget {
 
 class _MyPainterState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  
-  
   Animation<double> animation;
   AnimationController controller;
 
@@ -74,8 +72,7 @@ class _MyPainterState extends State<SplashScreen>
               () => {
                     controller.stop(),
                     Navigator.pushReplacementNamed(
-                        context,
-                        ProjectListScreen.routeName)
+                        context, ProjectListScreen.routeName)
                   })
         },
         child: SafeArea(
@@ -85,14 +82,14 @@ class _MyPainterState extends State<SplashScreen>
             children: <Widget>[
               Center(
                   child: Text(
-                "Welcome to CurbWheel",
-                textAlign: TextAlign.center,
+                "CurbWheel",
+                textAlign: TextAlign.left,
                 style: Theme.of(context).textTheme.headline1,
               )),
               Center(
                   child: Text(
                 "press screen to get started",
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
                 style: Theme.of(context).textTheme.subtitle2,
               )),
               Expanded(

@@ -26,7 +26,7 @@ class StreetSelectMapScreenArguments {
 }
 
 class StreetSelectMapScreen extends StatefulWidget {
-  static const routeName = '/map';
+  static const routeName = '/map/select';
 
   final db.Project project;
 
@@ -134,7 +134,8 @@ class _FullMapState extends State<FullMap> {
 
   _loadSurveyedLines(context) async {
 
-    List<db.Survey> surveys = await _database.surveyDao.getAllSurveys();
+    List<db.Survey> surveys =
+        await _database.surveyDao.getAllSurveysByProjectId(project.id);
 
     _surveyedStreets = Map();
     for (db.Survey s in surveys) {
@@ -232,20 +233,24 @@ class _FullMapState extends State<FullMap> {
     Street selectedStreet = Street(geomId, refId, refLength, streetName,
         fromStreetName, toStreetName, sideOfStreet, direction);
 
-    // clone and reverse objects
-    List<Position> geomCoords;
-    if (direction == DirectionOfTravel.Forward)
-      geomCoords = f.geometry.coordinates;
-    else
-      geomCoords =
-          List<Position>.from(f.geometry.coordinates).reversed.toList();
+    // // clone and reverse objects
+
+    // if (direction == DirectionOfTravel.Forward)
+    //   geomCoords = f.geometry.coordinates;
+    // else
+    //   geomCoords =
+    //       List<Position>.from(f.geometry.coordinates).reversed.toList();
+
+    // Feature<LineString> visualizationFeature =
+    //     Feature<LineString>(geometry: LineString(coordinates: geomCoords));
 
     Feature<LineString> visualizationFeature =
-        Feature<LineString>(geometry: LineString(coordinates: geomCoords));
+        data.getDirectionalGeomByRefId(refId);
 
     List<LatLng> mapboxGeom = await getMapboxGLGeom(visualizationFeature);
 
     double sideOfStreetStreetOffset = 4;
+
     if (sideOfStreet == SideOfStreet.Left &&
         direction == DirectionOfTravel.Forward)
       sideOfStreetStreetOffset = -4;
@@ -265,7 +270,8 @@ class _FullMapState extends State<FullMap> {
     _selectionLines.add(l);
 
     Point p = along(visualizationFeature, 20);
-    double b = bearing(Point(coordinates: geomCoords[0]), p);
+    double b = bearing(
+        Point(coordinates: visualizationFeature.geometry.coordinates[0]), p);
     LatLng latLng = new LatLng(p.coordinates.lat, p.coordinates.lng);
 
     double sideOfStreetSymbolOffset = 0.25;
@@ -337,7 +343,6 @@ class _FullMapState extends State<FullMap> {
 
       _lastBounds = bounds;
 
-      // ick is this the rigfh way to handle async object initialization?
       List<Feature<LineString>> features = data.getGeomsByBounds(bounds);
 
       _basemapLines = new List();
@@ -375,7 +380,7 @@ class _FullMapState extends State<FullMap> {
           }
         }
 
-        if (_surveyedStreets.containsKey(f.properties['bakcReferenceId'])) {
+        if (_surveyedStreets.containsKey(f.properties['backReferenceId'])) {
           for (db.Survey s
               in _surveyedStreets[f.properties['forwardReferenceId']]) {
             double offset = -4;
@@ -494,7 +499,7 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
                               id: moor.Value(surveyId),
                               shStRefId: moor.Value(_street.shStRefId),
                               streetName: moor.Value(_street.streetName),
-                              length: moor.Value(_street.length),
+                              mapLength: moor.Value(_street.length),
                               projectId: moor.Value(_project.id),
                               startStreetName:
                                   moor.Value(_street.fromStreetName),

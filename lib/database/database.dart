@@ -29,13 +29,15 @@ class Surveys extends Table {
   TextColumn get projectId => text()();
   TextColumn get shStRefId => text()();
   TextColumn get streetName => text()();
-  RealColumn get length => real()();
+  RealColumn get mapLength => real()();
+  RealColumn get measuredLength => real().nullable()();
   TextColumn get startStreetName => text()();
   TextColumn get endStreetName => text()();
   TextColumn get direction => text()();
   TextColumn get side => text()();
   BoolColumn get complete => boolean().nullable()();
   DateTimeColumn get endTimestamp => dateTime().nullable()();
+  BoolColumn get synced => boolean().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -75,6 +77,7 @@ class Photos extends Table {
   TextColumn get id => text()();
   TextColumn get pointId => text()();
   TextColumn get file => text()();
+  BoolColumn get synced => boolean().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -86,6 +89,7 @@ class FeatureTypes extends Table {
   TextColumn get geometryType => text()(); // 'point' or 'line'
   TextColumn get color => text()(); // string of color hex code
   TextColumn get name => text()(); // label to be displayed in app
+  TextColumn get label => text()(); // label to be displayed in app
 
   @override
   Set<Column> get primaryKey => {id};

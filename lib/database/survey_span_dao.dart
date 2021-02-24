@@ -12,7 +12,11 @@ class SurveySpanDao extends DatabaseAccessor<CurbWheelDatabase>
 
   Stream<List<SurveySpan>> watchAllSpans() => select(surveySpans).watch();
 
-  Future<SurveySpan> getById(String id) => (select(surveySpans)..where((s) => s.id.equals(id))).getSingle();
+  Future<SurveySpan> getById(String id) =>
+      (select(surveySpans)..where((s) => s.id.equals(id))).getSingle();
+
+  Future<List<SurveySpan>> getSpansBySurveyItemId(String surveyItemId) =>
+      select(surveySpans).get();
 
   Future insertSpan(SurveySpansCompanion surveySpan) =>
       into(surveySpans).insert(surveySpan);
