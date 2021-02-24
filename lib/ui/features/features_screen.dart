@@ -147,7 +147,7 @@ class FeatureCard extends StatelessWidget {
                     children: [
                       Padding(
                           padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
-                          child: Text(feature.name))
+                          child: Text(feature.label))
                     ],
                   )
                 ],
