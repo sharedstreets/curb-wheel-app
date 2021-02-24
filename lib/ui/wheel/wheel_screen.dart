@@ -6,6 +6,7 @@ import 'package:curbwheel/service/bluetooth_service.dart';
 import 'package:curbwheel/ui/ble/ble_selector.dart';
 import 'package:curbwheel/ui/features/features_screen.dart';
 import 'package:curbwheel/ui/map/street_select_map_screen.dart';
+import 'package:curbwheel/ui/projects/project_list_screen.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
 import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:flutter/material.dart';
@@ -164,7 +165,7 @@ showAlertDialog(BuildContext context) {
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => BleListDisplay())); 
+          context, MaterialPageRoute(builder: (context) => BleListDisplay()));
     },
   );
 
@@ -236,6 +237,7 @@ class _WheelHeaderState extends State<WheelHeader> {
                           complete: true,
                           endTimestamp: DateTime.now());
                       await _database.surveyDao.updateSurvey(completeSurvey);
+                      Navigator.pushNamed(context, ProjectListScreen.routeName);
                     }),
               ],
             ),
