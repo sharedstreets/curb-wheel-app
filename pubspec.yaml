@@ -31,7 +31,10 @@ dependencies:
   provider:
   chopper: ^2.0.0
   path: ^1.7.0
-  turf: ^0.0.2+3
+  turf: 
+    git:
+      url: git://github.com/dartclub/turf_dart.git
+      ref: master
   qr_code_scanner: ^0.3.0
   path_provider:
   shared_preferences: '>=0.5.0 <2.0.0'

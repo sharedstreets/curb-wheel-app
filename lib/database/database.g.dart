@@ -410,15 +410,15 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
   final String projectId;
   final String geometryType;
   final String color;
-  final String name;
   final String label;
+  final String value;
   FeatureType(
       {@required this.id,
       @required this.projectId,
       @required this.geometryType,
       @required this.color,
-      @required this.name,
-      @required this.label});
+      @required this.label,
+      @required this.value});
   factory FeatureType.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -431,9 +431,10 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
           .mapFromDatabaseResponse(data['${effectivePrefix}geometry_type']),
       color:
           stringType.mapFromDatabaseResponse(data['${effectivePrefix}color']),
-      name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       label:
           stringType.mapFromDatabaseResponse(data['${effectivePrefix}label']),
+      value:
+          stringType.mapFromDatabaseResponse(data['${effectivePrefix}value']),
     );
   }
   @override
@@ -451,11 +452,11 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
     if (!nullToAbsent || color != null) {
       map['color'] = Variable<String>(color);
     }
-    if (!nullToAbsent || name != null) {
-      map['name'] = Variable<String>(name);
-    }
     if (!nullToAbsent || label != null) {
       map['label'] = Variable<String>(label);
+    }
+    if (!nullToAbsent || value != null) {
+      map['value'] = Variable<String>(value);
     }
     return map;
   }
@@ -471,9 +472,10 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
           : Value(geometryType),
       color:
           color == null && nullToAbsent ? const Value.absent() : Value(color),
-      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       label:
           label == null && nullToAbsent ? const Value.absent() : Value(label),
+      value:
+          value == null && nullToAbsent ? const Value.absent() : Value(value),
     );
   }
 
@@ -485,8 +487,8 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
       projectId: serializer.fromJson<String>(json['projectId']),
       geometryType: serializer.fromJson<String>(json['geometryType']),
       color: serializer.fromJson<String>(json['color']),
-      name: serializer.fromJson<String>(json['name']),
       label: serializer.fromJson<String>(json['label']),
+      value: serializer.fromJson<String>(json['value']),
     );
   }
   @override
@@ -497,8 +499,8 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
       'projectId': serializer.toJson<String>(projectId),
       'geometryType': serializer.toJson<String>(geometryType),
       'color': serializer.toJson<String>(color),
-      'name': serializer.toJson<String>(name),
       'label': serializer.toJson<String>(label),
+      'value': serializer.toJson<String>(value),
     };
   }
 
@@ -507,15 +509,15 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
           String projectId,
           String geometryType,
           String color,
-          String name,
-          String label}) =>
+          String label,
+          String value}) =>
       FeatureType(
         id: id ?? this.id,
         projectId: projectId ?? this.projectId,
         geometryType: geometryType ?? this.geometryType,
         color: color ?? this.color,
-        name: name ?? this.name,
         label: label ?? this.label,
+        value: value ?? this.value,
       );
   @override
   String toString() {
@@ -524,8 +526,8 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
           ..write('projectId: $projectId, ')
           ..write('geometryType: $geometryType, ')
           ..write('color: $color, ')
-          ..write('name: $name, ')
-          ..write('label: $label')
+          ..write('label: $label, ')
+          ..write('value: $value')
           ..write(')'))
         .toString();
   }
@@ -536,7 +538,7 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
       $mrjc(
           projectId.hashCode,
           $mrjc(geometryType.hashCode,
-              $mrjc(color.hashCode, $mrjc(name.hashCode, label.hashCode))))));
+              $mrjc(color.hashCode, $mrjc(label.hashCode, value.hashCode))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -545,8 +547,8 @@ class FeatureType extends DataClass implements Insertable<FeatureType> {
           other.projectId == this.projectId &&
           other.geometryType == this.geometryType &&
           other.color == this.color &&
-          other.name == this.name &&
-          other.label == this.label);
+          other.label == this.label &&
+          other.value == this.value);
 }
 
 class FeatureTypesCompanion extends UpdateCompanion<FeatureType> {
@@ -554,44 +556,44 @@ class FeatureTypesCompanion extends UpdateCompanion<FeatureType> {
   final Value<String> projectId;
   final Value<String> geometryType;
   final Value<String> color;
-  final Value<String> name;
   final Value<String> label;
+  final Value<String> value;
   const FeatureTypesCompanion({
     this.id = const Value.absent(),
     this.projectId = const Value.absent(),
     this.geometryType = const Value.absent(),
     this.color = const Value.absent(),
-    this.name = const Value.absent(),
     this.label = const Value.absent(),
+    this.value = const Value.absent(),
   });
   FeatureTypesCompanion.insert({
     @required String id,
     @required String projectId,
     @required String geometryType,
     @required String color,
-    @required String name,
     @required String label,
+    @required String value,
   })  : id = Value(id),
         projectId = Value(projectId),
         geometryType = Value(geometryType),
         color = Value(color),
-        name = Value(name),
-        label = Value(label);
+        label = Value(label),
+        value = Value(value);
   static Insertable<FeatureType> custom({
     Expression<String> id,
     Expression<String> projectId,
     Expression<String> geometryType,
     Expression<String> color,
-    Expression<String> name,
     Expression<String> label,
+    Expression<String> value,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (projectId != null) 'project_id': projectId,
       if (geometryType != null) 'geometry_type': geometryType,
       if (color != null) 'color': color,
-      if (name != null) 'name': name,
       if (label != null) 'label': label,
+      if (value != null) 'value': value,
     });
   }
 
@@ -600,15 +602,15 @@ class FeatureTypesCompanion extends UpdateCompanion<FeatureType> {
       Value<String> projectId,
       Value<String> geometryType,
       Value<String> color,
-      Value<String> name,
-      Value<String> label}) {
+      Value<String> label,
+      Value<String> value}) {
     return FeatureTypesCompanion(
       id: id ?? this.id,
       projectId: projectId ?? this.projectId,
       geometryType: geometryType ?? this.geometryType,
       color: color ?? this.color,
-      name: name ?? this.name,
       label: label ?? this.label,
+      value: value ?? this.value,
     );
   }
 
@@ -627,11 +629,11 @@ class FeatureTypesCompanion extends UpdateCompanion<FeatureType> {
     if (color.present) {
       map['color'] = Variable<String>(color.value);
     }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
     if (label.present) {
       map['label'] = Variable<String>(label.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
     }
     return map;
   }
@@ -643,8 +645,8 @@ class FeatureTypesCompanion extends UpdateCompanion<FeatureType> {
           ..write('projectId: $projectId, ')
           ..write('geometryType: $geometryType, ')
           ..write('color: $color, ')
-          ..write('name: $name, ')
-          ..write('label: $label')
+          ..write('label: $label, ')
+          ..write('value: $value')
           ..write(')'))
         .toString();
   }
@@ -705,18 +707,6 @@ class $FeatureTypesTable extends FeatureTypes
     );
   }
 
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
-  GeneratedTextColumn _name;
-  @override
-  GeneratedTextColumn get name => _name ??= _constructName();
-  GeneratedTextColumn _constructName() {
-    return GeneratedTextColumn(
-      'name',
-      $tableName,
-      false,
-    );
-  }
-
   final VerificationMeta _labelMeta = const VerificationMeta('label');
   GeneratedTextColumn _label;
   @override
@@ -729,9 +719,21 @@ class $FeatureTypesTable extends FeatureTypes
     );
   }
 
+  final VerificationMeta _valueMeta = const VerificationMeta('value');
+  GeneratedTextColumn _value;
+  @override
+  GeneratedTextColumn get value => _value ??= _constructValue();
+  GeneratedTextColumn _constructValue() {
+    return GeneratedTextColumn(
+      'value',
+      $tableName,
+      false,
+    );
+  }
+
   @override
   List<GeneratedColumn> get $columns =>
-      [id, projectId, geometryType, color, name, label];
+      [id, projectId, geometryType, color, label, value];
   @override
   $FeatureTypesTable get asDslTable => this;
   @override
@@ -768,17 +770,17 @@ class $FeatureTypesTable extends FeatureTypes
     } else if (isInserting) {
       context.missing(_colorMeta);
     }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name'], _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
     if (data.containsKey('label')) {
       context.handle(
           _labelMeta, label.isAcceptableOrUnknown(data['label'], _labelMeta));
     } else if (isInserting) {
       context.missing(_labelMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+          _valueMeta, value.isAcceptableOrUnknown(data['value'], _valueMeta));
+    } else if (isInserting) {
+      context.missing(_valueMeta);
     }
     return context;
   }

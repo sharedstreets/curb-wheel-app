@@ -16,7 +16,8 @@ class SurveySpanDao extends DatabaseAccessor<CurbWheelDatabase>
       (select(surveySpans)..where((s) => s.id.equals(id))).getSingle();
 
   Future<List<SurveySpan>> getSpansBySurveyItemId(String surveyItemId) =>
-      select(surveySpans).get();
+      (select(surveySpans)..where((s) => s.surveyItemId.equals(surveyItemId)))
+          .get();
 
   Future insertSpan(SurveySpansCompanion surveySpan) =>
       into(surveySpans).insert(surveySpan);

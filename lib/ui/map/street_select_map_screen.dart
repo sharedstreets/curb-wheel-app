@@ -48,7 +48,8 @@ class _StreetSelectMapScreenState extends State<StreetSelectMapScreen> {
     return Scaffold(
         appBar: AppBar(
             title: Text("Select street",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.white)),
             actions: [BleStatusButton()]),
         body: FullMap(project));
   }
@@ -134,7 +135,6 @@ class _FullMapState extends State<FullMap> {
   }
 
   _loadSurveyedLines(context) async {
-
     List<db.Survey> surveys =
         await _database.surveyDao.getAllSurveysByProjectId(project.id);
 
@@ -273,6 +273,9 @@ class _FullMapState extends State<FullMap> {
     Point p = along(visualizationFeature, 20);
     double b = bearing(
         Point(coordinates: visualizationFeature.geometry.coordinates[0]), p);
+
+    if (b < 0) b = b + 360;
+
     LatLng latLng = new LatLng(p.coordinates.lat, p.coordinates.lng);
 
     double sideOfStreetSymbolOffset = 0.25;
@@ -286,7 +289,7 @@ class _FullMapState extends State<FullMap> {
     double rotationOffset = b - 90;
     double paddingOffset = 2;
     String arrows = ">>>";
-    if (rotationOffset > 90) {
+    if (rotationOffset > 180) {
       arrows = "<<<";
       rotationOffset = rotationOffset - 180;
       paddingOffset = -2;

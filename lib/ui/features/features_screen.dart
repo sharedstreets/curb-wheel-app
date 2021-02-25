@@ -84,7 +84,7 @@ class FeatureCard extends StatelessWidget {
           surveyId: survey.id,
           featureId: feature.id,
           geometryType: feature.geometryType,
-          name: feature.name,
+          name: feature.label,
           color: feature.color);
       if (this.feature.geometryType == 'line') {
         listItem.span =

@@ -1,3 +1,4 @@
+import 'package:curbwheel/service/sync.dart';
 import 'package:curbwheel/ui/camera/camera_screen.dart';
 import 'package:curbwheel/ui/camera/gallery_screen.dart';
 import 'package:curbwheel/ui/camera/image_view_screen.dart';
@@ -18,6 +19,8 @@ import 'database/database.dart';
 void main() => runApp(MultiProvider(providers: [
       Provider<CurbWheelDatabase>(create: (_) => CurbWheelDatabase()),
       Provider<ProjectMapDatastores>(create: (_) => ProjectMapDatastores()),
+      ChangeNotifierProvider(
+          create: (BuildContext context) => ProjectSyncService(context)),
       ChangeNotifierProvider(create: (BuildContext context) => BleConnection()),
       ChangeNotifierProxyProvider<BleConnection, WheelCounter>(
         create: (BuildContext context) => WheelCounter(),
