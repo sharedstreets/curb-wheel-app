@@ -5,6 +5,7 @@ import 'package:curbwheel/ui/map/street_select_map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../../database/database.dart';
 
@@ -144,12 +145,15 @@ class ProjectCard extends StatelessWidget {
                                 );
                                 Widget continueButton = FlatButton(
                                   child: Text("Delete"),
-                                  onPressed: () {
+                                  onPressed: () async {
                                     try {
-                                      _database.projectDao
+                                      await _database.projectDao
                                           .deleteProject(project);
-                                    } catch (e) {
-                                      print(e);
+                                    }  catch (exception, stackTrace) {
+                                      await Sentry.captureException(
+                                        exception,
+                                        stackTrace: stackTrace,
+                                      );
                                     }
                                     Navigator.of(context).pop();
                                     Navigator.of(context).pop();

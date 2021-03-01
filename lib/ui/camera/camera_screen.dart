@@ -1,3 +1,5 @@
+import 'package:sentry_flutter/sentry_flutter.dart';
+
 import 'preview_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -53,8 +55,11 @@ class _CameraScreenState extends State<CameraScreen> {
 
     try {
       await cameraController.initialize();
-    } catch (e) {
-      showCameraException(e);
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
     }
 
     if (mounted) {
@@ -130,11 +135,17 @@ class _CameraScreenState extends State<CameraScreen> {
         Navigator.pushNamed(context, PreviewScreen.routeName,
             arguments: PreviewScreenArguments(widget.surveyItemId, path,
                 position: _position, pointId: _pointId));
-      } catch (e) {
-        print(e);
+      } catch (exception, stackTrace) {
+          await Sentry.captureException(
+            exception,
+            stackTrace: stackTrace,
+        );
       }
-    } catch (e) {
-      showCameraException(e);
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -188,10 +199,6 @@ class _CameraScreenState extends State<CameraScreen> {
     cameraController.dispose();
 
     super.dispose();
-  }
-
-  showCameraException(e) {
-    String errorText = 'Error ${e.code} \nError message: ${e.description}';
   }
 }
 
