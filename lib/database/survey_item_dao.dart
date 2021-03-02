@@ -29,4 +29,7 @@ class SurveyItemDao extends DatabaseAccessor<CurbWheelDatabase>
 
   Future deleteSurveyItem(SurveyItem surveyItem) =>
       delete(surveyItems).delete(surveyItem);
+
+  Future deleteSurveyItemsBySurveyId(String surveyId) =>
+      (delete(surveyItems)..where((si) => si.surveyId.equals(surveyId))).go();
 }

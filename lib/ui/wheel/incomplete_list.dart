@@ -6,15 +6,17 @@ import 'package:curbwheel/ui/camera/camera_screen.dart';
 import 'package:curbwheel/ui/camera/gallery_screen.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
 import 'package:curbwheel/ui/wheel/progress.dart';
+import 'package:curbwheel/utils/survey_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class IncompleteList extends StatefulWidget {
+  final SurveyManager surveyManager;
   final Survey survey;
   final double currentWheelPosition;
 
-  IncompleteList(this.survey, this.currentWheelPosition);
+  IncompleteList(this.surveyManager, this.survey, this.currentWheelPosition);
 
   @override
   _IncompleteListState createState() => _IncompleteListState();
@@ -61,35 +63,13 @@ class _IncompleteListState extends State<IncompleteList> {
             TextButton(
                 child: Text('Delete'),
                 onPressed: () {
-                  _deleteItem(listItem);
+                  widget.surveyManager.deleteSurveyItem(listItem.toSurveyItem());
                   Navigator.pop(context);
                 }),
           ],
         );
       },
     );
-  }
-
-  void _deleteItem(ListItem listItem) async {
-    SurveyItem surveyItem = listItem.toSurveyItem();
-    await _database.surveyItemDao.deleteSurveyItem(surveyItem);
-    List<SurveySpan> spans =
-        await _database.surveySpanDao.getSpansBySurveyItemId(surveyItem.id);
-    for (SurveySpan span in spans) {
-      await _database.surveySpanDao.deleteSpan(span);
-    }
-    List<SurveyPoint> points =
-        await _database.surveyPointDao.getPointsBySurveyItemId(surveyItem.id);
-    for (SurveyPoint point in points) {
-      await _database.surveyPointDao.deletePoint(point);
-    }
-    List<Photo> photos =
-        await _database.photoDao.getPhotosBySurveyItemId(surveyItem.id);
-    for (Photo photo in photos) {
-      await _database.photoDao.deletePhoto(photo);
-      File file = File(photo.file);
-      file.deleteSync();
-    }
   }
 
   @override
@@ -105,13 +85,10 @@ class _IncompleteListState extends State<IncompleteList> {
                 if (snapshot.data.length == 0) {
                   return Center(
                       child: Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: Text('No active items',
-                          style: TextStyle(
-                              color: Colors.black, fontSize: 20)
-                            )
-                      )
-                    );
+                          padding: EdgeInsets.all(20.0),
+                          child: Text('No active items',
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 20))));
                 } else {
                   return ListView.builder(
                     shrinkWrap: true,
@@ -129,9 +106,7 @@ class _IncompleteListState extends State<IncompleteList> {
               } else {
                 return Text("No data");
               }
-            }
-          )
-        );
+            }));
   }
 }
 
