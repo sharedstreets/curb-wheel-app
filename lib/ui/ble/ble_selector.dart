@@ -20,8 +20,7 @@ class BleStatusButton extends StatelessWidget {
                 : Colors.orange,
         tooltip: 'Bluetooth',
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => BleListDisplay()));
+          Navigator.pushNamed(context,BleListDisplay.routeName);
         },
       );
     });
@@ -29,6 +28,9 @@ class BleStatusButton extends StatelessWidget {
 }
 
 class BleListDisplay extends StatefulWidget {
+  static const routeName = '/ble-list';
+
+
   @override
   State createState() => new _BleDeviceList();
 }

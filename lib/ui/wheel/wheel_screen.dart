@@ -164,8 +164,7 @@ showAlertDialog(BuildContext context) {
     onPressed: () {
       Navigator.pop(context);
       Navigator.pop(context);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => BleListDisplay()));
+      Navigator.pushNamed(context, BleListDisplay.routeName);
     },
   );
 

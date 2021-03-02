@@ -1,4 +1,5 @@
 import 'package:curbwheel/service/sync.dart';
+import 'package:curbwheel/ui/ble/ble_selector.dart';
 import 'package:curbwheel/ui/camera/camera_screen.dart';
 import 'package:curbwheel/ui/camera/gallery_screen.dart';
 import 'package:curbwheel/ui/camera/image_view_screen.dart';
@@ -120,6 +121,7 @@ class CurbWheel extends StatelessWidget {
         SplashScreen.routeName: (context) => SplashScreen(),
         ProjectListScreen.routeName: (context) => ProjectListScreen(),
         FeatureSelectScreen.routeName: (context) => FeatureSelectScreen(),
+        BleListDisplay.routeName: (contet) => BleListDisplay(),
         GalleryScreen.routeName: (context) => GalleryScreen(),
         ImageViewScreen.routeName: (context) => ImageViewScreen(),
       },
