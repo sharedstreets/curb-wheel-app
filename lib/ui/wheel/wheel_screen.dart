@@ -68,7 +68,8 @@ class _WheelScreenState extends State<WheelScreen>
 
     if (_bleService.currentWheel() == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await showBluetoothAlertDialog(context, _survey, _surveyManager.deleteSurvey);
+        await showBluetoothAlertDialog(
+            context, _survey, _surveyManager.deleteSurvey);
       });
     }
     if (this.listItem != null) {
@@ -87,7 +88,8 @@ class _WheelScreenState extends State<WheelScreen>
 
     Future<bool> _onWillPop() {
       if (_survey.complete == false) {
-        return showBackWarningDialog(context, _survey, _surveyManager.deleteSurvey) ??
+        return showBackWarningDialog(
+                context, _survey, _surveyManager.deleteSurvey) ??
             false;
       } else {
         return Future.value(true);
@@ -116,7 +118,7 @@ class _WheelScreenState extends State<WheelScreen>
             Container(
                 child: Column(
               children: [
-                WheelHeader(_currentWheelPosition, _survey),
+                WheelHeader(_currentWheelPosition, _project, _survey),
                 StreamBuilder(
                     stream: _database.getListItemCounts(_survey.id),
                     builder: (_, AsyncSnapshot<Count> snapshot) {
@@ -234,9 +236,11 @@ showBluetoothAlertDialog(
 
 class WheelHeader extends StatefulWidget {
   final double currentWheelPosition;
+  final Project project;
   final Survey survey;
+  
 
-  WheelHeader(this.currentWheelPosition, this.survey);
+  WheelHeader(this.currentWheelPosition, this.project, this.survey);
 
   @override
   _WheelHeaderState createState() => _WheelHeaderState();
@@ -282,7 +286,9 @@ class _WheelHeaderState extends State<WheelHeader> {
                           complete: true,
                           endTimestamp: DateTime.now());
                       await _database.surveyDao.updateSurvey(completeSurvey);
-                      Navigator.pushNamed(context, ProjectListScreen.routeName);
+                      Navigator.pushNamed(
+                          context, StreetSelectMapScreen.routeName,
+                          arguments: StreetSelectMapScreenArguments(widget.project));
                     }),
               ],
             ),
