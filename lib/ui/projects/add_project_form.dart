@@ -7,6 +7,7 @@ import 'package:curbwheel/utils/file_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:moor/moor.dart' as moor;
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 var uuid = Uuid();
@@ -62,8 +63,11 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
         return false;
       else
         return true;
-    } catch (e) {
-      return true;
+    }  catch (exception, stackTrace) {
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -200,8 +204,11 @@ class _DownloadButtonState extends State<DownloadButton> {
             });
             try {
               await _fetch();
-            } catch (e) {
-              print(e);
+            } catch (exception, stackTrace) {
+              await Sentry.captureException(
+                exception,
+                stackTrace: stackTrace,
+              );
               final snackBar = SnackBar(
                 content: Text('Unable to retreive project configuration.'),
               );

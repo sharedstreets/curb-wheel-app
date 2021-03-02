@@ -16,7 +16,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'database/database.dart';
 
-void main() => runApp(MultiProvider(providers: [
+import 'package:sentry_flutter/sentry_flutter.dart';
+
+Future<void> main() async {
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = 'https://65b0f6e78382424e8173ccafe7e07776@o538616.ingest.sentry.io/5656907';
+    },
+    appRunner: () => runApp(MultiProvider(providers: [
       Provider<CurbWheelDatabase>(create: (_) => CurbWheelDatabase()),
       Provider<ProjectMapDatastores>(create: (_) => ProjectMapDatastores()),
       ChangeNotifierProvider(
@@ -28,7 +35,9 @@ void main() => runApp(MultiProvider(providers: [
                 WheelCounter existingWheelCounter) =>
             existingWheelCounter.updateConnection(bleConnection),
       )
-    ], child: CurbWheel()));
+    ], child: CurbWheel())),
+  );
+}
 
 class CurbWheel extends StatelessWidget {
   @override
