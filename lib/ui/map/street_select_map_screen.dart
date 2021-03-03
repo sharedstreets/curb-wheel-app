@@ -286,7 +286,7 @@ class _FullMapState extends State<FullMap> {
     double rotationOffset = b - 90;
     double paddingOffset = 2;
     String arrows = ">>>";
-    if (rotationOffset > 180) {
+    if (rotationOffset > 90) {
       arrows = "<<<";
       rotationOffset = rotationOffset - 180;
       paddingOffset = -2;
@@ -507,10 +507,8 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
                               endStreetName: moor.Value(_street.toStreetName),
                               direction: moor.Value(
                                   _street.directionOfTravel.toString()),
-                              side:
-                                  moor.Value(_street.sideOfStreet.toString()),
-                              complete: moor.Value(false)
-                                  );
+                              side: moor.Value(_street.sideOfStreet.toString()),
+                              complete: moor.Value(false));
                           await surveyDao.insertSurvey(surveysCompanion);
                           db.Survey survey =
                               await surveyDao.getSurveyById(surveyId);
