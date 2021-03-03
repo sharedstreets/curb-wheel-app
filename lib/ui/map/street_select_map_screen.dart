@@ -194,7 +194,7 @@ class _FullMapState extends State<FullMap> {
     var data = await _projectMapData.mapData;
     Feature<LineString> f = data.geomIndex[geomId];
     String streetName = f.properties['name'];
-    if (streetName == null || streetName == "") streetName = "Unamed Street";
+    if (streetName == null || streetName == "") streetName = "Unnamed Street";
 
     String fromId = direction == DirectionOfTravel.Forward
         ? f.properties['fromIntersectionId']
@@ -210,19 +210,19 @@ class _FullMapState extends State<FullMap> {
     List<String> fromStreets = data.getStreetsByIntersection(fromId);
     List<String> toStreets = data.getStreetsByIntersection(toId);
 
-    String fromStreetName = "Unamed Street";
+    String fromStreetName = "Unnamed Street";
     for (String newStreet in fromStreets) {
       if (streetName.toLowerCase() != newStreet.toLowerCase()) {
-        if (fromStreetName == "Unamed Street") {
+        if (fromStreetName == "Unnamed Street") {
           fromStreetName = newStreet;
         }
       }
     }
 
-    String toStreetName = "Unamed Street";
+    String toStreetName = "Unnamed Street";
     for (String newStreet in toStreets) {
       if (streetName.toLowerCase() != newStreet.toLowerCase()) {
-        if (toStreetName == "Unamed Street") {
+        if (toStreetName == "Unnamed Street") {
           toStreetName = newStreet;
         }
       }
