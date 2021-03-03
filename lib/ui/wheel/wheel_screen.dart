@@ -237,7 +237,6 @@ class WheelHeader extends StatefulWidget {
   final double currentWheelPosition;
   final Project project;
   final Survey survey;
-  
 
   WheelHeader(this.currentWheelPosition, this.project, this.survey);
 
@@ -285,9 +284,7 @@ class _WheelHeaderState extends State<WheelHeader> {
                           complete: true,
                           endTimestamp: DateTime.now());
                       await _database.surveyDao.updateSurvey(completeSurvey);
-                      Navigator.pushNamed(
-                          context, StreetSelectMapScreen.routeName,
-                          arguments: StreetSelectMapScreenArguments(widget.project));
+                      Navigator.pop(context);
                     }),
               ],
             ),

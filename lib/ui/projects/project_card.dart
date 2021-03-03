@@ -42,9 +42,9 @@ class ProjectCard extends StatelessWidget {
           children: <Widget>[
             ListTile(
               leading: Icon(Icons.location_city_sharp),
-              trailing: GestureDetector(
+              trailing: FlatButton(
                 child: Icon(Icons.more_horiz),
-                onTap: () {
+                onPressed: () {
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
