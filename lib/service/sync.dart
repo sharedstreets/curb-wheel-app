@@ -54,7 +54,7 @@ class ProjectSyncService extends ChangeNotifier {
 
     String uploadDir = 'projects/' + project.projectId + '/';
     String surveysPath = uploadDir + 'surveys/';
-    String imagesPath = uploadDir + 'surveys/';
+    String imagesPath = uploadDir + 'images/';
 
     ProjectMapDatastore projectMapData = _mapDatastore.getDatastore(project);
     MapData mapData = await projectMapData.mapData;
@@ -108,6 +108,20 @@ class ProjectSyncService extends ChangeNotifier {
             properties['type'] = ft.value;
             properties['color'] = ft.color;
             spanFeature.properties = properties;
+
+            properties['photos'] = [];
+
+            // join not working in getPhotosBySurveyItemId so doing this manually
+            List<SurveyPoint> spanPoints =
+                await _database.surveyPointDao.getPointsBySurveyItemId(item.id);
+            for (SurveyPoint spanPoint in spanPoints) {
+              List<Photo> photos =
+                  await _database.photoDao.getAllPhotosByPointId(spanPoint.id);
+              for (Photo p in photos) {
+                projectPhotos.add(p);
+                properties['photos'].add(p.id);
+              }
+            }
 
             spanFeatures.add(spanFeature);
           }
