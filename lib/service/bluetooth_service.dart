@@ -21,7 +21,7 @@ class BleWheel {
   StreamController<WheelStatus> _stateStreamController = new StreamController();
 
   StreamController<int> _forwardStreamController = new StreamController();
-  StreamController<int> _revreseStreamController = new StreamController();
+  StreamController<int> _reverseStreamController = new StreamController();
 
   BluetoothCharacteristic _forwardCharacteristic;
   BluetoothCharacteristic _reverseCharacteristic;
@@ -140,7 +140,7 @@ class BleWheel {
           .buffer
           .asByteData()
           .getUint32(0);
-      _revreseStreamController.add(intVal);
+      _reverseStreamController.add(intVal);
     });
   }
 
@@ -352,7 +352,7 @@ class WheelCounter extends ChangeNotifier {
           connnectedWheel._forwardStreamController.stream
               .listen(updateForwardCounter);
 
-          connnectedWheel._revreseStreamController.stream
+          connnectedWheel._reverseStreamController.stream
               .listen(updateReverseCounter);
         }
       });
