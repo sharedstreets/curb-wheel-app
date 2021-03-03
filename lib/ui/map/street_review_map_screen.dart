@@ -1,5 +1,6 @@
 import 'package:curbwheel/database/database.dart' as db;
 import 'package:curbwheel/database/models.dart';
+import 'package:curbwheel/ui/shared/utils.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:curbwheel/database/survey_dao.dart';
 import 'package:curbwheel/service/bluetooth_service.dart';
@@ -64,10 +65,6 @@ class _Symbol {
   SymbolOptions options;
   Map<String, dynamic> data;
 }
-
-enum SideOfStreet { Right, Left }
-
-enum DirectionOfTravel { Forward, Backward }
 
 class Street {
   final String shstGeomId;
@@ -434,28 +431,11 @@ class _ReviewStreetHeader extends State<ReviewStreetHeader> {
             _survey != null
                 ? Align(
                     alignment: Alignment.centerLeft,
-                    child: RichText(
-                      text: TextSpan(
-                        text: '',
-                        style: DefaultTextStyle.of(context).style,
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: _survey.side == SideOfStreet.Left.toString()
-                                  ? "Left side"
-                                  : "Right side",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          TextSpan(text: " between "),
-                          TextSpan(
-                              text: '${_survey.startStreetName}',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          TextSpan(text: ' and '),
-                          TextSpan(
-                              text: '${_survey.endStreetName}',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    ),
-                  )
+                    child: buildStreetDescription(
+                        context,
+                        getSideOfStreetFromString(_survey.side),
+                        _survey.startStreetName,
+                        _survey.endStreetName))
                 : SizedBox.shrink(),
           ],
         ),
