@@ -166,7 +166,9 @@ class _FullMapState extends State<FullMap> {
     if (_selectedStreet != null) {
       _selectStreet(
           _selectedStreet.shstGeomId,
-          _selectedStreet.sideOfStreet,
+          _selectedStreet.sideOfStreet == SideOfStreet.Right
+              ? SideOfStreet.Left
+              : SideOfStreet.Right,
           _selectedStreet.directionOfTravel == DirectionOfTravel.Forward
               ? DirectionOfTravel.Backward
               : DirectionOfTravel.Forward);
