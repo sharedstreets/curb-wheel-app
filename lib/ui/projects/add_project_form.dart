@@ -45,7 +45,7 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
     // TODO should this db init move to code within the widget tree?
     // per https://stackoverflow.com/questions/60363665/dependoninheritedelement-was-called-before-initstate-in-flutter
     _database = Provider.of<CurbWheelDatabase>(context, listen: false);
-    _isNewProject = _checkIfNewProject();
+    _isNewProject = false
   }
 
   @override
@@ -58,16 +58,16 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
     try {
       List<Project> projectList =
           await _database.projectDao.findProjectById(_config.projectId);
-
       if (projectList.length > 0)
         return false;
       else
         return true;
-    }  catch (exception, stackTrace) {
+    } catch (exception, stackTrace) {
       await Sentry.captureException(
         exception,
         stackTrace: stackTrace,
       );
+      return false;
     }
   }
 
