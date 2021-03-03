@@ -196,7 +196,7 @@ class ProjectCard extends StatelessWidget {
                       return Text(snapshot.data.length.toString() +
                           " streets surveyed");
                     else
-                      return Text("Ready survey!");
+                      return Text("Ready to survey!");
                   }),
             ),
           ],

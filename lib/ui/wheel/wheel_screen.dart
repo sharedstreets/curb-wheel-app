@@ -294,27 +294,11 @@ class _WheelHeaderState extends State<WheelHeader> {
             ),
             Align(
               alignment: Alignment.centerLeft,
-              child: RichText(
-                text: TextSpan(
-                  text: '',
-                  style: DefaultTextStyle.of(context).style,
-                  children: <TextSpan>[
-                    TextSpan(
-                        text: _survey.side == SideOfStreet.Left.toString()
-                            ? "Left side"
-                            : "Right side",
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    TextSpan(text: " between "),
-                    TextSpan(
-                        text: '${_survey.startStreetName}',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    TextSpan(text: ' and '),
-                    TextSpan(
-                        text: '${_survey.endStreetName}',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
+              child: buildStreetDescription(
+                  context,
+                  getSideOfStreetFromString(_survey.side),
+                  _survey.startStreetName,
+                  _survey.endStreetName),
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(8, 8, 8, 8),

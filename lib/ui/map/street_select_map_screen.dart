@@ -1,5 +1,6 @@
 import 'package:curbwheel/database/database.dart' as db;
 import 'package:curbwheel/ui/ble/ble_selector.dart';
+import 'package:curbwheel/ui/shared/utils.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:curbwheel/database/survey_dao.dart';
 import 'package:curbwheel/service/bluetooth_service.dart';
@@ -64,10 +65,6 @@ class _Symbol {
   SymbolOptions options;
   Map<String, dynamic> data;
 }
-
-enum SideOfStreet { Right, Left }
-
-enum DirectionOfTravel { Forward, Backward }
 
 class Street {
   final String shstGeomId;
@@ -529,28 +526,8 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
             _street != null
                 ? Align(
                     alignment: Alignment.centerLeft,
-                    child: RichText(
-                      text: TextSpan(
-                        text: '',
-                        style: DefaultTextStyle.of(context).style,
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: _street.sideOfStreet == SideOfStreet.Left
-                                  ? "Left side"
-                                  : "Right side",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          TextSpan(text: " between "),
-                          TextSpan(
-                              text: '${_street.fromStreetName}',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          TextSpan(text: ' and '),
-                          TextSpan(
-                              text: '${_street.toStreetName}',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    ),
-                  )
+                    child: buildStreetDescription(context, _street.sideOfStreet,
+                        _street.fromStreetName, _street.toStreetName))
                 : SizedBox.shrink(),
             _street != null
                 ? Center(
