@@ -211,8 +211,7 @@ showBluetoothAlertDialog(
       await deleteCallback(survey);
       Navigator.pop(context);
       Navigator.pop(context);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => BleListDisplay()));
+      Navigator.pushNamed(context, BleListDisplay.routeName);
     },
   );
 
