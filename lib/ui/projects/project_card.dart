@@ -22,8 +22,8 @@ class ProjectCard extends StatelessWidget {
     var _database = Provider.of<CurbWheelDatabase>(context);
     ProjectSyncService sync = Provider.of<ProjectSyncService>(context);
 
-    Future<List<Survey>> _surveys =
-        _database.surveyDao.getAllSurveysByProjectId(project.id);
+    Stream<List<Survey>> _surveys =
+        _database.surveyDao.getAllSurveysByProjectIdStream(project.id);
     return Card(
       child: InkWell(
         splashColor: Colors.white.withAlpha(100),
@@ -186,8 +186,8 @@ class ProjectCard extends StatelessWidget {
                 project.name,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              subtitle: FutureBuilder<List<Survey>>(
-                  future: _surveys,
+              subtitle: StreamBuilder<List<Survey>>(
+                  stream: _surveys,
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Survey>> snapshot) {
                     if (snapshot.data != null &&

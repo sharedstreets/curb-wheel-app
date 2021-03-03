@@ -13,6 +13,9 @@ class SurveyDao extends DatabaseAccessor<CurbWheelDatabase>
   Future<List<Survey>> getAllSurveysByProjectId(String projectId) =>
       (select(surveys)..where((s) => s.projectId.equals(projectId))).get();
 
+  Stream<List<Survey>> getAllSurveysByProjectIdStream(String projectId) =>
+      (select(surveys)..where((s) => s.projectId.equals(projectId))).watch();
+
   Future<List<Survey>> getAllSurveysByProjectIdAndReferenceIds(
           String projectId, List<String> referenceIds) =>
       (select(surveys)
