@@ -9,14 +9,13 @@ import 'package:curbwheel/ui/map/street_select_map_screen.dart';
 import 'package:curbwheel/ui/projects/project_list_screen.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
 import 'package:curbwheel/ui/wheel/progress.dart';
+import 'package:curbwheel/utils/survey_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'complete_list.dart';
 import 'incomplete_list.dart';
-
-enum PhotoOptions { addPhoto, noPhoto }
 
 class WheelScreenArguments {
   final Project project;
@@ -40,13 +39,7 @@ class WheelScreen extends StatefulWidget {
 
 class _WheelScreenState extends State<WheelScreen>
     with SingleTickerProviderStateMixin {
-  CurbWheelDatabase _database;
-  WheelCounter _counter;
-  List<ListItem> incompleteSpans;
   ListItem listItem;
-  Project _project;
-  Survey _survey;
-  double _currentWheelPosition;
   TabController _tabController;
 
   @override
@@ -64,15 +57,19 @@ class _WheelScreenState extends State<WheelScreen>
 
   @override
   Widget build(BuildContext context) {
-    _project = widget.project;
-    _survey = widget.survey;
-    _database = Provider.of<CurbWheelDatabase>(context);
-    _counter = Provider.of<WheelCounter>(context);
-    _currentWheelPosition = _counter.getForwardCounter() / 10;
+    Project _project = widget.project;
+    Survey _survey = widget.survey;
+    CurbWheelDatabase _database = Provider.of<CurbWheelDatabase>(context);
+    WheelCounter _counter = Provider.of<WheelCounter>(context);
+    double _currentWheelPosition = _counter.getForwardCounter() / 10;
     BleConnection _bleService = Provider.of<BleConnection>(context);
+
+    SurveyManager _surveyManager = SurveyManager(_database);
+
     if (_bleService.currentWheel() == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await showAlertDialog(context);
+        await showBluetoothAlertDialog(
+            context, _survey, _surveyManager.deleteSurvey);
       });
     }
     if (this.listItem != null) {
@@ -89,7 +86,19 @@ class _WheelScreenState extends State<WheelScreen>
       setState(() => this.listItem = null);
     }
 
-    return Scaffold(
+    Future<bool> _onWillPop() {
+      if (_survey.complete == false) {
+        return showBackWarningDialog(
+                context, _survey, _surveyManager.deleteSurvey) ??
+            false;
+      } else {
+        return Future.value(true);
+      }
+    }
+
+    return new WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
         appBar: AppBar(
             title: Text("Survey street",
                 style: TextStyle(
@@ -109,7 +118,7 @@ class _WheelScreenState extends State<WheelScreen>
             Container(
                 child: Column(
               children: [
-                WheelHeader(_currentWheelPosition, _survey),
+                WheelHeader(_currentWheelPosition, _project, _survey),
                 StreamBuilder(
                     stream: _database.getListItemCounts(_survey.id),
                     builder: (_, AsyncSnapshot<Count> snapshot) {
@@ -148,20 +157,58 @@ class _WheelScreenState extends State<WheelScreen>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  IncompleteList(_survey, _currentWheelPosition),
+                  IncompleteList(
+                      _surveyManager, _survey, _currentWheelPosition),
                   CompleteList(_survey),
                 ],
               ),
             ),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }
 
-showAlertDialog(BuildContext context) {
+showBackWarningDialog(
+    BuildContext context, Survey survey, Function deleteCallback) {
+  AlertDialog alert = AlertDialog(
+    title: Text("Incomplete survey"),
+    content: Text(
+        "This survey is incomplete. Navigating back will delete the current progress, cancel to continue surveying and save your progress."),
+    actions: [
+      FlatButton(
+        textColor: Color(0xFF6200EE),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: Text("CANCEL"),
+      ),
+      FlatButton(
+        child: Text("GO BACK TO MAP"),
+        onPressed: () async {
+          await deleteCallback(survey);
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+        },
+      )
+    ],
+  );
+
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+showBluetoothAlertDialog(
+    BuildContext context, Survey survey, Function deleteCallback) {
   Widget okButton = FlatButton(
     child: Text("Go to connection screen"),
-    onPressed: () {
+    onPressed: () async {
+      await deleteCallback(survey);
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.push(
@@ -189,9 +236,11 @@ showAlertDialog(BuildContext context) {
 
 class WheelHeader extends StatefulWidget {
   final double currentWheelPosition;
+  final Project project;
   final Survey survey;
+  
 
-  WheelHeader(this.currentWheelPosition, this.survey);
+  WheelHeader(this.currentWheelPosition, this.project, this.survey);
 
   @override
   _WheelHeaderState createState() => _WheelHeaderState();
@@ -237,7 +286,9 @@ class _WheelHeaderState extends State<WheelHeader> {
                           complete: true,
                           endTimestamp: DateTime.now());
                       await _database.surveyDao.updateSurvey(completeSurvey);
-                      Navigator.pushNamed(context, ProjectListScreen.routeName);
+                      Navigator.pushNamed(
+                          context, StreetSelectMapScreen.routeName,
+                          arguments: StreetSelectMapScreenArguments(widget.project));
                     }),
               ],
             ),

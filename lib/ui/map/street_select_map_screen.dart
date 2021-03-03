@@ -511,7 +511,9 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
                               direction: moor.Value(
                                   _street.directionOfTravel.toString()),
                               side:
-                                  moor.Value(_street.sideOfStreet.toString()));
+                                  moor.Value(_street.sideOfStreet.toString()),
+                              complete: moor.Value(false)
+                                  );
                           await surveyDao.insertSurvey(surveysCompanion);
                           db.Survey survey =
                               await surveyDao.getSurveyById(surveyId);
