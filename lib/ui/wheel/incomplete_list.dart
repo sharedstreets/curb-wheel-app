@@ -207,7 +207,7 @@ class _ActiveCardState extends State<ActiveCard> {
                                           ],
                                         ),
                                       ),
-                                      FlatButton(
+                                      TextButton(
                                         onPressed: () => {
                                           Navigator.pushNamed(
                                               context, GalleryScreen.routeName,
@@ -215,7 +215,10 @@ class _ActiveCardState extends State<ActiveCard> {
                                                   surveyItemId:
                                                       _listItem.surveyItemId))
                                         },
-                                        padding: EdgeInsets.all(10.0),
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.black,
+                                          padding: EdgeInsets.all(10.0),
+                                        ),
                                         child: Row(
                                           children: <Widget>[
                                             Icon(Icons.image_sharp),
@@ -225,12 +228,15 @@ class _ActiveCardState extends State<ActiveCard> {
                                           ],
                                         ),
                                       ),
-                                      FlatButton(
+                                      TextButton(
                                         onPressed: () {
                                           Navigator.pop(context);
                                           return _deleteCallback(_listItem);
                                         },
-                                        padding: EdgeInsets.all(10.0),
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.black,
+                                          padding: EdgeInsets.all(10.0),
+                                        ),
                                         child: Row(
                                           children: <Widget>[
                                             Icon(Icons.delete),
@@ -246,10 +252,13 @@ class _ActiveCardState extends State<ActiveCard> {
                                         child: Divider(
                                             thickness: 1.0, color: Colors.grey),
                                       ),
-                                      FlatButton(
+                                      TextButton(
                                         onPressed: () =>
                                             {Navigator.pop(context)},
-                                        padding: EdgeInsets.all(10.0),
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.black,
+                                          padding: EdgeInsets.all(10.0),
+                                        ),
                                         child: Row(
                                           children: <Widget>[
                                             Icon(Icons.close),

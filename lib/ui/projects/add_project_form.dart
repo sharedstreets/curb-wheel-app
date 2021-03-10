@@ -198,7 +198,7 @@ class _DownloadButtonState extends State<DownloadButton> {
 
   @override
   build(BuildContext context) {
-    return FlatButton(
+    return TextButton(
         onPressed: () async {
           // prevent concurrent loads
           if (_loading == false) {
@@ -215,7 +215,7 @@ class _DownloadButtonState extends State<DownloadButton> {
               final snackBar = SnackBar(
                 content: Text('Unable to retreive project configuration.'),
               );
-              Scaffold.of(context).showSnackBar(snackBar);
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }
 
             setState(() {
@@ -223,7 +223,10 @@ class _DownloadButtonState extends State<DownloadButton> {
             });
           }
         },
-        padding: EdgeInsets.all(10.0),
+        style: TextButton.styleFrom(
+            primary: Colors.black,
+            padding: EdgeInsets.all(10.0),
+        ),
         child: Row(
           children: _loading
               ? <Widget>[Spinner(icon: Icons.refresh), Text("  Downloading...")]

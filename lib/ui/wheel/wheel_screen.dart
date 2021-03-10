@@ -175,14 +175,13 @@ showBackWarningDialog(
     content: Text(
         "This survey is incomplete. Navigating back will delete the current progress, cancel to continue surveying and save your progress."),
     actions: [
-      FlatButton(
-        textColor: Color(0xFF6200EE),
+      TextButton(
         onPressed: () {
           Navigator.of(context).pop();
         },
         child: Text("CANCEL"),
       ),
-      FlatButton(
+      TextButton(
         child: Text("GO BACK TO MAP"),
         onPressed: () async {
           await deleteCallback(survey);
@@ -203,7 +202,7 @@ showBackWarningDialog(
 
 showBluetoothAlertDialog(
     BuildContext context, Survey survey, Function deleteCallback) {
-  Widget okButton = FlatButton(
+  Widget okButton = TextButton(
     child: Text("Go to connection screen"),
     onPressed: () async {
       await deleteCallback(survey);
