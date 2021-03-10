@@ -5,14 +5,12 @@ import 'package:curbwheel/database/models.dart';
 import 'package:curbwheel/service/bluetooth_service.dart';
 import 'package:curbwheel/ui/ble/ble_selector.dart';
 import 'package:curbwheel/ui/features/features_screen.dart';
-import 'package:curbwheel/ui/map/street_select_map_screen.dart';
-import 'package:curbwheel/ui/projects/project_list_screen.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
-import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:curbwheel/utils/survey_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:progresso/progresso.dart';
 
 import 'complete_list.dart';
 import 'incomplete_list.dart';
@@ -251,6 +249,7 @@ class _WheelHeaderState extends State<WheelHeader> {
     var _survey = widget.survey;
     var _currentMeasurement = widget.currentWheelPosition;
     var _max = widget.survey.mapLength;
+    var _progress = _currentMeasurement / _max;
     Color _color = Colors.blue;
 
     if (_currentMeasurement / _max >= 0.98) {
@@ -298,11 +297,12 @@ class _WheelHeaderState extends State<WheelHeader> {
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-              child: ProgressBar(
-                progress: _currentMeasurement,
-                max: _max,
+              child: Progresso(
+                progress: _progress,
                 progressColor: _color,
                 backgroundStrokeWidth: 10.0,
+                progressStrokeCap: StrokeCap.round,
+                backgroundStrokeCap: StrokeCap.round,
               ),
             ),
             Text(

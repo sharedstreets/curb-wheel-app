@@ -5,10 +5,10 @@ import 'package:curbwheel/database/models.dart';
 import 'package:curbwheel/ui/camera/camera_screen.dart';
 import 'package:curbwheel/ui/camera/gallery_screen.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
-import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:curbwheel/utils/survey_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:progresso/progresso.dart';
 import 'package:provider/provider.dart';
 
 class IncompleteList extends StatefulWidget {
@@ -63,7 +63,8 @@ class _IncompleteListState extends State<IncompleteList> {
             TextButton(
                 child: Text('Delete'),
                 onPressed: () {
-                  widget.surveyManager.deleteSurveyItem(listItem.toSurveyItem());
+                  widget.surveyManager
+                      .deleteSurveyItem(listItem.toSurveyItem());
                   Navigator.pop(context);
                 }),
           ],
@@ -134,13 +135,13 @@ class _ActiveCardState extends State<ActiveCard> {
     var _start = _listItem.geometryType == "line"
         ? _listItem.span.start
         : _listItem.points[0].position;
-    var _progress = _listItem.geometryType == "line"
+    var _wheelPosition = _listItem.geometryType == "line"
         ? widget.currentWheelPosition
         : _listItem.points[0].position;
     var _max = widget.survey.mapLength;
+    var _progress = _wheelPosition / _max;
 
     var _points = _listItem.points.map((p) => p.position).toList();
-
     final String assetName = _listItem.geometryType == 'line'
         ? 'assets/vector-line.svg'
         : 'assets/map-marker.svg';
@@ -170,16 +171,23 @@ class _ActiveCardState extends State<ActiveCard> {
                   ]),
                   Padding(
                       padding: EdgeInsets.all(2.0),
-                      child: ProgressBar(
-                          start: _start,
-                          max: _max,
+                      child: Progresso(
+                          start: _start / _max,
                           progress: _progress,
                           progressColor: colorConvert(_listItem.color),
+                          progressStrokeCap: StrokeCap.round,
+                          backgroundStrokeCap: StrokeCap.round,
+                          pointColor: colorConvert(_listItem.color),
+                          pointRadius: 15.0,
                           points: _points)),
                   _listItem.geometryType == "line"
-                      ? Text(
-                          "${(_start).toStringAsFixed(1)}m-${(_progress).toStringAsFixed(1)}m")
-                      : Text("${(_start).toStringAsFixed(1)}m"),
+                      ? Padding(
+                          padding: EdgeInsets.fromLTRB(0, 8.0, 0, 0),
+                          child: Text(
+                              "${(_start).toStringAsFixed(1)}m-${(_wheelPosition).toStringAsFixed(1)}m"))
+                      : Padding(
+                          padding: EdgeInsets.fromLTRB(0, 8.0, 0, 0),
+                          child: Text("${(_start).toStringAsFixed(1)}m")),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
