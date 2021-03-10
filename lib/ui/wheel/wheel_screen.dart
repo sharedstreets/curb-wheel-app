@@ -168,7 +168,7 @@ class _WheelScreenState extends State<WheelScreen>
   }
 }
 
-showBackWarningDialog(
+Future<bool> showBackWarningDialog(
     BuildContext context, Survey survey, Function deleteCallback) {
   AlertDialog alert = AlertDialog(
     title: Text("Incomplete survey"),

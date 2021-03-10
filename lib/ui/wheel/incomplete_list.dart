@@ -140,8 +140,7 @@ class _ActiveCardState extends State<ActiveCard> {
         : _listItem.points[0].position;
     var _max = widget.survey.mapLength;
     var _progress = _wheelPosition / _max;
-    var _points = _listItem.points.map((p) => p.position).toList();
-
+    var _points = _listItem.points.map((p) => p.position / _max).toList();
     final String assetName = _listItem.geometryType == 'line'
         ? 'assets/vector-line.svg'
         : 'assets/map-marker.svg';
@@ -178,8 +177,7 @@ class _ActiveCardState extends State<ActiveCard> {
                           progressStrokeCap: StrokeCap.round,
                           backgroundStrokeCap: StrokeCap.round,
                           pointColor: colorConvert(_listItem.color),
-                          points: _points)
-                    ),
+                          points: _points)),
                   _listItem.geometryType == "line"
                       ? Padding(
                           padding: EdgeInsets.fromLTRB(0, 8.0, 0, 0),

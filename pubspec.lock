@@ -620,7 +620,7 @@ packages:
       name: progresso
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.1"
+    version: "0.2.0"
   protobuf:
     dependency: transitive
     description:

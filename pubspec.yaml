@@ -48,7 +48,7 @@ dependencies:
   uuid: 2.2.2
   camera:
   sentry_flutter: ^4.0.4
-  progresso:
+  progresso: ^0.2.0
 
 
 dev_dependencies:
