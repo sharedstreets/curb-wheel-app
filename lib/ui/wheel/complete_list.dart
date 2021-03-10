@@ -107,7 +107,9 @@ class _InactiveCardState extends State<InactiveCard> {
                           progressStrokeCap: StrokeCap.round,
                           backgroundStrokeCap: StrokeCap.round,
                           points: _points)),
-                  Text(positionString),
+                  Padding(
+                     padding: EdgeInsets.fromLTRB(0, 8.0, 0, 0),
+                     child:Text(positionString)),
                 ],
               ),
             )));
