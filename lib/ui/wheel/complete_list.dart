@@ -1,10 +1,10 @@
 import 'package:curbwheel/database/database.dart';
 import 'package:curbwheel/database/models.dart';
-import 'package:curbwheel/ui/wheel/progress.dart';
 import 'package:flutter/material.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:progresso/progresso.dart';
 import 'package:provider/provider.dart';
 
 class CompleteList extends StatefulWidget {
@@ -100,13 +100,16 @@ class _InactiveCardState extends State<InactiveCard> {
                   ),
                   Padding(
                       padding: EdgeInsets.all(2.0),
-                      child: ProgressBar(
-                          start: _start,
-                          progress: _stop,
-                          max: _max,
+                      child: Progresso(
+                          start: _start /_max,
+                          progress: _stop / _max,
                           progressColor: colorConvert(_listItem.color),
+                          progressStrokeCap: StrokeCap.round,
+                          backgroundStrokeCap: StrokeCap.round,
                           points: _points)),
-                  Text(positionString),
+                  Padding(
+                     padding: EdgeInsets.fromLTRB(0, 8.0, 0, 0),
+                     child:Text(positionString)),
                 ],
               ),
             )));
