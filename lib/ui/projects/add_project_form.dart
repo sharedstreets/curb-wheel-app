@@ -7,6 +7,7 @@ import 'package:curbwheel/utils/file_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:moor/moor.dart' as moor;
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 var uuid = Uuid();
@@ -54,16 +55,22 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
   }
 
   Future<bool> _checkIfNewProject() async {
+    if (_config == null) {
+      return false;
+    }
     try {
       List<Project> projectList =
           await _database.projectDao.findProjectById(_config.projectId);
-
       if (projectList.length > 0)
         return false;
       else
         return true;
-    } catch (e) {
-      return true;
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
+      return false;
     }
   }
 
@@ -87,11 +94,10 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
         geometryType: moor.Value(featureType.geometryType),
         color: moor.Value(featureType.color),
         label: moor.Value(featureType.label),
-        name: moor.Value(featureType.value),
+        value: moor.Value(featureType.value),
       );
       await _database.featureTypeDao.insertFeature(_feature);
     }
-    //await FileUtils.writeFile(_config.projectId, 'map.json', _mapData.toString());
 
     Navigator.pop(context);
   }
@@ -192,7 +198,7 @@ class _DownloadButtonState extends State<DownloadButton> {
 
   @override
   build(BuildContext context) {
-    return FlatButton(
+    return TextButton(
         onPressed: () async {
           // prevent concurrent loads
           if (_loading == false) {
@@ -201,12 +207,15 @@ class _DownloadButtonState extends State<DownloadButton> {
             });
             try {
               await _fetch();
-            } catch (e) {
-              print(e);
+            } catch (exception, stackTrace) {
+              await Sentry.captureException(
+                exception,
+                stackTrace: stackTrace,
+              );
               final snackBar = SnackBar(
                 content: Text('Unable to retreive project configuration.'),
               );
-              Scaffold.of(context).showSnackBar(snackBar);
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }
 
             setState(() {
@@ -214,7 +223,10 @@ class _DownloadButtonState extends State<DownloadButton> {
             });
           }
         },
-        padding: EdgeInsets.all(10.0),
+        style: TextButton.styleFrom(
+            primary: Colors.black,
+            padding: EdgeInsets.all(10.0),
+        ),
         child: Row(
           children: _loading
               ? <Widget>[Spinner(icon: Icons.refresh), Text("  Downloading...")]

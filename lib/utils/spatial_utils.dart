@@ -188,7 +188,7 @@ contains(LatLngBounds lnglatBounds, LatLng lnglat) {
 ///
 /// //addToMap
 /// var addToMap = [along, line]
-along(line, double distance, {var options = turf.Unit.meters}) {
+turf.Point along(line, double distance, {var options = turf.Unit.meters}) {
   // Get Coords
   var geom = getGeom(line);
   var coords = geom.coordinates;

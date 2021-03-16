@@ -5,16 +5,18 @@ import 'package:curbwheel/database/models.dart';
 import 'package:curbwheel/ui/camera/camera_screen.dart';
 import 'package:curbwheel/ui/camera/gallery_screen.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
-import 'package:curbwheel/ui/wheel/progress.dart';
+import 'package:curbwheel/utils/survey_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:progresso/progresso.dart';
 import 'package:provider/provider.dart';
 
 class IncompleteList extends StatefulWidget {
+  final SurveyManager surveyManager;
   final Survey survey;
   final double currentWheelPosition;
 
-  IncompleteList(this.survey, this.currentWheelPosition);
+  IncompleteList(this.surveyManager, this.survey, this.currentWheelPosition);
 
   @override
   _IncompleteListState createState() => _IncompleteListState();
@@ -61,35 +63,14 @@ class _IncompleteListState extends State<IncompleteList> {
             TextButton(
                 child: Text('Delete'),
                 onPressed: () {
-                  _deleteItem(listItem);
+                  widget.surveyManager
+                      .deleteSurveyItem(listItem.toSurveyItem());
                   Navigator.pop(context);
                 }),
           ],
         );
       },
     );
-  }
-
-  void _deleteItem(ListItem listItem) async {
-    SurveyItem surveyItem = listItem.toSurveyItem();
-    await _database.surveyItemDao.deleteSurveyItem(surveyItem);
-    List<SurveySpan> spans =
-        await _database.surveySpanDao.getSpansBySurveyItemId(surveyItem.id);
-    for (SurveySpan span in spans) {
-      await _database.surveySpanDao.deleteSpan(span);
-    }
-    List<SurveyPoint> points =
-        await _database.surveyPointDao.getPointsBySurveyItemId(surveyItem.id);
-    for (SurveyPoint point in points) {
-      await _database.surveyPointDao.deletePoint(point);
-    }
-    List<Photo> photos =
-        await _database.photoDao.getPhotosBySurveyItemId(surveyItem.id);
-    for (Photo photo in photos) {
-      await _database.photoDao.deletePhoto(photo);
-      File file = File(photo.file);
-      file.deleteSync();
-    }
   }
 
   @override
@@ -154,13 +135,12 @@ class _ActiveCardState extends State<ActiveCard> {
     var _start = _listItem.geometryType == "line"
         ? _listItem.span.start
         : _listItem.points[0].position;
-    var _progress = _listItem.geometryType == "line"
+    var _wheelPosition = _listItem.geometryType == "line"
         ? widget.currentWheelPosition
         : _listItem.points[0].position;
     var _max = widget.survey.mapLength;
-
-    var _points = _listItem.points.map((p) => p.position).toList();
-
+    var _progress = _wheelPosition / _max;
+    var _points = _listItem.points.map((p) => p.position / _max).toList();
     final String assetName = _listItem.geometryType == 'line'
         ? 'assets/vector-line.svg'
         : 'assets/map-marker.svg';
@@ -190,16 +170,22 @@ class _ActiveCardState extends State<ActiveCard> {
                   ]),
                   Padding(
                       padding: EdgeInsets.all(2.0),
-                      child: ProgressBar(
-                          start: _start,
-                          max: _max,
+                      child: Progresso(
+                          start: _start / _max,
                           progress: _progress,
                           progressColor: colorConvert(_listItem.color),
+                          progressStrokeCap: StrokeCap.round,
+                          backgroundStrokeCap: StrokeCap.round,
+                          pointColor: colorConvert(_listItem.color),
                           points: _points)),
                   _listItem.geometryType == "line"
-                      ? Text(
-                          "${(_start).toStringAsFixed(1)}m-${(_progress).toStringAsFixed(1)}m")
-                      : Text("${(_start).toStringAsFixed(1)}m"),
+                      ? Padding(
+                          padding: EdgeInsets.fromLTRB(0, 8.0, 0, 0),
+                          child: Text(
+                              "${(_start).toStringAsFixed(1)}m-${(_wheelPosition).toStringAsFixed(1)}m"))
+                      : Padding(
+                          padding: EdgeInsets.fromLTRB(0, 8.0, 0, 0),
+                          child: Text("${(_start).toStringAsFixed(1)}m")),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -219,7 +205,7 @@ class _ActiveCardState extends State<ActiveCard> {
                                           ],
                                         ),
                                       ),
-                                      FlatButton(
+                                      TextButton(
                                         onPressed: () => {
                                           Navigator.pushNamed(
                                               context, GalleryScreen.routeName,
@@ -227,7 +213,10 @@ class _ActiveCardState extends State<ActiveCard> {
                                                   surveyItemId:
                                                       _listItem.surveyItemId))
                                         },
-                                        padding: EdgeInsets.all(10.0),
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.black,
+                                          padding: EdgeInsets.all(10.0),
+                                        ),
                                         child: Row(
                                           children: <Widget>[
                                             Icon(Icons.image_sharp),
@@ -237,12 +226,15 @@ class _ActiveCardState extends State<ActiveCard> {
                                           ],
                                         ),
                                       ),
-                                      FlatButton(
+                                      TextButton(
                                         onPressed: () {
                                           Navigator.pop(context);
                                           return _deleteCallback(_listItem);
                                         },
-                                        padding: EdgeInsets.all(10.0),
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.black,
+                                          padding: EdgeInsets.all(10.0),
+                                        ),
                                         child: Row(
                                           children: <Widget>[
                                             Icon(Icons.delete),
@@ -258,10 +250,13 @@ class _ActiveCardState extends State<ActiveCard> {
                                         child: Divider(
                                             thickness: 1.0, color: Colors.grey),
                                       ),
-                                      FlatButton(
+                                      TextButton(
                                         onPressed: () =>
                                             {Navigator.pop(context)},
-                                        padding: EdgeInsets.all(10.0),
+                                        style: TextButton.styleFrom(
+                                          primary: Colors.black,
+                                          padding: EdgeInsets.all(10.0),
+                                        ),
                                         child: Row(
                                           children: <Widget>[
                                             Icon(Icons.close),

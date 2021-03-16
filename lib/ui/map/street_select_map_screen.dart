@@ -1,4 +1,6 @@
 import 'package:curbwheel/database/database.dart' as db;
+import 'package:curbwheel/ui/ble/ble_selector.dart';
+import 'package:curbwheel/ui/shared/utils.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:curbwheel/database/survey_dao.dart';
 import 'package:curbwheel/service/bluetooth_service.dart';
@@ -48,7 +50,8 @@ class _StreetSelectMapScreenState extends State<StreetSelectMapScreen> {
         appBar: AppBar(
             title: Text("Select street",
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.white))),
+                    fontWeight: FontWeight.bold, color: Colors.white)),
+            actions: [BleStatusButton()]),
         body: FullMap(project));
   }
 }
@@ -62,10 +65,6 @@ class _Symbol {
   SymbolOptions options;
   Map<String, dynamic> data;
 }
-
-enum SideOfStreet { Right, Left }
-
-enum DirectionOfTravel { Forward, Backward }
 
 class Street {
   final String shstGeomId;
@@ -133,8 +132,6 @@ class _FullMapState extends State<FullMap> {
   }
 
   _loadSurveyedLines(context) async {
-    print("test");
-
     List<db.Survey> surveys =
         await _database.surveyDao.getAllSurveysByProjectId(project.id);
 
@@ -169,7 +166,9 @@ class _FullMapState extends State<FullMap> {
     if (_selectedStreet != null) {
       _selectStreet(
           _selectedStreet.shstGeomId,
-          _selectedStreet.sideOfStreet,
+          _selectedStreet.sideOfStreet == SideOfStreet.Right
+              ? SideOfStreet.Left
+              : SideOfStreet.Right,
           _selectedStreet.directionOfTravel == DirectionOfTravel.Forward
               ? DirectionOfTravel.Backward
               : DirectionOfTravel.Forward);
@@ -197,7 +196,7 @@ class _FullMapState extends State<FullMap> {
     var data = await _projectMapData.mapData;
     Feature<LineString> f = data.geomIndex[geomId];
     String streetName = f.properties['name'];
-    if (streetName == null || streetName == "") streetName = "Unamed Street";
+    if (streetName == null || streetName == "") streetName = "Unnamed Street";
 
     String fromId = direction == DirectionOfTravel.Forward
         ? f.properties['fromIntersectionId']
@@ -213,19 +212,19 @@ class _FullMapState extends State<FullMap> {
     List<String> fromStreets = data.getStreetsByIntersection(fromId);
     List<String> toStreets = data.getStreetsByIntersection(toId);
 
-    String fromStreetName = "Unamed Street";
+    String fromStreetName = "Unnamed Street";
     for (String newStreet in fromStreets) {
       if (streetName.toLowerCase() != newStreet.toLowerCase()) {
-        if (fromStreetName == "Unamed Street") {
+        if (fromStreetName == "Unnamed Street") {
           fromStreetName = newStreet;
         }
       }
     }
 
-    String toStreetName = "Unamed Street";
+    String toStreetName = "Unnamed Street";
     for (String newStreet in toStreets) {
       if (streetName.toLowerCase() != newStreet.toLowerCase()) {
-        if (toStreetName == "Unamed Street") {
+        if (toStreetName == "Unnamed Street") {
           toStreetName = newStreet;
         }
       }
@@ -273,6 +272,9 @@ class _FullMapState extends State<FullMap> {
     Point p = along(visualizationFeature, 20);
     double b = bearing(
         Point(coordinates: visualizationFeature.geometry.coordinates[0]), p);
+
+    if (b < 0) b = b + 360;
+
     LatLng latLng = new LatLng(p.coordinates.lat, p.coordinates.lng);
 
     double sideOfStreetSymbolOffset = 0.25;
@@ -507,8 +509,8 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
                               endStreetName: moor.Value(_street.toStreetName),
                               direction: moor.Value(
                                   _street.directionOfTravel.toString()),
-                              side:
-                                  moor.Value(_street.sideOfStreet.toString()));
+                              side: moor.Value(_street.sideOfStreet.toString()),
+                              complete: moor.Value(false));
                           await surveyDao.insertSurvey(surveysCompanion);
                           db.Survey survey =
                               await surveyDao.getSurveyById(surveyId);
@@ -524,28 +526,8 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
             _street != null
                 ? Align(
                     alignment: Alignment.centerLeft,
-                    child: RichText(
-                      text: TextSpan(
-                        text: '',
-                        style: DefaultTextStyle.of(context).style,
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: _street.sideOfStreet == SideOfStreet.Left
-                                  ? "Left side"
-                                  : "Right side",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          TextSpan(text: " between "),
-                          TextSpan(
-                              text: '${_street.fromStreetName}',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          TextSpan(text: ' and '),
-                          TextSpan(
-                              text: '${_street.toStreetName}',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    ),
-                  )
+                    child: buildStreetDescription(context, _street.sideOfStreet,
+                        _street.fromStreetName, _street.toStreetName))
                 : SizedBox.shrink(),
             _street != null
                 ? Center(
@@ -582,11 +564,14 @@ class IconTextButton extends StatefulWidget {
 class _IconTextButtonState extends State<IconTextButton> {
   @override
   build(BuildContext context) {
-    return FlatButton(
+    return TextButton(
         onPressed: () async {
           this.widget.callback();
         },
-        padding: EdgeInsets.all(10.0),
+        style: TextButton.styleFrom(
+            primary: Colors.black,
+            padding: EdgeInsets.all(10.0),
+          ),
         child: Row(children: [Icon(widget.icon), Text(this.widget.label)]));
   }
 }

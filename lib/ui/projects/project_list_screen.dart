@@ -24,7 +24,6 @@ class ProjectListScreenState extends State<ProjectListScreen> {
   @override
   Widget build(BuildContext context) {
     _database = Provider.of<CurbWheelDatabase>(context);
-
     Future<void> _addProjectOption() async {
       switch (await showDialog<Action>(
           context: context,

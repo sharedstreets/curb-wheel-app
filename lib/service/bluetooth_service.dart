@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final WHEEL_SERVICE_UUID = new Guid("1381f6e7-12f9-4ad7-aa87-1c5d50fe03f9");
@@ -20,7 +21,7 @@ class BleWheel {
   StreamController<WheelStatus> _stateStreamController = new StreamController();
 
   StreamController<int> _forwardStreamController = new StreamController();
-  StreamController<int> _revreseStreamController = new StreamController();
+  StreamController<int> _reverseStreamController = new StreamController();
 
   BluetoothCharacteristic _forwardCharacteristic;
   BluetoothCharacteristic _reverseCharacteristic;
@@ -139,7 +140,7 @@ class BleWheel {
           .buffer
           .asByteData()
           .getUint32(0);
-      _revreseStreamController.add(intVal);
+      _reverseStreamController.add(intVal);
     });
   }
 
@@ -285,8 +286,11 @@ class BleConnection extends ChangeNotifier {
 
       _flutterBlue.startScan(
           timeout: Duration(seconds: 4), withServices: [WHEEL_SERVICE_UUID]);
-    } catch (e) {
-      print(e);
+    } catch (exception, stackTrace) {
+      await Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -348,7 +352,7 @@ class WheelCounter extends ChangeNotifier {
           connnectedWheel._forwardStreamController.stream
               .listen(updateForwardCounter);
 
-          connnectedWheel._revreseStreamController.stream
+          connnectedWheel._reverseStreamController.stream
               .listen(updateReverseCounter);
         }
       });

@@ -290,7 +290,7 @@ packages:
       name: flutter_svg
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.19.1"
+    version: "0.19.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -354,7 +354,7 @@ packages:
       name: io
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.4"
+    version: "0.3.5"
   js:
     dependency: transitive
     description:
@@ -509,6 +509,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.9.3"
+  package_info:
+    dependency: transitive
+    description:
+      name: package_info
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.3+4"
   path:
     dependency: "direct main"
     description:
@@ -607,13 +614,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
+  progresso:
+    dependency: "direct main"
+    description:
+      name: progresso
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
   protobuf:
     dependency: transitive
     description:
       name: protobuf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.1"
+    version: "1.1.2"
   provider:
     dependency: "direct main"
     description:
@@ -670,6 +684,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.24.1"
+  sentry:
+    dependency: transitive
+    description:
+      name: sentry
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.6"
+  sentry_flutter:
+    dependency: "direct main"
+    description:
+      name: sentry_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.6"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -739,7 +767,7 @@ packages:
       name: shelf_web_socket
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.4"
+    version: "0.2.4+1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -779,7 +807,7 @@ packages:
       name: sqflite
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.2+3"
+    version: "1.3.1+2"
   sqflite_common:
     dependency: transitive
     description:
@@ -881,9 +909,11 @@ packages:
   turf:
     dependency: "direct main"
     description:
-      name: turf
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "6b444bfff9e8500ab2ce8d18e19bb37c8b70b35c"
+      url: "git://github.com/dartclub/turf_dart.git"
+    source: git
     version: "0.0.2+3"
   typed_data:
     dependency: transitive
@@ -971,4 +1001,4 @@ packages:
     version: "2.2.1"
 sdks:
   dart: ">=2.12.0-0.0 <3.0.0"
-  flutter: ">=1.22.2"
+  flutter: ">=1.24.0-10.1.pre"

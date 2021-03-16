@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 0.9.61+2
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -31,11 +31,14 @@ dependencies:
   provider:
   chopper: ^2.0.0
   path: ^1.7.0
-  turf: ^0.0.2+3
+  turf: 
+    git:
+      url: git://github.com/dartclub/turf_dart.git
+      ref: master
   qr_code_scanner: ^0.3.0
   path_provider:
   shared_preferences: '>=0.5.0 <2.0.0'
-  flutter_svg:
+  flutter_svg: 0.19.3
   rxdart:
   flutter_blue: ^0.7.3
   mapbox_gl: ^0.9.0
@@ -44,6 +47,8 @@ dependencies:
   synchronized: ^2.2.0+2
   uuid: 2.2.2
   camera:
+  sentry_flutter: ^4.0.4
+  progresso: ^0.2.0
 
 
 dev_dependencies:

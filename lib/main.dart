@@ -1,3 +1,5 @@
+import 'package:curbwheel/service/sync.dart';
+import 'package:curbwheel/ui/ble/ble_selector.dart';
 import 'package:curbwheel/ui/camera/camera_screen.dart';
 import 'package:curbwheel/ui/camera/gallery_screen.dart';
 import 'package:curbwheel/ui/camera/image_view_screen.dart';
@@ -15,9 +17,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'database/database.dart';
 
-void main() => runApp(MultiProvider(providers: [
+import 'package:sentry_flutter/sentry_flutter.dart';
+
+Future<void> main() async {
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = 'https://65b0f6e78382424e8173ccafe7e07776@o538616.ingest.sentry.io/5656907';
+    },
+    appRunner: () => runApp(MultiProvider(providers: [
       Provider<CurbWheelDatabase>(create: (_) => CurbWheelDatabase()),
       Provider<ProjectMapDatastores>(create: (_) => ProjectMapDatastores()),
+      ChangeNotifierProvider(
+          create: (BuildContext context) => ProjectSyncService(context)),
       ChangeNotifierProvider(create: (BuildContext context) => BleConnection()),
       ChangeNotifierProxyProvider<BleConnection, WheelCounter>(
         create: (BuildContext context) => WheelCounter(),
@@ -25,7 +36,9 @@ void main() => runApp(MultiProvider(providers: [
                 WheelCounter existingWheelCounter) =>
             existingWheelCounter.updateConnection(bleConnection),
       )
-    ], child: CurbWheel()));
+    ], child: CurbWheel())),
+  );
+}
 
 class CurbWheel extends StatelessWidget {
   @override
@@ -108,6 +121,7 @@ class CurbWheel extends StatelessWidget {
         SplashScreen.routeName: (context) => SplashScreen(),
         ProjectListScreen.routeName: (context) => ProjectListScreen(),
         FeatureSelectScreen.routeName: (context) => FeatureSelectScreen(),
+        BleListDisplay.routeName: (contet) => BleListDisplay(),
         GalleryScreen.routeName: (context) => GalleryScreen(),
         ImageViewScreen.routeName: (context) => ImageViewScreen(),
       },

@@ -88,8 +88,8 @@ class FeatureTypes extends Table {
   TextColumn get projectId => text()();
   TextColumn get geometryType => text()(); // 'point' or 'line'
   TextColumn get color => text()(); // string of color hex code
-  TextColumn get name => text()(); // label to be displayed in app
   TextColumn get label => text()(); // label to be displayed in app
+  TextColumn get value => text()(); // value to use in export feed
 
   @override
   Set<Column> get primaryKey => {id};
@@ -199,7 +199,7 @@ class CurbWheelDatabase extends _$CurbWheelDatabase {
               geometryType: surveyItem.feature.geometryType,
               featureId: surveyItem.feature.id,
               color: surveyItem.feature.color,
-              name: surveyItem.feature.name,
+              name: surveyItem.feature.label,
               span: span[0],
               points: points);
           return listItem;
@@ -210,7 +210,7 @@ class CurbWheelDatabase extends _$CurbWheelDatabase {
               geometryType: surveyItem.feature.geometryType,
               featureId: surveyItem.feature.id,
               color: surveyItem.feature.color,
-              name: surveyItem.feature.name,
+              name: surveyItem.feature.label,
               points: points);
           return listItem;
         }
