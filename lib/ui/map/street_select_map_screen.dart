@@ -14,6 +14,8 @@ import 'package:turf/turf.dart';
 import 'package:uuid/uuid.dart';
 import 'map_database.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 const String ACCESS_TOKEN =
     "pk.eyJ1IjoidHJhbnNwb3J0cGFydG5lcnNoaXAiLCJhIjoiY2trZTN1b3NlMDN3aTJvbzFhdW1uZGExcCJ9.S0gouMnBt_Ynv0GnmOQzeA";
 
@@ -48,7 +50,7 @@ class _StreetSelectMapScreenState extends State<StreetSelectMapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text("Select street",
+            title: Text(AppLocalizations.of(context).mapScreenTitle,
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.white)),
             actions: [BleStatusButton()]),

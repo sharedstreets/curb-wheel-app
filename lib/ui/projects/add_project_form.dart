@@ -9,6 +9,7 @@ import 'package:moor/moor.dart' as moor;
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 var uuid = Uuid();
 
@@ -151,16 +152,21 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
                               onPressed: () {
                                 _addProject();
                               },
-                              child: Text('Add Project',
+                              child: Text(AppLocalizations.of(context).addProject,
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 20)),
                             );
                           } else
-                            return Text("Project already imported.");
+                            return Text(AppLocalizations.of(context).alreadyImportedWarning);
                         } else
                           return Text("");
-                      }))
-            ])));
+                      }
+                      ),
+                      ),
+            ]
+            ),
+            ),
+            );
   }
 }
 
@@ -213,7 +219,7 @@ class _DownloadButtonState extends State<DownloadButton> {
                 stackTrace: stackTrace,
               );
               final snackBar = SnackBar(
-                content: Text('Unable to retreive project configuration.'),
+                content: Text(AppLocalizations.of(context).unableToRetrieveProject),
               );
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }
@@ -229,8 +235,8 @@ class _DownloadButtonState extends State<DownloadButton> {
         ),
         child: Row(
           children: _loading
-              ? <Widget>[Spinner(icon: Icons.refresh), Text("  Downloading...")]
-              : <Widget>[Icon(Icons.refresh), Text("  Download")],
+              ? <Widget>[Spinner(icon: Icons.refresh), Text(AppLocalizations.of(context).downloading)]
+              : <Widget>[Icon(Icons.refresh), Text(AppLocalizations.of(context).downloadBtn)],
         ));
   }
 }

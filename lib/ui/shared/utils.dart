@@ -1,5 +1,7 @@
 import 'package:curbwheel/ui/map/street_review_map_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 Color colorConvert(String color) {
   color = color.replaceAll("#", "");
@@ -28,23 +30,12 @@ SideOfStreet getSideOfStreetFromString(String side) {
 
 Widget buildStreetDescription(BuildContext context, SideOfStreet side,
     String startStreetName, String endStreetName) {
-  return RichText(
-    text: TextSpan(
-      text: '',
-      style: DefaultTextStyle.of(context).style,
-      children: <TextSpan>[
-        TextSpan(
-            text: side == SideOfStreet.Left ? "Left side" : "Right side",
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        TextSpan(text: " between "),
-        TextSpan(
-            text: '${startStreetName}',
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        TextSpan(text: ' and '),
-        TextSpan(
-            text: '${endStreetName}',
-            style: TextStyle(fontWeight: FontWeight.bold)),
-      ],
-    ),
+  var _sideOfStreet = side == SideOfStreet.Left ? AppLocalizations.of(context).leftSide : AppLocalizations.of(context).rightSide;
+  return Html(data:
+    AppLocalizations.of(context).streetContext(
+        _sideOfStreet,
+        startStreetName,
+        endStreetName
+      ),
   );
 }

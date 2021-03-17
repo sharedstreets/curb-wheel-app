@@ -1,5 +1,7 @@
 import 'package:curbwheel/service/models.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class ProjectConfigCard extends StatelessWidget {
   final Config config;
@@ -9,8 +11,6 @@ class ProjectConfigCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(config.featureTypes);
-
     return Card(
       child: InkWell(
         child: Column(
@@ -31,14 +31,12 @@ class ProjectConfigCard extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text("Primary contact:"),
+                      Text(AppLocalizations.of(context).projectPrimaryContact),
                       Text(config.email,
                           style: TextStyle(fontWeight: FontWeight.bold)),
                       Text(""),
-                      Text("Map data:"),
-                      Text(
-                          mapData.featureCollection.features.length.toString() +
-                              " segments",
+                      Text(AppLocalizations.of(context).projectMapData),
+                      Text(AppLocalizations.of(context).projectSegmentsCount(mapData.featureCollection.features.length),
                           style: TextStyle(fontWeight: FontWeight.bold)),
                           Text(""),
                       FeatureTypeList(config)
@@ -58,7 +56,7 @@ class FeatureTypeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> featureTypeList = [];
-    featureTypeList.add(Text("Feature types:"));
+    featureTypeList.add(Text(AppLocalizations.of(context).projectFeatureTypes));
     for (var featureType in config.featureTypes) {
       featureTypeList.add(
         Text(

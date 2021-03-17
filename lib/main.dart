@@ -19,6 +19,9 @@ import 'database/database.dart';
 
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+
 Future<void> main() async {
   await SentryFlutter.init(
     (options) {
@@ -45,6 +48,8 @@ class CurbWheel extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'CurbWheel',
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
           fontFamily: 'Raleway',
           primaryColor: Colors.black,

@@ -4,6 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+
 class QrScanner extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _QrScannerState();
@@ -44,7 +47,7 @@ class _QrScannerState extends State<QrScanner> {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            'Scan project QR Code',
+            AppLocalizations.of(context).scanQrCode,
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),

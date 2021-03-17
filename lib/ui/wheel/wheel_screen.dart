@@ -15,6 +15,9 @@ import 'package:progresso/progresso.dart';
 import 'complete_list.dart';
 import 'incomplete_list.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+
 class WheelScreenArguments {
   final Project project;
   final Survey survey;
@@ -98,7 +101,7 @@ class _WheelScreenState extends State<WheelScreen>
       onWillPop: _onWillPop,
       child: Scaffold(
         appBar: AppBar(
-            title: Text("Survey street",
+            title: Text(AppLocalizations.of(context).wheelScreenTitle,
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.white)),
             actions: [BleStatusButton()]),
@@ -141,14 +144,16 @@ class _WheelScreenState extends State<WheelScreen>
                             unselectedLabelColor: Colors.black,
                             tabs: [
                               Tab(
-                                text: 'Active features($activeCount)',
+                                text: AppLocalizations.of(context).activeFeatures(activeCount),
                               ),
                               Tab(
-                                text: 'Completed features ($completeCount)',
+                                text: AppLocalizations.of(context).completedFeatures(completeCount),
                               ),
                             ],
-                          ));
-                    }),
+                          )
+                          );
+                    }
+                  ),
               ],
             )),
             Expanded(
@@ -171,18 +176,17 @@ class _WheelScreenState extends State<WheelScreen>
 Future<bool> showBackWarningDialog(
     BuildContext context, Survey survey, Function deleteCallback) {
   AlertDialog alert = AlertDialog(
-    title: Text("Incomplete survey"),
-    content: Text(
-        "This survey is incomplete. Navigating back will delete the current progress, cancel to continue surveying and save your progress."),
+    title: Text(AppLocalizations.of(context).incompleteSurveyWarningTitle),
+    content: Text(AppLocalizations.of(context).incompleteSurveyWarningBody),
     actions: [
       TextButton(
         onPressed: () {
           Navigator.of(context).pop();
         },
-        child: Text("CANCEL"),
+        child: Text(AppLocalizations.of(context).cancel),
       ),
       TextButton(
-        child: Text("GO BACK TO MAP"),
+        child: Text(AppLocalizations.of(context).goBackToMap),
         onPressed: () async {
           await deleteCallback(survey);
           Navigator.of(context).pop();
@@ -203,7 +207,7 @@ Future<bool> showBackWarningDialog(
 showBluetoothAlertDialog(
     BuildContext context, Survey survey, Function deleteCallback) {
   Widget okButton = TextButton(
-    child: Text("Go to connection screen"),
+    child: Text(AppLocalizations.of(context).bluetoothWarningBtn),
     onPressed: () async {
       await deleteCallback(survey);
       Navigator.pop(context);
@@ -213,9 +217,8 @@ showBluetoothAlertDialog(
   );
 
   AlertDialog alert = AlertDialog(
-    title: Text("Bluetooth Not Connected"),
-    content: Text(
-        "You are not connected to a CurbWheel, go to the connection screen to find a nearby CurbWheel connection before surveying."),
+    title: Text(AppLocalizations.of(context).bluetoothWarningTitle),
+    content: Text(AppLocalizations.of(context).bluetoothWarningBody),
     actions: [
       okButton,
     ],
@@ -304,8 +307,7 @@ class _WheelHeaderState extends State<WheelHeader> {
                 backgroundStrokeCap: StrokeCap.round,
               ),
             ),
-            Text(
-                "Surveyed ${_currentMeasurement.toStringAsFixed(1)}m of ${_survey.mapLength.toStringAsFixed(1)}m"),
+            Text(AppLocalizations.of(context).surveyedProgress(_currentMeasurement.toStringAsFixed(1), _survey.mapLength.toStringAsFixed(1))),
           ],
         ),
       ),

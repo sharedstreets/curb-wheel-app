@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 var uuid = Uuid();
 
@@ -46,7 +48,7 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
             var features = snapshot.data;
             return Scaffold(
               appBar: AppBar(
-                title: Text("Select feature type",
+                title: Text(AppLocalizations.of(context).selectFeatureTypeScreen,
                     style: TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.white)),
               ),
@@ -61,7 +63,7 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
               ),
             );
           } else {
-            return Text("Loading features");
+            return Text(AppLocalizations.of(context).loadingFeatures);
           }
         });
   }

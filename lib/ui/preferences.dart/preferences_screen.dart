@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class PreferencesScreen extends StatefulWidget {
   @override
@@ -16,8 +18,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     Future _bleConnection = _getBleConnectionValue(_bleConnectionTextFieldController);
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-            'Settings',
+          title: Text(AppLocalizations.of(context).settings,
             style: TextStyle(color: Colors.white),
           ),
         ),
@@ -34,7 +35,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                       controller: _deviceNameTextFieldController,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: 'Device name'),
+                          labelText: AppLocalizations.of(context).deviceName),
                     );
                   }),
                   SizedBox(height: 16),
@@ -49,14 +50,14 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                       controller: _bleConnectionTextFieldController,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: 'Default wheel BLE connection'),
+                          labelText: AppLocalizations.of(context).defaultBleConnection),
                     );
                   }),
               RaisedButton(
                 onPressed: () async =>
                     {await _setValues(_deviceNameTextFieldController)},
                 color: Colors.blue,
-                child: Text("Save"),
+                child: Text(AppLocalizations.of(context).save),
               )
             ],
           ),

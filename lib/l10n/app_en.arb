@@ -1,0 +1,309 @@
+    {
+      "@@locale": "en",
+      "welcome": "press screen to start",
+      "@welcome": {
+        "description": ""
+      },
+      "noProjects": "No projects",
+      "@noProjects": {
+        "description": ""
+      },
+      "projectScreenTitle": "CurbWheel projects",
+      "@projectScreenTitle": {
+        "description": ""
+      },
+      "projectSegmentsCount":"{segmentCount} segments",
+      "@projectSegmentsCount": {
+        "description": "",
+        "placeholders": {
+          "segmentCount": {
+            "type": "int",
+            "example": "1",
+            "format": "compactLong"
+          }
+        }
+      },
+      "unableToRetrieveProject": "Unable to retreive project configuration.",
+      "@unableToRetrieveProject": {
+        "description": ""
+      },
+      "projectCardSubTitle": "Read to survey!",
+      "@projectCardSubTitle": {
+        "description": ""
+      },
+      "completedSurveys": "Completed surveys",
+      "@completedSurveys": {
+        "description": ""
+      },
+      "reviewCompletedSurveys": "Review completed surveys",
+      "@reviewCompletedSurveys": {
+        "description": ""
+      },
+      "streetSurveyCount": "{streetCount} streets surveyed",
+      "@streetSurveyCount": {
+        "description": "",
+        "placeholders": {
+          "streetCount": {
+            "type": "int",
+            "example": "1",
+            "format": "compactLong"
+          }
+        }
+      },
+      "readyToSurvey": "Ready to survey!",
+      "@readyToSurvey": {
+        "description": ""
+      },
+      "syncData": "Sync data",
+      "@syncData": {
+        "description": ""
+      },
+      "deleteProject": "Delete project",
+      "@deleteProject": {
+        "description": ""
+      },
+      "deleteProjectWarningBody": "Are you sure you want to permanently delete this project and all related data from this phone?",
+      "@deleteProjectWarningBody": {
+        "description": ""
+      },
+      "addProject": "Add project",
+      "@addProject": {
+        "description": ""
+      },
+      "scanQrCode": "Scan QR code",
+      "@scanQrCode": {
+        "description": ""
+      },
+      "enterUrl": "Enter URL",
+      "@enterUrl": {
+        "description": ""
+      },
+      "qrScanScreenTitle": "Scan project QR Code",
+      "@qrScanScreenTitle": {
+        "description": ""
+      },
+      "loadingProjects": "Loading projects...",
+      "@loadingProjects": {
+        "description": ""
+      },
+      "loadingFeatures": "Loading features...",
+      "@loadingFeatures": {
+        "description": ""
+      },
+      "urlScreenTitle": "Add Project",
+      "@urlScreenTitle": {
+        "description": ""
+      },
+      "projectConfigurationUrl": "Project configuration URL",
+      "@projectConfigurationUrl": {
+        "description": ""
+      },
+      "downloadBtn": "Download",
+      "@downloadBtn": {
+        "description": ""
+      },
+      "downloading": "Downloading...",
+      "@downloading": {
+        "description": ""
+      },
+      "projectPrimaryContact": "Primary contact",
+      "@projectPrimaryContact": {
+        "description": ""
+      },
+      "projectMapData": "Map data",
+      "@projectMapData": {
+        "description": ""
+      },
+      "projectFeatureTypes": "Feature types",
+      "@projectFeatureTypes": {
+        "description": ""
+      },
+      "alreadyImportedWarning": "Project already imported",
+      "@alreadyImportedWarning": {
+        "description": ""
+      },
+      "mapScreenTitle": "Select street",
+      "@mapScreenTitle": {
+        "description": ""
+      },
+      "zoomInWarning": "Zoom in to select street",
+      "@zoomInWarning": {
+        "description": ""
+      },
+      "selectStreet": "Select a street",
+      "@selectStreet": {
+        "description": ""
+      },
+      "toggleSide": "Toggle side",
+      "@toggleSide": {
+        "description": ""
+      },
+      "toggleDirection": "Toggle direction",
+      "@toggleDirection": {
+        "description": ""
+      },
+      "rightSide": "Right side",
+      "@rightSide": {
+        "description": ""
+      },
+      "leftSide": "Left side",
+      "@leftSide": {
+        "description": ""
+      },
+      "streetContext": "<strong>{side}</strong> between <strong>{start}</strong> and <strong>{end}</strong>",
+      "@streetContext": {
+        "description": "",
+        "placeholders": {
+          "side": {
+            "type": "String",
+            "example": "Right side"
+          },
+          "start": {
+            "type": "String"
+          },
+          "end": {
+            "type": "String"
+          }
+        }
+      },
+      "bluetoothWarningTitle": "Bluetooth not connected",
+      "@bluetoothWarningTitle": {
+        "description": ""
+      },
+      "bluetoothWarningBody": "You are not connected to a CurbWheel, go to the connection screen to find a nearby CurbWheel connection before surveying",
+      "@bluetoothWarningBody": {
+        "description": ""
+      },
+      "bluetoothWarningBtn": "Go to connection screen",
+      "@bluetoothWarningBtn": {
+        "description": ""
+      },
+      "bluetooConnectionScreenTitle": "Connect Wheel",
+      "@bluetooConnectionScreenTitle": {
+        "description": ""
+      },
+      "scanningForDevices": "Scanning for devices...",
+      "@scanningForDevices": {
+        "description": ""
+      },
+      "noActiveItems": "No active survey items",
+      "@noActiveItems": {
+        "description": ""
+      },
+      "noCompleteItems": "No completed survey items",
+      "@noCompleteItems": {
+        "description": ""
+      },
+      "surveyedProgress": "Surveyed {progress} of {total}",
+      "@surveyedProgress": {
+        "description": "",
+        "placeholders": {
+        "progress": {
+          "type": "String",
+          "example": "1.0"
+        },
+        "total": {
+          "type": "String",
+          "example": "1.0"
+        }
+      }
+      },
+      "selectFeatureTypeScreen": "Select feature type",
+      "@selectFeatureTypeScreen": {
+        "description": ""
+      },
+      "loading": "Loading",
+      "@loading": {
+        "description": ""
+      },
+      "settings": "Settings",
+      "@settings": {
+        "description": ""
+      },
+      "deviceName": "Device name",
+      "@deviceName": {
+        "description": ""
+      },
+      "defaultBleConnection": "Default wheel BLE connection",
+      "@defaultBleConnection": {
+        "description": ""
+      },
+      "save": "Save",
+      "@save": {
+        "description": ""
+      },
+      "noData": "No data",
+      "@noData": {
+        "description": ""
+      },
+      "galleryScreenTitle": "Photos",
+      "@galleryScreenTitle": {
+        "description": ""
+      },
+      "viewPhotos": "View photos",
+      "@viewPhotos": {
+        "description": ""
+      },
+      "noPhotos": "No photos",
+      "@noPhotos": {
+        "description": ""
+      },
+      "delete": "delete",
+      "@delete": {
+        "description": ""
+      },
+      "cancel": "cancel",
+      "@cancel": {
+        "description": ""
+      },
+      "deleteWarningTitle": "Delete item?",
+      "@deleteWarningTitle": {
+        "description": ""
+      },
+      "wheelScreenTitle": "Survey street",
+      "@wheelScreenTitle": {
+        "description": ""
+      },
+      "deleteWarningBody": "Are you sure you want to delete this survey item? This cannot be undone",
+      "@deleteWarningBody": {
+        "description": ""
+      },
+      "activeFeatures": "Active features ( {count} )",
+      "@activeFeatures": {
+        "description": "",
+        "placeholders": {
+        "count": {
+          "type": "int",
+          "example": "42",
+          "format": "compactLong"
+        }
+      }
+      },
+      "completedFeatures": "Completed features ({count})",
+      "@completedFeatures": {
+        "description": "",
+        "placeholders": {
+        "count": {
+          "type": "int",
+          "example": "42",
+          "format": "compactLong"
+        }
+      }
+      },
+      "incompleteSurveyWarningTitle": "Incomplete survey",
+      "@incompleteSurveyWarningTitle": {
+        "description": ""
+      },
+      "incompleteSurveyWarningBody": "This survey is incomplete. Navigating back will delete the current progress. Cancel to continue surveying and save your progress",
+      "@incompleteSurveyWarningBody": {
+        "description": ""
+      },
+      "goBackToMap": "Go back to map",
+      "@goBackToMap": {
+        "description": ""
+      },
+      "reviewSurveysScreenTitle": "Review surveys",
+      "@reviewSurveysScreenTitle": {
+        "description": ""
+      }
+    }
