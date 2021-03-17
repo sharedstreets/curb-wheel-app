@@ -339,6 +339,7 @@ class _FullMapState extends State<FullMap> {
       setState(() {
         _zoomInToTap = false;
       });
+
       LatLngBounds bounds = await _mapController.getVisibleRegion();
 
       // TOOD need to filter filter for box contains?
@@ -418,7 +419,7 @@ class _FullMapState extends State<FullMap> {
       LocationData locationData = await location.getLocation();
       LatLng newLatLng =
           new LatLng(locationData.latitude, locationData.longitude);
-      CameraUpdate cameraUpdate = CameraUpdate.newLatLngZoom(newLatLng, 12);
+      CameraUpdate cameraUpdate = CameraUpdate.newLatLngZoom(newLatLng, 16);
       _mapController.moveCamera(cameraUpdate);
       _mapController.addListener(_onMapChanged);
       _mapController.onLineTapped.add(_onLineTapped);
