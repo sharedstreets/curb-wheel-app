@@ -198,7 +198,8 @@ class _FullMapState extends State<FullMap> {
     var data = await _projectMapData.mapData;
     Feature<LineString> f = data.geomIndex[geomId];
     String streetName = f.properties['name'];
-    if (streetName == null || streetName == "") streetName = "Unnamed Street";
+    if (streetName == null || streetName == "")
+      streetName = AppLocalizations.of(context).unnamedStreet;
 
     String fromId = direction == DirectionOfTravel.Forward
         ? f.properties['fromIntersectionId']
@@ -214,19 +215,19 @@ class _FullMapState extends State<FullMap> {
     List<String> fromStreets = data.getStreetsByIntersection(fromId);
     List<String> toStreets = data.getStreetsByIntersection(toId);
 
-    String fromStreetName = "Unnamed Street";
+    String fromStreetName = AppLocalizations.of(context).unnamedStreet;
     for (String newStreet in fromStreets) {
       if (streetName.toLowerCase() != newStreet.toLowerCase()) {
-        if (fromStreetName == "Unnamed Street") {
+        if (fromStreetName == AppLocalizations.of(context).unnamedStreet) {
           fromStreetName = newStreet;
         }
       }
     }
 
-    String toStreetName = "Unnamed Street";
+    String toStreetName = AppLocalizations.of(context).unnamedStreet;
     for (String newStreet in toStreets) {
       if (streetName.toLowerCase() != newStreet.toLowerCase()) {
-        if (toStreetName == "Unnamed Street") {
+        if (toStreetName == AppLocalizations.of(context).unnamedStreet) {
           toStreetName = newStreet;
         }
       }
@@ -571,9 +572,9 @@ class _IconTextButtonState extends State<IconTextButton> {
           this.widget.callback();
         },
         style: TextButton.styleFrom(
-            primary: Colors.black,
-            padding: EdgeInsets.all(10.0),
-          ),
+          primary: Colors.black,
+          padding: EdgeInsets.all(10.0),
+        ),
         child: Row(children: [Icon(widget.icon), Text(this.widget.label)]));
   }
 }

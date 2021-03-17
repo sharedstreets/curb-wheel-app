@@ -134,6 +134,10 @@
       "@selectStreet": {
         "description": ""
       },
+      "unnamedStreet": "Unnamed Street",
+      "@unnamedStreet": {
+        "description": ""
+      },
       "toggleSide": "Toggle side",
       "@toggleSide": {
         "description": ""
