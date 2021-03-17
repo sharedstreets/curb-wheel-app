@@ -118,7 +118,7 @@ class _FullMapState extends State<FullMap> {
   _FullMapState(this.project);
   Street _selectedStreet;
 
-  bool _zoomInToTap = true;
+  bool _zoomInToTap = false;
 
   @override
   void initState() {
@@ -332,7 +332,7 @@ class _FullMapState extends State<FullMap> {
     // not performant on a iphone 6s below z15
     // suggests importance of switching to geojson overlay
     if (_mapController.isCameraMoving == false &&
-        _mapController.cameraPosition.zoom > 15.5) {
+        _mapController.cameraPosition.zoom >= 15.5) {
       setState(() {
         _zoomInToTap = false;
       });
@@ -403,6 +403,12 @@ class _FullMapState extends State<FullMap> {
       }
 
       _redrawMap();
+    } else {
+      if (_zoomInToTap != true) {
+        setState(() {
+          _zoomInToTap = true;
+        });
+      }
     }
   }
 
@@ -415,11 +421,13 @@ class _FullMapState extends State<FullMap> {
       LocationData locationData = await location.getLocation();
       LatLng newLatLng =
           new LatLng(locationData.latitude, locationData.longitude);
-      CameraUpdate cameraUpdate = CameraUpdate.newLatLngZoom(newLatLng, 12);
+      CameraUpdate cameraUpdate = CameraUpdate.newLatLngZoom(newLatLng, 16);
       _mapController.moveCamera(cameraUpdate);
       _mapController.addListener(_onMapChanged);
       _mapController.onLineTapped.add(_onLineTapped);
     }
+
+    _onMapChanged();
   }
 
   @override
@@ -569,9 +577,9 @@ class _IconTextButtonState extends State<IconTextButton> {
           this.widget.callback();
         },
         style: TextButton.styleFrom(
-            primary: Colors.black,
-            padding: EdgeInsets.all(10.0),
-          ),
+          primary: Colors.black,
+          padding: EdgeInsets.all(10.0),
+        ),
         child: Row(children: [Icon(widget.icon), Text(this.widget.label)]));
   }
 }
