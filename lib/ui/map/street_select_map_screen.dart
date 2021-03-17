@@ -332,14 +332,11 @@ class _FullMapState extends State<FullMap> {
     // not performant on a iphone 6s below z15
     // suggests importance of switching to geojson overlay
     if (_mapController.isCameraMoving == false &&
-        _mapController.cameraPosition.zoom < 15.5) {
-      setState(() {
-        _zoomInToTap = true;
-      });
-    } else {
+        _mapController.cameraPosition.zoom > 15.5) {
       setState(() {
         _zoomInToTap = false;
       });
+
       LatLngBounds bounds = await _mapController.getVisibleRegion();
 
       // TOOD need to filter filter for box contains?
