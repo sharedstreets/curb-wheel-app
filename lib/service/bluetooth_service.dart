@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 final WHEEL_SERVICE_UUID = new Guid("1381f6e7-12f9-4ad7-aa87-1c5d50fe03f9");
 final FORWARD_UUID = new Guid("4365ec89-253c-49f4-b8a4-3ffe6ad73673");
 final REVERSE_UUID = new Guid("0d7f503f-78ed-4c24-a9f3-271264661448");
+final DUAL_UUID = new Guid("1fb110c0-3874-4c32-99c1-e1c8669c543f");
 
 enum WheelStatus { CONNECTING, CONNECTED, DISCONNECTED }
 
@@ -25,6 +26,7 @@ class BleWheel {
 
   BluetoothCharacteristic _forwardCharacteristic;
   BluetoothCharacteristic _reverseCharacteristic;
+  BluetoothCharacteristic _dualCharacteristic;
 
   bool _connectionFailed = false;
 
@@ -92,24 +94,31 @@ class BleWheel {
               _forwardCharacteristic = characteristic;
             } else if (characteristic.uuid == REVERSE_UUID) {
               _reverseCharacteristic = characteristic;
+            } else if (characteristic.uuid == DUAL_UUID) {
+              _dualCharacteristic = characteristic;
             }
           }
         }
       }
 
-      if (_reverseCharacteristic == null) {
-        _connectionFailed = true;
-        await _device.disconnect();
+// try dual characteristic first
+      if (_dualCharacteristic != null) {
+        await subscribeDualCounter();
+      } else {
+        // fall back to individual forward/reverse message streams if dual isn't avaialble
+        if (_reverseCharacteristic == null) {
+          _connectionFailed = true;
+          await _device.disconnect();
+        }
+
+        if (_reverseCharacteristic == null) {
+          _connectionFailed = true;
+          await _device.disconnect();
+        }
+
+        await subscribeForwardCounter();
+        await subscribeReverseCounter();
       }
-
-      if (_reverseCharacteristic == null) {
-        _connectionFailed = true;
-        await _device.disconnect();
-      }
-
-      await subscribeForwardCounter();
-      await subscribeReverseCounter();
-
       _stateStreamController.add(WheelStatus.CONNECTED);
     }
   }
@@ -120,8 +129,36 @@ class BleWheel {
     _reverseCharacteristic = null;
   }
 
+  subscribeDualCounter() async {
+    await _dualCharacteristic.setNotifyValue(true);
+
+    // dual characterist packs the forward and reverse counts into a single 64bit message
+    // first four byte word is the forward count
+    // second four bytes word is reverse count
+    // both words are in little endian order
+
+    _dualCharacteristic.value.listen((value) {
+      int forwardIntVal =
+          Uint8List.fromList(value.reversed.toList().sublist(4, 8))
+              .buffer
+              .asByteData()
+              .getUint32(0);
+      _forwardStreamController.add(forwardIntVal);
+
+      int reverseIntVal =
+          Uint8List.fromList(value.reversed.toList().sublist(0, 4))
+              .buffer
+              .asByteData()
+              .getUint32(0);
+      _reverseStreamController.add(reverseIntVal);
+    });
+  }
+
   subscribeForwardCounter() async {
     await _forwardCharacteristic.setNotifyValue(true);
+
+    // forward characteristic reports counts as 32bit message
+    // in little endian order
 
     _forwardCharacteristic.value.listen((value) {
       int intVal = Uint8List.fromList(value.reversed.toList())
@@ -134,6 +171,9 @@ class BleWheel {
 
   subscribeReverseCounter() async {
     await _reverseCharacteristic.setNotifyValue(true);
+
+    // reverse characteristic reports counts as 32bit message
+    // in little endian order
 
     _reverseCharacteristic.value.listen((value) {
       int intVal = Uint8List.fromList(value.reversed.toList())
