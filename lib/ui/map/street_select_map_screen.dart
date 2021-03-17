@@ -568,11 +568,14 @@ class IconTextButton extends StatefulWidget {
 class _IconTextButtonState extends State<IconTextButton> {
   @override
   build(BuildContext context) {
-    return FlatButton(
+    return TextButton(
         onPressed: () async {
           this.widget.callback();
         },
-        padding: EdgeInsets.all(10.0),
+        style: TextButton.styleFrom(
+            primary: Colors.black,
+            padding: EdgeInsets.all(10.0),
+          ),
         child: Row(children: [Icon(widget.icon), Text(this.widget.label)]));
   }
 }

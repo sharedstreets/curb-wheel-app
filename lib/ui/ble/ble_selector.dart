@@ -60,8 +60,8 @@ class _BleDeviceList extends State<BleListDisplay> {
 
   void _displaySnackBar(BuildContext context, {@required String error}) {
     final snackBar = SnackBar(content: Text(error));
-    Scaffold.of(context).hideCurrentSnackBar();
-    Scaffold.of(context).showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   Widget getDevices() {

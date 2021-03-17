@@ -42,7 +42,7 @@ class ProjectCard extends StatelessWidget {
           children: <Widget>[
             ListTile(
               leading: Icon(Icons.location_city_sharp),
-              trailing: FlatButton(
+              trailing: TextButton(
                 child: Icon(Icons.more_horiz),
                 onPressed: () {
                   showModalBottomSheet(
@@ -136,14 +136,14 @@ class ProjectCard extends StatelessWidget {
                               onTap: () {
                                 // set up the buttons
 
-                                Widget cancelButton = FlatButton(
+                                Widget cancelButton = TextButton(
                                   child: Text("Cancel"),
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                     Navigator.of(context).pop();
                                   },
                                 );
-                                Widget continueButton = FlatButton(
+                                Widget continueButton = TextButton(
                                   child: Text("Delete"),
                                   onPressed: () async {
                                     try {
