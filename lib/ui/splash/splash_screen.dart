@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 import 'package:curbwheel/ui/projects/project_list_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Spoke {
   final int theta1;
@@ -87,8 +88,7 @@ class _MyPainterState extends State<SplashScreen>
                 style: Theme.of(context).textTheme.headline1,
               )),
               Center(
-                  child: Text(
-                "press screen to get started",
+                  child: Text(AppLocalizations.of(context).welcome,
                 textAlign: TextAlign.left,
                 style: Theme.of(context).textTheme.subtitle2,
               )),

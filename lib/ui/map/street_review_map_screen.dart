@@ -14,6 +14,9 @@ import 'package:rxdart/rxdart.dart';
 import 'package:turf/turf.dart';
 import 'package:uuid/uuid.dart';
 import 'map_database.dart';
+import 'package:flutter_html/flutter_html.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 const String ACCESS_TOKEN =
     "pk.eyJ1IjoidHJhbnNwb3J0cGFydG5lcnNoaXAiLCJhIjoiY2trZTN1b3NlMDN3aTJvbzFhdW1uZGExcCJ9.S0gouMnBt_Ynv0GnmOQzeA";
@@ -49,7 +52,7 @@ class _StreetReviewMapScreenState extends State<StreetReviewMapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text("Review surveys",
+            title: Text(AppLocalizations.of(context).reviewSurveysScreenTitle,
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.white))),
         body: FullMap(project));
@@ -154,8 +157,8 @@ class _FullMapState extends State<FullMap> {
           return ListView(children: <Widget>[
             ListTile(
                 title: Text(
-              "Completed Surveys",
-              style: TextStyle(fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context).completedSurveys,
+                  style: TextStyle(fontWeight: FontWeight.bold),
             )),
             FutureBuilder<List<db.Survey>>(
                 future: _refServeys,
@@ -168,6 +171,11 @@ class _FullMapState extends State<FullMap> {
                     shrinkWrap: true,
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index) {
+                      var _sideOfStreet = snapshot.data[index].side ==
+                              SideOfStreet.Left.toString()
+                          ? AppLocalizations.of(context).leftSide
+                          : AppLocalizations.of(context).rightSide;
+
                       return GestureDetector(
                           onTap: () {
                             setState(() {
@@ -185,47 +193,30 @@ class _FullMapState extends State<FullMap> {
                               subtitle: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 5, 10, 10),
-                                    child: RichText(
-                                      text: TextSpan(
-                                        text: '',
-                                        style:
-                                            DefaultTextStyle.of(context).style,
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                              text: snapshot.data[index].side ==
-                                                      SideOfStreet.Left
-                                                          .toString()
-                                                  ? "Left side"
-                                                  : "Right side",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                          TextSpan(text: " from "),
-                                          TextSpan(
-                                              text:
-                                                  '${snapshot.data[index].startStreetName}',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                          TextSpan(text: ' to '),
-                                          TextSpan(
-                                              text:
-                                                  '${snapshot.data[index].endStreetName}',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                          TextSpan(
-                                              text:
-                                                  "\n\nSurveyed by Kevin at 9:30am on 2/18/2021 ",
-                                              style: TextStyle(
-                                                  fontStyle: FontStyle.italic)),
-                                        ],
+                                      padding:
+                                          EdgeInsets.fromLTRB(0, 5, 10, 10),
+                                      child: Html(
+                                        data:
+                                        AppLocalizations.of(context)
+                                            .streetContext(
+                                                _sideOfStreet,
+                                                snapshot.data[index]
+                                                    .startStreetName,
+                                                snapshot
+                                                    .data[index].endStreetName),
                                       ),
-                                    ),
-                                  ))));
+                                  ),
+                                ),
+                              ),
+                            );
                     },
                   );
-                })
-          ]);
-        });
+                }
+              )
+          ]
+        );
+      }
+    );
   }
 
   _redrawMap() {
@@ -408,8 +399,8 @@ class _ReviewStreetHeader extends State<ReviewStreetHeader> {
     String streetName = _survey != null
         ? _survey.streetName
         : widget.zoomInToTap == null || widget.zoomInToTap == true
-            ? "Zoom in to select a street"
-            : "Select street";
+            ? AppLocalizations.of(context).zoomInWarning
+            : AppLocalizations.of(context).selectStreet;
 
     return Container(
       color: Colors.white,
@@ -422,7 +413,7 @@ class _ReviewStreetHeader extends State<ReviewStreetHeader> {
               children: [
                 Flexible(
                   child: Text(
-                    '${streetName}',
+                    streetName,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   ),
                 ),

@@ -7,6 +7,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:progresso/progresso.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+
 class CompleteList extends StatefulWidget {
   final Survey survey;
 
@@ -37,9 +40,11 @@ class _CompleteListState extends State<CompleteList> {
                   },
                 );
               } else {
-                return Text("");
+                return Text(AppLocalizations.of(context).noCompleteItems);
               }
-            }));
+            }
+          )
+      );
   }
 }
 

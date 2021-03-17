@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../database/database.dart';
 
@@ -57,7 +58,8 @@ class ProjectCard extends StatelessWidget {
                           GestureDetector(
                               child: ListTile(
                                   leading: Icon(Icons.list_alt),
-                                  title: Text("Review completed surveys")),
+                                  title: Text(AppLocalizations.of(context)
+                                      .reviewCompletedSurveys)),
                               onTap: () {
                                 Navigator.of(context).pop();
                                 Navigator.pushNamed(
@@ -128,28 +130,32 @@ class ProjectCard extends StatelessWidget {
                               },
                               child: ListTile(
                                   leading: Icon(Icons.sync_alt),
-                                  title: Text("Sync data"))),
+                                  title: Text(
+                                      AppLocalizations.of(context).syncData))),
                           GestureDetector(
                               child: ListTile(
                                   leading: Icon(Icons.delete_forever),
-                                  title: Text("Delete project")),
+                                  title: Text(AppLocalizations.of(context)
+                                      .deleteProject)),
                               onTap: () {
                                 // set up the buttons
 
                                 Widget cancelButton = TextButton(
-                                  child: Text("Cancel"),
+                                  child:
+                                      Text(AppLocalizations.of(context).cancel),
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                     Navigator.of(context).pop();
                                   },
                                 );
                                 Widget continueButton = TextButton(
-                                  child: Text("Delete"),
+                                  child:
+                                      Text(AppLocalizations.of(context).delete),
                                   onPressed: () async {
                                     try {
                                       await _database.projectDao
                                           .deleteProject(project);
-                                    }  catch (exception, stackTrace) {
+                                    } catch (exception, stackTrace) {
                                       await Sentry.captureException(
                                         exception,
                                         stackTrace: stackTrace,
@@ -161,9 +167,10 @@ class ProjectCard extends StatelessWidget {
                                 );
 
                                 AlertDialog alert = AlertDialog(
-                                  title: Text("Delete Project"),
-                                  content: Text(
-                                      "Are you sure you want to perminately delete this project and all related data from this phone?"),
+                                  title: Text(AppLocalizations.of(context)
+                                      .deleteProject),
+                                  content: Text(AppLocalizations.of(context)
+                                      .deleteProjectWarningBody),
                                   actions: [
                                     cancelButton,
                                     continueButton,
@@ -193,10 +200,9 @@ class ProjectCard extends StatelessWidget {
                     if (snapshot.data != null &&
                         snapshot.data.length != null &&
                         snapshot.data.length > 0)
-                      return Text(snapshot.data.length.toString() +
-                          " streets surveyed");
+                      return Text(AppLocalizations.of(context).streetSurveyCount(snapshot.data.length));
                     else
-                      return Text("Ready to survey!");
+                      return Text(AppLocalizations.of(context).readyToSurvey);
                   }),
             ),
           ],

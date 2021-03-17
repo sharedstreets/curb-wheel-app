@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+
 class CameraScreenArguments {
   final String surveyItemId;
   final double position;
@@ -69,8 +72,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Widget cameraWidget(context) {
     if (cameraController == null || !cameraController.value.isInitialized) {
-      return Text(
-        'Loading',
+      return Text(AppLocalizations.of(context).loading,
         style: TextStyle(
             color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
       );
@@ -93,8 +95,7 @@ class _CameraScreenState extends State<CameraScreen> {
   /// Display camera preview
   Widget cameraPreview() {
     if (cameraController == null || !cameraController.value.isInitialized) {
-      return Text(
-        'Loading',
+      return Text(AppLocalizations.of(context).loading,
         style: TextStyle(
             color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
       );
@@ -187,7 +188,9 @@ class _CameraScreenState extends State<CameraScreen> {
                     width: double.infinity,
                     padding: EdgeInsets.all(15),
                     color: Colors.transparent,
-                    child: cameraControl(context)))
+                    child: cameraControl(context)
+                  )
+                )
           ],
         ),
       ),

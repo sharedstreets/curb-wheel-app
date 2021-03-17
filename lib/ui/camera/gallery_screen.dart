@@ -6,6 +6,8 @@ import 'package:curbwheel/ui/camera/image_view_screen.dart';
 import '../../database/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class GalleryScreenArguments {
   final String projectId;
@@ -44,7 +46,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
       _photos = _database.photoDao.watchAllPhotos();
     }
     return Scaffold(
-      appBar: AppBar(title: Text("Photos")),
+      appBar: AppBar(title: Text(AppLocalizations.of(context).galleryScreenTitle)),
       body: StreamBuilder(
         stream: _photos,
         builder: (context, AsyncSnapshot<List<PhotoWithParents>> snapshot) {
@@ -52,7 +54,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
             children: <Widget>[
               Expanded(
                 child: snapshot.hasData ? 
-                snapshot.data.length == 0 ? Center(child: Text("No photos"),) : GridView.builder(
+                snapshot.data.length == 0 ? Center(child: Text(AppLocalizations.of(context).noPhotos),) : GridView.builder(
                     itemCount: snapshot.data.length,
                     gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2),
@@ -67,7 +69,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                           ),
                         ),
                       );
-                    }) : Center(child: Text("Loading")),
+                    }) : Center(child: Text(AppLocalizations.of(context).loading)),
               ),
             ],
           );

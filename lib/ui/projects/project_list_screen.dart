@@ -7,6 +7,8 @@ import 'package:curbwheel/database/database.dart';
 import 'project_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 enum Action { form, qrcode }
 
@@ -29,7 +31,7 @@ class ProjectListScreenState extends State<ProjectListScreen> {
           context: context,
           builder: (BuildContext context) {
             return SimpleDialog(
-              title: const Text('Add project'),
+              title: Text(AppLocalizations.of(context).addProject),
               children: <Widget>[
                 SimpleDialogOption(
                   onPressed: () {
@@ -37,7 +39,7 @@ class ProjectListScreenState extends State<ProjectListScreen> {
                   },
                   child: Row(children: <Widget>[
                     Icon(Icons.qr_code_scanner),
-                    Text('  Scan QR Code',
+                    Text(AppLocalizations.of(context).scanQrCode,
                         style: TextStyle(fontWeight: FontWeight.bold))
                   ]),
                 ),
@@ -47,7 +49,7 @@ class ProjectListScreenState extends State<ProjectListScreen> {
                   },
                   child: Row(children: <Widget>[
                     Icon(Icons.link),
-                    Text('  Enter URL',
+                    Text(AppLocalizations.of(context).enterUrl,
                         style: TextStyle(fontWeight: FontWeight.bold))
                   ]),
                 ),
@@ -88,10 +90,10 @@ class ProjectListScreenState extends State<ProjectListScreen> {
                 );
               });
         } else {
-          return Center(child: Text('No projects yet'));
+          return Center(child: Text(AppLocalizations.of(context).noProjects));
         }
       } else {
-        return Center(child: Text('Loading projects...'));
+        return Center(child: Text(AppLocalizations.of(context).loadingProjects));
       }
     }
 
@@ -99,7 +101,7 @@ class ProjectListScreenState extends State<ProjectListScreen> {
     return Scaffold(
       appBar: AppBar(
           title: Text(
-            'CurbWheel projects',
+            AppLocalizations.of(context).projectScreenTitle,
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
           actions: [

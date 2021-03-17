@@ -4,6 +4,9 @@ import 'package:curbwheel/service/bluetooth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+
 class BleStatusButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -104,8 +107,10 @@ class _BleDeviceList extends State<BleListDisplay> {
                                 .getReverseCounter()
                                 .toString() +
                             ")",
-                      );
-                    }));
+                            );
+                        }
+                      ),
+                    );
                   } else if (connection.currentWheel().isConnecting()) {
                     color = Colors.blue[500];
                   } else if (connection.currentWheel().connectionFailed()) {
@@ -140,9 +145,8 @@ class _BleDeviceList extends State<BleListDisplay> {
             });
       } else {
         return Center(
-            child: Text(
-          'Scanning for devices...',
-        ));
+            child: Text(AppLocalizations.of(context).scanningForDevices)
+        );
       }
     });
   }
@@ -151,8 +155,7 @@ class _BleDeviceList extends State<BleListDisplay> {
   Widget build(BuildContext ctxt) {
     return new Scaffold(
         appBar: AppBar(
-          title: Text(
-            'Connect Wheel',
+          title: Text(AppLocalizations.of(context).bluetooConnectionScreenTitle,
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),

@@ -30,6 +30,9 @@ class ImageViewScreen extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-            ])));
+            ]
+            ),
+            ),
+            );
   }
 }

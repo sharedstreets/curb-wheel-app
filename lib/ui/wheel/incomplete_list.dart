@@ -11,6 +11,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:progresso/progresso.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class IncompleteList extends StatefulWidget {
   final SurveyManager surveyManager;
   final Survey survey;
@@ -45,23 +47,22 @@ class _IncompleteListState extends State<IncompleteList> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete item?'),
+          title: Text(AppLocalizations.of(context).deleteWarningTitle),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Are you sure you want to delete this survey item?'),
-                Text('This cannot be undone.'),
+                Text(AppLocalizations.of(context).deleteWarningBody),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-                child: Text('Cancel'),
+                child: Text(AppLocalizations.of(context).cancel),
                 onPressed: () {
                   Navigator.pop(context);
                 }),
             TextButton(
-                child: Text('Delete'),
+                child: Text(AppLocalizations.of(context).delete),
                 onPressed: () {
                   widget.surveyManager
                       .deleteSurveyItem(listItem.toSurveyItem());
@@ -87,7 +88,7 @@ class _IncompleteListState extends State<IncompleteList> {
                   return Center(
                       child: Padding(
                           padding: EdgeInsets.all(20.0),
-                          child: Text('No active items',
+                          child: Text(AppLocalizations.of(context).noActiveItems,
                               style: TextStyle(
                                   color: Colors.black, fontSize: 20))));
                 } else {
@@ -105,7 +106,7 @@ class _IncompleteListState extends State<IncompleteList> {
                   );
                 }
               } else {
-                return Text("No data");
+                return Text(AppLocalizations.of(context).noData);
               }
             }));
   }
@@ -222,7 +223,7 @@ class _ActiveCardState extends State<ActiveCard> {
                                             Icon(Icons.image_sharp),
                                             Padding(
                                                 padding: EdgeInsets.all(8.0),
-                                                child: Text("View photos"))
+                                                child: Text(AppLocalizations.of(context).viewPhotos))
                                           ],
                                         ),
                                       ),
@@ -240,7 +241,7 @@ class _ActiveCardState extends State<ActiveCard> {
                                             Icon(Icons.delete),
                                             Padding(
                                                 padding: EdgeInsets.all(8.0),
-                                                child: Text("Delete"))
+                                                child: Text(AppLocalizations.of(context).delete))
                                           ],
                                         ),
                                       ),
@@ -262,7 +263,7 @@ class _ActiveCardState extends State<ActiveCard> {
                                             Icon(Icons.close),
                                             Padding(
                                                 padding: EdgeInsets.all(8.0),
-                                                child: Text("Cancel"))
+                                                child: Text(AppLocalizations.of(context).cancel))
                                           ],
                                         ),
                                       ),
