@@ -245,7 +245,7 @@ class _FullMapState extends State<FullMap> {
     // not performant on a iphone 6s below z15
     // suggests importance of switching to geojson overlay
     if (_mapController.isCameraMoving == false &&
-        _mapController.cameraPosition.zoom > 12) {
+        _mapController.cameraPosition.zoom >= 12) {
       setState(() {
         _zoomInToTap = false;
       });
