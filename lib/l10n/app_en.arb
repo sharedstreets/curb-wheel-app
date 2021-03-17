@@ -248,11 +248,11 @@
       "@noPhotos": {
         "description": ""
       },
-      "delete": "delete",
+      "delete": "Delete",
       "@delete": {
         "description": ""
       },
-      "cancel": "cancel",
+      "cancel": "Cancel",
       "@cancel": {
         "description": ""
       },
