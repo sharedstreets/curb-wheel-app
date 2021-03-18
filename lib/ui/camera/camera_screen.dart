@@ -8,7 +8,6 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class CameraScreenArguments {
   final String surveyItemId;
   final double position;
@@ -72,7 +71,8 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Widget cameraWidget(context) {
     if (cameraController == null || !cameraController.value.isInitialized) {
-      return Text(AppLocalizations.of(context).loading,
+      return Text(
+        AppLocalizations.of(context).loading,
         style: TextStyle(
             color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
       );
@@ -95,7 +95,8 @@ class _CameraScreenState extends State<CameraScreen> {
   /// Display camera preview
   Widget cameraPreview() {
     if (cameraController == null || !cameraController.value.isInitialized) {
-      return Text(AppLocalizations.of(context).loading,
+      return Text(
+        AppLocalizations.of(context).loading,
         style: TextStyle(
             color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
       );
@@ -137,9 +138,9 @@ class _CameraScreenState extends State<CameraScreen> {
             arguments: PreviewScreenArguments(widget.surveyItemId, path,
                 position: _position, pointId: _pointId));
       } catch (exception, stackTrace) {
-          await Sentry.captureException(
-            exception,
-            stackTrace: stackTrace,
+        await Sentry.captureException(
+          exception,
+          stackTrace: stackTrace,
         );
       }
     } catch (exception, stackTrace) {
@@ -174,8 +175,8 @@ class _CameraScreenState extends State<CameraScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          automaticallyImplyLeading: true,
-        ),
+        automaticallyImplyLeading: true,
+      ),
       backgroundColor: Colors.black,
       body: Container(
         child: Stack(
@@ -188,9 +189,7 @@ class _CameraScreenState extends State<CameraScreen> {
                     width: double.infinity,
                     padding: EdgeInsets.all(15),
                     color: Colors.transparent,
-                    child: cameraControl(context)
-                  )
-                )
+                    child: cameraControl(context)))
           ],
         ),
       ),

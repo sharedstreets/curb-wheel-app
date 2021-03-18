@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class CompleteList extends StatefulWidget {
   final Survey survey;
 
@@ -42,9 +41,7 @@ class _CompleteListState extends State<CompleteList> {
               } else {
                 return Text(AppLocalizations.of(context).noCompleteItems);
               }
-            }
-          )
-      );
+            }));
   }
 }
 
@@ -87,38 +84,38 @@ class _InactiveCardState extends State<InactiveCard> {
       positionString = "${_start}m";
     }
     return Padding(
-        padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-        child: Card(
-            color: Colors.white,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
-                    child: Row(children: [
-                      svgIcon,
-                      Text(_listItem.name),
-                      Spacer(),
-                    ]),
-                  ),
-                  Padding(
-                      padding: EdgeInsets.all(2.0),
-                      child: Progresso(
-                          start: _start /_max,
-                          progress: _stop / _max,
-                          progressColor: colorConvert(_listItem.color),
-                          progressStrokeCap: StrokeCap.round,
-                          backgroundStrokeCap: StrokeCap.round,
-                          points: _points)),
-                  Padding(
-                     padding: EdgeInsets.fromLTRB(0, 8.0, 0, 0),
-                     child:Text(positionString)),
-                ],
+      padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+      child: Card(
+        color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 10.0),
+                child: Row(children: [
+                  svgIcon,
+                  Text(_listItem.name),
+                  Spacer(),
+                ]),
               ),
-            ),
-            ),
-            );
+              Padding(
+                  padding: EdgeInsets.all(2.0),
+                  child: Progresso(
+                      start: _start / _max,
+                      progress: _stop / _max,
+                      progressColor: colorConvert(_listItem.color),
+                      progressStrokeCap: StrokeCap.round,
+                      backgroundStrokeCap: StrokeCap.round,
+                      points: _points)),
+              Padding(
+                  padding: EdgeInsets.fromLTRB(0, 8.0, 0, 0),
+                  child: Text(positionString)),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

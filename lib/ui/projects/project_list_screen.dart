@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 enum Action { form, qrcode }
 
 class ProjectListScreen extends StatefulWidget {
@@ -93,7 +92,8 @@ class ProjectListScreenState extends State<ProjectListScreen> {
           return Center(child: Text(AppLocalizations.of(context).noProjects));
         }
       } else {
-        return Center(child: Text(AppLocalizations.of(context).loadingProjects));
+        return Center(
+            child: Text(AppLocalizations.of(context).loadingProjects));
       }
     }
 
@@ -138,7 +138,7 @@ class ProjectListScreenState extends State<ProjectListScreen> {
                             alignment: Alignment.bottomCenter,
                             child: _showProjectList(snapshot)),
                       );
-                    })
+                    }),
               ]),
         ),
       ),

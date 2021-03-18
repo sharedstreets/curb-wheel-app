@@ -86,7 +86,8 @@ class _IncompleteListState extends State<IncompleteList> {
                   return Center(
                       child: Padding(
                           padding: EdgeInsets.all(20.0),
-                          child: Text(AppLocalizations.of(context).noActiveItems,
+                          child: Text(
+                              AppLocalizations.of(context).noActiveItems,
                               style: TextStyle(
                                   color: Colors.black, fontSize: 20))));
                 } else {
@@ -221,7 +222,9 @@ class _ActiveCardState extends State<ActiveCard> {
                                             Icon(Icons.image_sharp),
                                             Padding(
                                                 padding: EdgeInsets.all(8.0),
-                                                child: Text(AppLocalizations.of(context).viewPhotos))
+                                                child: Text(
+                                                    AppLocalizations.of(context)
+                                                        .viewPhotos))
                                           ],
                                         ),
                                       ),
@@ -239,7 +242,9 @@ class _ActiveCardState extends State<ActiveCard> {
                                             Icon(Icons.delete),
                                             Padding(
                                                 padding: EdgeInsets.all(8.0),
-                                                child: Text(AppLocalizations.of(context).delete))
+                                                child: Text(
+                                                    AppLocalizations.of(context)
+                                                        .delete))
                                           ],
                                         ),
                                       ),
@@ -261,7 +266,9 @@ class _ActiveCardState extends State<ActiveCard> {
                                             Icon(Icons.close),
                                             Padding(
                                                 padding: EdgeInsets.all(8.0),
-                                                child: Text(AppLocalizations.of(context).cancel))
+                                                child: Text(
+                                                    AppLocalizations.of(context)
+                                                        .cancel))
                                           ],
                                         ),
                                       ),

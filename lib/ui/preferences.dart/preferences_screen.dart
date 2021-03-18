@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class PreferencesScreen extends StatefulWidget {
   @override
   _PreferencesScreenState createState() => _PreferencesScreenState();
@@ -15,10 +14,12 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   @override
   Widget build(BuildContext context) {
     Future _deviceName = _getDeviceNameValue(_deviceNameTextFieldController);
-    Future _bleConnection = _getBleConnectionValue(_bleConnectionTextFieldController);
+    Future _bleConnection =
+        _getBleConnectionValue(_bleConnectionTextFieldController);
     return Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context).settings,
+          title: Text(
+            AppLocalizations.of(context).settings,
             style: TextStyle(color: Colors.white),
           ),
         ),
@@ -38,8 +39,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           labelText: AppLocalizations.of(context).deviceName),
                     );
                   }),
-                  SizedBox(height: 16),
-                  FutureBuilder<dynamic>(
+              SizedBox(height: 16),
+              FutureBuilder<dynamic>(
                   future: _bleConnection,
                   builder:
                       (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -50,16 +51,17 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                       controller: _bleConnectionTextFieldController,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: AppLocalizations.of(context).defaultBleConnection),
+                          labelText: AppLocalizations.of(context)
+                              .defaultBleConnection),
                     );
                   }),
               ElevatedButton(
                 onPressed: () async =>
                     {await _setValues(_deviceNameTextFieldController)},
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.black,
-                        onPrimary: Colors.white,
-                      ),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.black,
+                  onPrimary: Colors.white,
+                ),
                 child: Text(AppLocalizations.of(context).save),
               )
             ],
@@ -67,13 +69,15 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         )));
   }
 
-  Future _getDeviceNameValue(TextEditingController deviceNameTextFieldController) async {
+  Future _getDeviceNameValue(
+      TextEditingController deviceNameTextFieldController) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('deviceName');
     deviceNameTextFieldController.text = stringValue;
   }
 
-  Future _getBleConnectionValue(TextEditingController bleConnectionTextFieldController) async {
+  Future _getBleConnectionValue(
+      TextEditingController bleConnectionTextFieldController) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('previousWheelId');
     bleConnectionTextFieldController.text = stringValue;
@@ -85,7 +89,6 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     await prefs.setString('deviceName', _deviceName);
   }
 }
-
 
 class AlwaysDisabledFocusNode extends FocusNode {
   @override

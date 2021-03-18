@@ -106,70 +106,68 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Add project',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-          ),
+      appBar: AppBar(
+        title: Text(
+          'Add project',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        body: Padding(
-            padding: EdgeInsets.all(10.0),
-            child: Column(children: <Widget>[
-              Center(
-                child: TextFormField(
-                  controller: textFieldController,
-                  decoration:
-                      InputDecoration(labelText: 'Project configuration URL'),
-                ),
-              ),
-              DownloadButton(
-                  urlController: textFieldController,
-                  callback: (String url, var config, var mapData) {
-                    setState(() {
-                      this._projectUrl = url;
-                      this._config = config;
-                      this._mapData = mapData;
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(10.0),
+        child: Column(children: <Widget>[
+          Center(
+            child: TextFormField(
+              controller: textFieldController,
+              decoration:
+                  InputDecoration(labelText: 'Project configuration URL'),
+            ),
+          ),
+          DownloadButton(
+              urlController: textFieldController,
+              callback: (String url, var config, var mapData) {
+                setState(() {
+                  this._projectUrl = url;
+                  this._config = config;
+                  this._mapData = mapData;
 
-                      _isNewProject = _checkIfNewProject();
-                    });
-                  }),
-              _config != null
-                  ? ProjectConfigCard(
-                      config: _config,
-                      mapData: _mapData,
-                    )
-                  : Text(""),
-              Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: FutureBuilder<bool>(
-                      future: _isNewProject,
-                      builder:
-                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                        if (_config != null && snapshot.data != null) {
-                          if (snapshot.data) {
-                            return ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.black,
-                                onPrimary: Colors.white,
-                              ),
-                              onPressed: () {
-                                _addProject();
-                              },
-                              child: Text(AppLocalizations.of(context).addProject,
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20)),
-                            );
-                          } else
-                            return Text(AppLocalizations.of(context).alreadyImportedWarning);
-                        } else
-                          return Text("");
-                      }
-                      ),
-                      ),
-            ]
-            ),
-            ),
-            );
+                  _isNewProject = _checkIfNewProject();
+                });
+              }),
+          _config != null
+              ? ProjectConfigCard(
+                  config: _config,
+                  mapData: _mapData,
+                )
+              : Text(""),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: FutureBuilder<bool>(
+                future: _isNewProject,
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  if (_config != null && snapshot.data != null) {
+                    if (snapshot.data) {
+                      return ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.black,
+                          onPrimary: Colors.white,
+                        ),
+                        onPressed: () {
+                          _addProject();
+                        },
+                        child: Text(AppLocalizations.of(context).addProject,
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 20)),
+                      );
+                    } else
+                      return Text(
+                          AppLocalizations.of(context).alreadyImportedWarning);
+                  } else
+                    return Text("");
+                }),
+          ),
+        ]),
+      ),
+    );
   }
 }
 
@@ -222,7 +220,8 @@ class _DownloadButtonState extends State<DownloadButton> {
                 stackTrace: stackTrace,
               );
               final snackBar = SnackBar(
-                content: Text(AppLocalizations.of(context).unableToRetrieveProject),
+                content:
+                    Text(AppLocalizations.of(context).unableToRetrieveProject),
               );
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }
@@ -233,13 +232,19 @@ class _DownloadButtonState extends State<DownloadButton> {
           }
         },
         style: TextButton.styleFrom(
-            primary: Colors.black,
-            padding: EdgeInsets.all(10.0),
+          primary: Colors.black,
+          padding: EdgeInsets.all(10.0),
         ),
         child: Row(
           children: _loading
-              ? <Widget>[Spinner(icon: Icons.refresh), Text(AppLocalizations.of(context).downloading)]
-              : <Widget>[Icon(Icons.refresh), Text(AppLocalizations.of(context).downloadBtn)],
+              ? <Widget>[
+                  Spinner(icon: Icons.refresh),
+                  Text(AppLocalizations.of(context).downloading)
+                ]
+              : <Widget>[
+                  Icon(Icons.refresh),
+                  Text(AppLocalizations.of(context).downloadBtn)
+                ],
         ));
   }
 }

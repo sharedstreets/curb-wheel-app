@@ -491,7 +491,8 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
-                  child: Text(streetName,
+                  child: Text(
+                    streetName,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   ),
                 ),

@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class BleStatusButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -23,7 +22,7 @@ class BleStatusButton extends StatelessWidget {
                 : Colors.orange,
         tooltip: 'Bluetooth',
         onPressed: () {
-          Navigator.pushNamed(context,BleListDisplay.routeName);
+          Navigator.pushNamed(context, BleListDisplay.routeName);
         },
       );
     });
@@ -32,7 +31,6 @@ class BleStatusButton extends StatelessWidget {
 
 class BleListDisplay extends StatefulWidget {
   static const routeName = '/ble-list';
-
 
   @override
   State createState() => new _BleDeviceList();
@@ -95,21 +93,21 @@ class _BleDeviceList extends State<BleListDisplay> {
                     _pendingWheel = null;
                     color = Colors.blue[800];
 
-                    child.children.add(new Consumer<WheelCounter>(
-                        builder: (context, counter, child) {
-                      return Text(
-                        "(" +
-                            Provider.of<WheelCounter>(context)
-                                .getForwardCounter()
-                                .toString() +
-                            " | " +
-                            Provider.of<WheelCounter>(context)
-                                .getReverseCounter()
-                                .toString() +
-                            ")",
-                            );
-                        }
-                      ),
+                    child.children.add(
+                      new Consumer<WheelCounter>(
+                          builder: (context, counter, child) {
+                        return Text(
+                          "(" +
+                              Provider.of<WheelCounter>(context)
+                                  .getForwardCounter()
+                                  .toString() +
+                              " | " +
+                              Provider.of<WheelCounter>(context)
+                                  .getReverseCounter()
+                                  .toString() +
+                              ")",
+                        );
+                      }),
                     );
                   } else if (connection.currentWheel().isConnecting()) {
                     color = Colors.blue[500];
@@ -145,8 +143,7 @@ class _BleDeviceList extends State<BleListDisplay> {
             });
       } else {
         return Center(
-            child: Text(AppLocalizations.of(context).scanningForDevices)
-        );
+            child: Text(AppLocalizations.of(context).scanningForDevices));
       }
     });
   }
@@ -155,7 +152,8 @@ class _BleDeviceList extends State<BleListDisplay> {
   Widget build(BuildContext ctxt) {
     return new Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context).bluetooConnectionScreenTitle,
+          title: Text(
+            AppLocalizations.of(context).bluetooConnectionScreenTitle,
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),

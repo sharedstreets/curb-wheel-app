@@ -29,12 +29,11 @@ SideOfStreet getSideOfStreetFromString(String side) {
 
 Widget buildStreetDescription(BuildContext context, SideOfStreet side,
     String startStreetName, String endStreetName) {
-  var _sideOfStreet = side == SideOfStreet.Left ? AppLocalizations.of(context).leftSide : AppLocalizations.of(context).rightSide;
-  return Html(data:
-    AppLocalizations.of(context).streetContext(
-        _sideOfStreet,
-        startStreetName,
-        endStreetName
-      ),
+  var _sideOfStreet = side == SideOfStreet.Left
+      ? AppLocalizations.of(context).leftSide
+      : AppLocalizations.of(context).rightSide;
+  return Html(
+    data: AppLocalizations.of(context)
+        .streetContext(_sideOfStreet, startStreetName, endStreetName),
   );
 }

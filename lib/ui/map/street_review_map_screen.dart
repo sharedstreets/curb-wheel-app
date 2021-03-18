@@ -145,8 +145,8 @@ class _FullMapState extends State<FullMap> {
           return ListView(children: <Widget>[
             ListTile(
                 title: Text(
-                  AppLocalizations.of(context).completedSurveys,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+              AppLocalizations.of(context).completedSurveys,
+              style: TextStyle(fontWeight: FontWeight.bold),
             )),
             FutureBuilder<List<db.Survey>>(
                 future: _refServeys,
@@ -165,46 +165,39 @@ class _FullMapState extends State<FullMap> {
                           : AppLocalizations.of(context).rightSide;
 
                       return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedSurvey = snapshot.data[index];
-                              _onMapChanged();
-                              Navigator.of(context).pop();
-                            });
-                          },
-                          child: ListTile(
-                              leading: Icon(Icons.map),
-                              title: Text(
-                                snapshot.data[index].streetName,
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                        onTap: () {
+                          setState(() {
+                            _selectedSurvey = snapshot.data[index];
+                            _onMapChanged();
+                            Navigator.of(context).pop();
+                          });
+                        },
+                        child: ListTile(
+                          leading: Icon(Icons.map),
+                          title: Text(
+                            snapshot.data[index].streetName,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(0, 5, 10, 10),
+                              child: Html(
+                                data: AppLocalizations.of(context)
+                                    .streetContext(
+                                        _sideOfStreet,
+                                        snapshot.data[index].startStreetName,
+                                        snapshot.data[index].endStreetName),
                               ),
-                              subtitle: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(0, 5, 10, 10),
-                                      child: Html(
-                                        data:
-                                        AppLocalizations.of(context)
-                                            .streetContext(
-                                                _sideOfStreet,
-                                                snapshot.data[index]
-                                                    .startStreetName,
-                                                snapshot
-                                                    .data[index].endStreetName),
-                                      ),
-                                  ),
-                                ),
-                              ),
-                            );
+                            ),
+                          ),
+                        ),
+                      );
                     },
                   );
-                }
-              )
-          ]
-        );
-      }
-    );
+                }),
+          ]);
+        });
   }
 
   _redrawMap() {

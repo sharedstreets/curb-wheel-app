@@ -13,16 +13,17 @@ class ImageViewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ImageViewScreenArguments args = ModalRoute.of(context).settings.arguments;
+    final ImageViewScreenArguments args =
+        ModalRoute.of(context).settings.arguments;
     final String filePath = args.filePath;
     return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-        ),
-        body: Container(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+      ),
+      body: Container(
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
               Expanded(
                 flex: 2,
                 child: Image.file(
@@ -30,9 +31,8 @@ class ImageViewScreen extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-            ]
-            ),
-            ),
-            );
+            ]),
+      ),
+    );
   }
 }

@@ -2,7 +2,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'models.g.dart';
 
-
 @JsonSerializable(nullable: false)
 class Config {
   final String projectId;
@@ -20,7 +19,7 @@ class Config {
       this.organization,
       this.featureTypes});
 
-  factory Config.fromJson(Map<String, dynamic> json) => _$ConfigFromJson(json); 
+  factory Config.fromJson(Map<String, dynamic> json) => _$ConfigFromJson(json);
 }
 
 @JsonSerializable(nullable: false)
@@ -32,5 +31,6 @@ class FeatureType {
 
   FeatureType({this.geometryType, this.color, this.label, this.value});
 
-  factory FeatureType.fromJson(Map<String, dynamic> json) => _$FeatureTypeFromJson(json);
+  factory FeatureType.fromJson(Map<String, dynamic> json) =>
+      _$FeatureTypeFromJson(json);
 }
