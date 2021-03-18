@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:math';
 
 import 'package:mapbox_gl/mapbox_gl.dart';
@@ -724,7 +723,7 @@ bboxToRectangle(turf.BBox bbox) {
 }
 
 Future<List<LatLng>> getMapboxGLGeom(turf.Feature f) async {
-  List<LatLng> latLngs = new List();
+  List<LatLng> latLngs = [];
   await coordEach(f,
       (coord, coordIndex, featureIndex, multiFeatureIndex, geometryIndex) {
     latLngs.add(new LatLng(coord[1], coord[0]));
