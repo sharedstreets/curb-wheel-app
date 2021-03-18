@@ -108,9 +108,9 @@ class _FullMapState extends State<FullMap> {
 
   final db.Project project;
 
-  List<_Line> _basemapLines = new List();
-  List<_Line> _selectionLines = new List();
-  List<_Line> _surveyedLines = new List();
+  List<_Line> _basemapLines = [];
+  List<_Line> _selectionLines = [];
+  List<_Line> _surveyedLines = [];
   List<_Symbol> _selectionSymbols = [];
 
   Map<String, List<db.Survey>> _surveyedStreets;
@@ -124,7 +124,6 @@ class _FullMapState extends State<FullMap> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadSurveyedLines(context);
@@ -140,7 +139,7 @@ class _FullMapState extends State<FullMap> {
     _surveyedStreets = Map();
     for (db.Survey s in surveys) {
       _surveyedStreets.putIfAbsent(s.shStRefId, () {
-        return List();
+        return [];
       });
       _surveyedStreets[s.shStRefId].add(s);
     }
@@ -260,7 +259,7 @@ class _FullMapState extends State<FullMap> {
     else if (sideOfStreet == SideOfStreet.Left &&
         direction == DirectionOfTravel.Backward) sideOfStreetStreetOffset = -4;
 
-    _selectionLines = new List();
+    _selectionLines = [];
     _Line l = new _Line();
     l.options = new LineOptions(
       geometry: mapboxGeom,
@@ -297,7 +296,7 @@ class _FullMapState extends State<FullMap> {
       paddingOffset = -2;
     }
 
-    _selectionSymbols = List();
+    _selectionSymbols = [];
     _Symbol s = new _Symbol();
     s.options = new SymbolOptions(
       geometry: latLng,
@@ -352,8 +351,8 @@ class _FullMapState extends State<FullMap> {
 
       List<Feature<LineString>> features = data.getGeomsByBounds(bounds);
 
-      _basemapLines = new List();
-      _surveyedLines = new List();
+      _basemapLines = [];
+      _surveyedLines = [];
       for (Feature<LineString> f in features) {
         List<LatLng> mapboxGeom =
             await data.getMapboxGLGeomById(f.properties['id']);
@@ -492,8 +491,7 @@ class _SelectStreetHeader extends State<SelectStreetHeader> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
-                  child: Text(
-                    '${streetName}',
+                  child: Text(streetName,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   ),
                 ),

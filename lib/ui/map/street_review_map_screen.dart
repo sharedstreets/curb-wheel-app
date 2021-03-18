@@ -1,16 +1,10 @@
 import 'package:curbwheel/database/database.dart' as db;
-import 'package:curbwheel/database/models.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
-import 'package:curbwheel/database/survey_dao.dart';
-import 'package:curbwheel/service/bluetooth_service.dart';
-import 'package:curbwheel/ui/wheel/wheel_screen.dart';
 import 'package:curbwheel/utils/spatial_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:provider/provider.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:turf/turf.dart';
 import 'package:uuid/uuid.dart';
 import 'map_database.dart';
@@ -64,11 +58,6 @@ class _Line {
   Map<String, dynamic> data;
 }
 
-class _Symbol {
-  SymbolOptions options;
-  Map<String, dynamic> data;
-}
-
 class Street {
   final String shstGeomId;
   final String shStRefId;
@@ -109,8 +98,8 @@ class _FullMapState extends State<FullMap> {
 
   final db.Project project;
 
-  List<_Line> _surveyedLines = new List();
-  List<_Line> _surveySpans = new List();
+  List<_Line> _surveyedLines = [];
+  List<_Line> _surveySpans = [];
   Map<String, List<db.Survey>> _surveyedStreets;
 
   _FullMapState(this.project);
@@ -120,7 +109,6 @@ class _FullMapState extends State<FullMap> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadSurveyedLines(context);
@@ -138,7 +126,7 @@ class _FullMapState extends State<FullMap> {
     _surveyedStreets = Map();
     for (db.Survey s in surveys) {
       _surveyedStreets.putIfAbsent(s.shStRefId, () {
-        return List();
+        return [];
       });
       _surveyedStreets[s.shStRefId].add(s);
     }
@@ -242,8 +230,8 @@ class _FullMapState extends State<FullMap> {
       });
       LatLngBounds bounds = await _mapController.getVisibleRegion();
 
-      _surveyedLines = new List();
-      _surveySpans = new List();
+      _surveyedLines = [];
+      _surveySpans = [];
 
       if (_selectedSurvey == null) {
         // TOOD need to filter filter for box contains?

@@ -42,7 +42,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
     String _filePath = widget.filePath;
     double _position = widget.position;
     String _surveyItemId = widget.surveyItemId;
-    String _pointId = widget.pointId;
 
     return Scaffold(
         body: Container(

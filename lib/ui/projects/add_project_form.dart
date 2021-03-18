@@ -147,8 +147,11 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
                           (BuildContext context, AsyncSnapshot<bool> snapshot) {
                         if (_config != null && snapshot.data != null) {
                           if (snapshot.data) {
-                            return RaisedButton(
-                              color: Colors.black,
+                            return ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.black,
+                                onPrimary: Colors.white,
+                              ),
                               onPressed: () {
                                 _addProject();
                               },

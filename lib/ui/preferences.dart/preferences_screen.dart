@@ -53,10 +53,13 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           labelText: AppLocalizations.of(context).defaultBleConnection),
                     );
                   }),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () async =>
                     {await _setValues(_deviceNameTextFieldController)},
-                color: Colors.blue,
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.black,
+                        onPrimary: Colors.white,
+                      ),
                 child: Text(AppLocalizations.of(context).save),
               )
             ],

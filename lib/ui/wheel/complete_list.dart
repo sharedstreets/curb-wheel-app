@@ -117,6 +117,8 @@ class _InactiveCardState extends State<InactiveCard> {
                      child:Text(positionString)),
                 ],
               ),
-            )));
+            ),
+            ),
+            );
   }
 }
