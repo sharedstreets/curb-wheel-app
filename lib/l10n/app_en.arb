@@ -35,6 +35,10 @@
       "@completedSurveys": {
         "description": ""
       },
+      "noConnectivity": "No internet connection",
+      "@noConnectivity": {
+        "description": ""
+      },
       "reviewCompletedSurveys": "Review completed surveys",
       "@reviewCompletedSurveys": {
         "description": ""

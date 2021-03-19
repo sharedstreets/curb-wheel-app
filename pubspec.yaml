@@ -53,6 +53,7 @@ dependencies:
   progresso: ^0.2.0
   intl: ^0.17.0
   flutter_html:
+  connectivity: ^3.0.3
 
 
 dev_dependencies:
