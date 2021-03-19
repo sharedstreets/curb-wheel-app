@@ -63,9 +63,9 @@ class MapData {
 
     for (Feature<LineString> feature in _featureCollection.features) {
       _intersectionIndex.putIfAbsent(
-          feature.properties['toIntersectionId'], () => List<String>());
+          feature.properties['toIntersectionId'], () => []);
       _intersectionIndex.putIfAbsent(
-          feature.properties['fromIntersectionId'], () => List<String>());
+          feature.properties['fromIntersectionId'], () => []);
 
       _intersectionIndex[feature.properties['toIntersectionId']]
           .add(feature.properties['id']);

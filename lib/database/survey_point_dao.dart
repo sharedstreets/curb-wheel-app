@@ -20,27 +20,29 @@ class SurveyPointDao extends DatabaseAccessor<CurbWheelDatabase>
 
   Future deletePoint(SurveyPoint surveyPoint) =>
       delete(surveyPoints).delete(surveyPoint);
-  
+
   Future<List<SurveyPoint>> getPointsBySurveyItemId(String surveyItemId) =>
-      (select(surveyPoints)..where((sp) => sp.surveyItemId.equals(surveyItemId))).get();
+      (select(surveyPoints)
+            ..where((sp) => sp.surveyItemId.equals(surveyItemId)))
+          .get();
 
   Future<List<SurveyPoint>> getPointsBySurveyId(String surveyId) =>
-    (select(surveyPoints)
-          ..where((t) => surveys.id.equals(surveyId))
-          ..join([
-            innerJoin(surveyItems,
-                surveyItems.id.equalsExp(surveyPoints.surveyItemId)),
-            innerJoin(surveys,
-                surveys.id.equalsExp(surveyItems.surveyId))
-          ])).get();
-  
+      (select(surveyPoints)
+            ..where((t) => surveys.id.equals(surveyId))
+            ..join([
+              innerJoin(surveyItems,
+                  surveyItems.id.equalsExp(surveyPoints.surveyItemId)),
+              innerJoin(surveys, surveys.id.equalsExp(surveyItems.surveyId))
+            ]))
+          .get();
+
   Future<List<SurveyPoint>> getPointsByProjectId(String projectId) =>
-    (select(surveyPoints)
-          ..where((t) => surveys.projectId.equals(projectId))
-          ..join([
-            innerJoin(surveyItems,
-                surveyItems.id.equalsExp(surveyPoints.surveyItemId)),
-            innerJoin(surveys,
-                surveys.id.equalsExp(surveyItems.surveyId))
-          ])).get();
+      (select(surveyPoints)
+            ..where((t) => surveys.projectId.equals(projectId))
+            ..join([
+              innerJoin(surveyItems,
+                  surveyItems.id.equalsExp(surveyPoints.surveyItemId)),
+              innerJoin(surveys, surveys.id.equalsExp(surveyItems.surveyId))
+            ]))
+          .get();
 }

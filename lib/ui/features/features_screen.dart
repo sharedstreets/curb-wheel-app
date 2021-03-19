@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 var uuid = Uuid();
 
 class FeatureSelectScreenArguments {
@@ -48,7 +47,8 @@ class _FeatureSelectScreenState extends State<FeatureSelectScreen> {
             var features = snapshot.data;
             return Scaffold(
               appBar: AppBar(
-                title: Text(AppLocalizations.of(context).selectFeatureTypeScreen,
+                title: Text(
+                    AppLocalizations.of(context).selectFeatureTypeScreen,
                     style: TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.white)),
               ),

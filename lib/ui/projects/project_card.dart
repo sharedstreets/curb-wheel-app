@@ -200,7 +200,8 @@ class ProjectCard extends StatelessWidget {
                     if (snapshot.data != null &&
                         snapshot.data.length != null &&
                         snapshot.data.length > 0)
-                      return Text(AppLocalizations.of(context).streetSurveyCount(snapshot.data.length));
+                      return Text(AppLocalizations.of(context)
+                          .streetSurveyCount(snapshot.data.length));
                     else
                       return Text(AppLocalizations.of(context).readyToSurvey);
                   }),
