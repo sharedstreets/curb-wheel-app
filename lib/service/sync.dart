@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:turf/helpers.dart';
 import 'package:curbwheel/database/database.dart';
-import 'package:curbwheel/ui/map/map_database.dart';
-import 'package:turf/helpers.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -62,7 +60,7 @@ class ProjectSyncService extends ChangeNotifier {
     List<Survey> surveys =
         await _database.surveyDao.getAllSurveysByProjectId(project.id);
 
-    List<Photo> projectPhotos = List();
+    List<Photo> projectPhotos = [];
 
     status = ProjectSyncStatus();
     status.project = project;
@@ -73,8 +71,8 @@ class ProjectSyncService extends ChangeNotifier {
     notifyListeners();
 
     for (Survey survey in surveys) {
-      List<Feature<LineString>> spanFeatures = List();
-      List<Feature<Point>> pointFeatures = List();
+      List<Feature<LineString>> spanFeatures = [];
+      List<Feature<Point>> pointFeatures = [];
       List<SurveyItem> items =
           await _database.surveyItemDao.getSurveyItemsBySurveyId(survey.id);
 

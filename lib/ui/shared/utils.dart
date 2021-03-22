@@ -1,4 +1,3 @@
-import 'package:curbwheel/ui/map/street_review_map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -30,12 +29,11 @@ SideOfStreet getSideOfStreetFromString(String side) {
 
 Widget buildStreetDescription(BuildContext context, SideOfStreet side,
     String startStreetName, String endStreetName) {
-  var _sideOfStreet = side == SideOfStreet.Left ? AppLocalizations.of(context).leftSide : AppLocalizations.of(context).rightSide;
-  return Html(data:
-    AppLocalizations.of(context).streetContext(
-        _sideOfStreet,
-        startStreetName,
-        endStreetName
-      ),
+  var _sideOfStreet = side == SideOfStreet.Left
+      ? AppLocalizations.of(context).leftSide
+      : AppLocalizations.of(context).rightSide;
+  return Html(
+    data: AppLocalizations.of(context)
+        .streetContext(_sideOfStreet, startStreetName, endStreetName),
   );
 }

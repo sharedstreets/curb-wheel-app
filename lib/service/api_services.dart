@@ -4,7 +4,6 @@ import 'package:turf/turf.dart';
 
 part 'api_services.chopper.dart';
 
-
 class MapData {
   final FeatureCollection featureCollection;
 

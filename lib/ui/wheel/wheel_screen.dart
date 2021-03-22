@@ -17,7 +17,6 @@ import 'incomplete_list.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class WheelScreenArguments {
   final Project project;
   final Survey survey;
@@ -144,16 +143,16 @@ class _WheelScreenState extends State<WheelScreen>
                             unselectedLabelColor: Colors.black,
                             tabs: [
                               Tab(
-                                text: AppLocalizations.of(context).activeFeatures(activeCount),
+                                text: AppLocalizations.of(context)
+                                    .activeFeatures(activeCount),
                               ),
                               Tab(
-                                text: AppLocalizations.of(context).completedFeatures(completeCount),
+                                text: AppLocalizations.of(context)
+                                    .completedFeatures(completeCount),
                               ),
                             ],
-                          )
-                          );
-                    }
-                  ),
+                          ));
+                    }),
               ],
             )),
             Expanded(
@@ -307,7 +306,9 @@ class _WheelHeaderState extends State<WheelHeader> {
                 backgroundStrokeCap: StrokeCap.round,
               ),
             ),
-            Text(AppLocalizations.of(context).surveyedProgress(_currentMeasurement.toStringAsFixed(1), _survey.mapLength.toStringAsFixed(1))),
+            Text(AppLocalizations.of(context).surveyedProgress(
+                _currentMeasurement.toStringAsFixed(1),
+                _survey.mapLength.toStringAsFixed(1))),
           ],
         ),
       ),

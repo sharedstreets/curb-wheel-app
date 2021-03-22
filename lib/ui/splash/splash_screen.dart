@@ -88,7 +88,8 @@ class _MyPainterState extends State<SplashScreen>
                 style: Theme.of(context).textTheme.headline1,
               )),
               Center(
-                  child: Text(AppLocalizations.of(context).welcome,
+                  child: Text(
+                AppLocalizations.of(context).welcome,
                 textAlign: TextAlign.left,
                 style: Theme.of(context).textTheme.subtitle2,
               )),

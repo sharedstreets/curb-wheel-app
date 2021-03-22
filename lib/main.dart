@@ -21,11 +21,11 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 Future<void> main() async {
   await SentryFlutter.init(
     (options) {
-      options.dsn = 'https://65b0f6e78382424e8173ccafe7e07776@o538616.ingest.sentry.io/5656907';
+      options.dsn =
+          'https://65b0f6e78382424e8173ccafe7e07776@o538616.ingest.sentry.io/5656907';
     },
     appRunner: () => runApp(MultiProvider(providers: [
       Provider<CurbWheelDatabase>(create: (_) => CurbWheelDatabase()),

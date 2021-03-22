@@ -184,8 +184,11 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
                 builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                   if (_config != null && snapshot.data != null) {
                     if (snapshot.data) {
-                      return RaisedButton(
-                        color: Colors.black,
+                      return ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.black,
+                          onPrimary: Colors.white,
+                        ),
                         onPressed: () {
                           _addProject();
                         },
@@ -266,7 +269,8 @@ class _DownloadButtonState extends State<DownloadButton> {
                 message = AppLocalizations.of(context).noConnectivity;
               }
               final snackBar = SnackBar(
-                content: Text(message),
+                content:
+                    Text(AppLocalizations.of(context).unableToRetrieveProject),
               );
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }

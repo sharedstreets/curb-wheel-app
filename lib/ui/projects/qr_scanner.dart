@@ -6,7 +6,6 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class QrScanner extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _QrScannerState();

@@ -2,7 +2,6 @@ import 'package:curbwheel/service/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class ProjectConfigCard extends StatelessWidget {
   final Config config;
   final mapData;
@@ -27,20 +26,23 @@ class ProjectConfigCard extends StatelessWidget {
                   : Text(""),
             ),
             Padding(
-                padding: EdgeInsets.only(left: 20.0, bottom: 20.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(AppLocalizations.of(context).projectPrimaryContact),
-                      Text(config.email,
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(""),
-                      Text(AppLocalizations.of(context).projectMapData),
-                      Text(AppLocalizations.of(context).projectSegmentsCount(mapData.featureCollection.features.length),
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text(""),
-                      FeatureTypeList(config)
-                    ]))
+              padding: EdgeInsets.only(left: 20.0, bottom: 20.0),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(AppLocalizations.of(context).projectPrimaryContact),
+                    Text(config.email,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(""),
+                    Text(AppLocalizations.of(context).projectMapData),
+                    Text(
+                        AppLocalizations.of(context).projectSegmentsCount(
+                            mapData.featureCollection.features.length),
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(""),
+                    FeatureTypeList(config)
+                  ]),
+            ),
           ],
         ),
       ),
@@ -62,13 +64,13 @@ class FeatureTypeList extends StatelessWidget {
         Text(
           "\u2022 ${featureType.label}",
           style: TextStyle(fontWeight: FontWeight.bold),
-        ));
+        ),
+      );
     }
     return Container(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: featureTypeList
-      ),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: featureTypeList),
     );
   }
 }
