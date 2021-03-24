@@ -1,15 +1,18 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:curbwheel/client/config_client.dart';
 import 'package:curbwheel/database/database.dart';
 import 'package:curbwheel/ui/projects/project_config_card.dart';
 import 'package:curbwheel/utils/file_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:moor/moor.dart' as moor;
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:connectivity/connectivity.dart';
 
 var uuid = Uuid();
 
@@ -25,7 +28,10 @@ class AddProjectFormScreen extends StatefulWidget {
 }
 
 class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
+  ConnectivityResult _connectionStatus;
   CurbWheelDatabase _database;
+  final Connectivity _connectivity = Connectivity();
+  StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   var _config;
   var _mapData;
@@ -46,10 +52,41 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
     // per https://stackoverflow.com/questions/60363665/dependoninheritedelement-was-called-before-initstate-in-flutter
     _database = Provider.of<CurbWheelDatabase>(context, listen: false);
     _isNewProject = _checkIfNewProject();
+    initConnectivity();
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+  }
+
+  Future<void> initConnectivity() async {
+    ConnectivityResult result = ConnectivityResult.none;
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      print(e.toString());
+    }
+
+    if (!mounted) {
+      return Future.value(null);
+    }
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    switch (result) {
+      case ConnectivityResult.wifi:
+      case ConnectivityResult.mobile:
+      case ConnectivityResult.none:
+        setState(() => _connectionStatus = result);
+        break;
+      default:
+        setState(() => _connectionStatus = ConnectivityResult.none);
+        break;
+    }
   }
 
   @override
   void dispose() {
+    _connectivitySubscription.cancel();
     textFieldController.dispose();
     super.dispose();
   }
@@ -130,7 +167,8 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
 
                   _isNewProject = _checkIfNewProject();
                 });
-              }),
+              },
+              connectionStatus: _connectionStatus),
           _config != null
               ? ProjectConfigCard(
                   config: _config,
@@ -169,13 +207,22 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
   }
 }
 
-typedef void DownloadCallback(String url, var config, var mapData);
+typedef void DownloadCallback(
+  String url,
+  var config,
+  var mapData,
+);
 
 class DownloadButton extends StatefulWidget {
   final TextEditingController urlController;
   final DownloadCallback callback;
+  final ConnectivityResult connectionStatus;
 
-  DownloadButton({Key key, @required this.urlController, this.callback})
+  DownloadButton(
+      {Key key,
+      @required this.urlController,
+      this.callback,
+      this.connectionStatus})
       : super(key: key);
 
   @override
@@ -213,6 +260,12 @@ class _DownloadButtonState extends State<DownloadButton> {
             try {
               await _fetch();
             } catch (exception) {
+              print(widget.connectionStatus);
+              String message =
+                  AppLocalizations.of(context).unableToRetrieveProject;
+              if (widget.connectionStatus == ConnectivityResult.none) {
+                message = AppLocalizations.of(context).noConnectivity;
+              }
               final snackBar = SnackBar(
                 content:
                     Text(AppLocalizations.of(context).unableToRetrieveProject),
