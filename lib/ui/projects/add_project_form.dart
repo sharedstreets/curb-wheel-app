@@ -19,7 +19,6 @@ var uuid = Uuid();
 class AddProjectFormScreen extends StatefulWidget {
   final String initalProjectUrl;
 
-//requiring the list of todos
   AddProjectFormScreen({Key key, @required this.initalProjectUrl})
       : super(key: key);
 
@@ -144,8 +143,7 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Add project',
+        title: Text(AppLocalizations.of(context).addProject,
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
@@ -156,7 +154,7 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
             child: TextFormField(
               controller: textFieldController,
               decoration:
-                  InputDecoration(labelText: 'Project configuration URL'),
+                  InputDecoration(labelText: AppLocalizations.of(context).projectConfigurationUrl),
             ),
           ),
           DownloadButton(
@@ -247,7 +245,7 @@ class _DownloadButtonState extends State<DownloadButton> {
         callback(urlController.text, config, mapDataJson);
       });
     } else
-      throw Exception("Unable to load valid project config.");
+      throw Exception(AppLocalizations.of(context).unableToRetrieveProject);
   }
 
   @override

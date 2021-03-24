@@ -38,6 +38,7 @@ dependencies:
       url: git://github.com/dartclub/turf_dart.git
       ref: master
   qr_code_scanner: ^0.3.0
+  qr_flutter: ^4.0.0
   path_provider:
   shared_preferences: '>=0.5.0 <2.0.0'
   flutter_svg: 0.19.3

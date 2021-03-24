@@ -313,5 +313,18 @@
       "reviewSurveysScreenTitle": "Review surveys",
       "@reviewSurveysScreenTitle": {
         "description": ""
+      },
+      "shareProject": "Share project",
+      "@shareProject": {
+        "description": ""
+      },
+      "copyProjectUrl": "Copy URL",
+      "@copyProjectUrl": {
+        "description": ""
+      },
+      "sharingInstructions":  "Scan project QR code another phone or copy and share the project URL.",
+      "@sharingInstructions": {
+        "description": ""
       }
+
     }
