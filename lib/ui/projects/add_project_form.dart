@@ -142,6 +142,7 @@ class _AddProjectFormScreenState extends State<AddProjectFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).addProject,
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
