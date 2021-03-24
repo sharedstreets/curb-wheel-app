@@ -17,23 +17,28 @@ class SurveyManager {
   }
 
   deleteSurveyItem(SurveyItem surveyItem) async {
-    await _database.surveyItemDao.deleteSurveyItem(surveyItem);
+    List<SurveyPoint> points =
+        await _database.surveyPointDao.getPointsBySurveyItemId(surveyItem.id);
+
+    for (SurveyPoint point in points) {
+      await _database.surveyPointDao.deletePoint(point);
+      // this is a hack because the joins in getPhotosBySurveyItemId doesnt seem to work...
+      List<Photo> photos = await _database.photoDao.getAllPhotosByPointId(point.id);
+      if (photos.isNotEmpty) {
+        for (Photo photo in photos) {
+          File file = File(photo.file);
+          file.deleteSync();
+          await _database.photoDao.deletePhoto(photo);
+        }
+      }
+    }
+
     List<SurveySpan> spans =
         await _database.surveySpanDao.getSpansBySurveyItemId(surveyItem.id);
+
     for (SurveySpan span in spans) {
       await _database.surveySpanDao.deleteSpan(span);
     }
-    List<SurveyPoint> points =
-        await _database.surveyPointDao.getPointsBySurveyItemId(surveyItem.id);
-    for (SurveyPoint point in points) {
-      await _database.surveyPointDao.deletePoint(point);
-    }
-    List<Photo> photos =
-        await _database.photoDao.getPhotosBySurveyItemId(surveyItem.id);
-    for (Photo photo in photos) {
-      await _database.photoDao.deletePhoto(photo);
-      File file = File(photo.file);
-      file.deleteSync();
-    }
+    await _database.surveyItemDao.deleteSurveyItem(surveyItem);
   }
 }

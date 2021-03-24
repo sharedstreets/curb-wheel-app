@@ -179,7 +179,9 @@ class ProjectCard extends StatelessWidget {
                               child: ListTile(
                                   leading: Icon(Icons.sync_alt),
                                   title: Text(
-                                      AppLocalizations.of(context).syncData))),
+                                      AppLocalizations.of(context).syncData),
+                                    ),
+                                ),
                           GestureDetector(
                               child: ListTile(
                                   leading: Icon(Icons.delete_forever),

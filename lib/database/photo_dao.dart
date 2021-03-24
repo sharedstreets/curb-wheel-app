@@ -115,6 +115,7 @@ class PhotoDao extends DatabaseAccessor<CurbWheelDatabase>
                 .toList();
           }));
 
+  // always returns empty list... try to fix in future
   Future<List<Photo>> getPhotosBySurveyItemId(String surveyItemId) =>
       (select(photos)
             ..where((t) => surveyItems.id.equals(surveyItemId))
