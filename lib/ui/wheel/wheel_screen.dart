@@ -41,12 +41,22 @@ class _WheelScreenState extends State<WheelScreen>
     with SingleTickerProviderStateMixin {
   ListItem listItem;
   TabController _tabController;
+  BleConnection _bleService;
+  Survey _survey;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    this.listItem = widget.listItem;
+    listItem = widget.listItem;
+    _survey = widget.survey;
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _bleService = Provider.of<BleConnection>(context, listen: false);
+      if (_bleService.currentWheel() == null) {
+        showBluetoothAlertDialog(context, _survey);
+      }
+    });
   }
 
   @override
@@ -58,20 +68,13 @@ class _WheelScreenState extends State<WheelScreen>
   @override
   Widget build(BuildContext context) {
     Project _project = widget.project;
-    Survey _survey = widget.survey;
+
     CurbWheelDatabase _database = Provider.of<CurbWheelDatabase>(context);
     WheelCounter _counter = Provider.of<WheelCounter>(context);
     double _currentWheelPosition = _counter.getForwardCounter() / 10;
-    BleConnection _bleService = Provider.of<BleConnection>(context);
 
     SurveyManager _surveyManager = SurveyManager(_database);
 
-    if (_bleService.currentWheel() == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await showBluetoothAlertDialog(
-            context, _survey, _surveyManager.deleteSurvey);
-      });
-    }
     if (this.listItem != null) {
       _database.surveyItemDao
           .insertSurveyItem(listItem.toSurveyItemsCompanion());
@@ -203,15 +206,12 @@ Future<bool> showBackWarningDialog(
   );
 }
 
-showBluetoothAlertDialog(
-    BuildContext context, Survey survey, Function deleteCallback) {
+showBluetoothAlertDialog(BuildContext context, Survey survey) {
   Widget okButton = TextButton(
     child: Text(AppLocalizations.of(context).bluetoothWarningBtn),
     onPressed: () async {
-      await deleteCallback(survey);
       Navigator.pop(context);
-      Navigator.pop(context);
-      Navigator.pushNamed(context, BleListDisplay.routeName);
+      Navigator.popAndPushNamed(context, BleListDisplay.routeName);
     },
   );
 
