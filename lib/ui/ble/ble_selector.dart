@@ -7,8 +7,23 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BleStatusButton extends StatelessWidget {
+  static bool showModal = false;
+
+  BleStatusButton({showModal: false});
+
   @override
   Widget build(BuildContext context) {
+    if (showModal) {
+      if (Provider.of<BleConnection>(context, listen: false).currentWheel() !=
+              null &&
+          !Provider.of<BleConnection>(context, listen: false)
+              .currentWheel()
+              .isConnected()) {
+        // show modal dialog
+        showBluetoothAlertDialog(context);
+      }
+    }
+
     return Consumer<BleConnection>(builder: (context, connection, child) {
       return IconButton(
         icon: const Icon(Icons.bluetooth),
@@ -29,6 +44,32 @@ class BleStatusButton extends StatelessWidget {
   }
 }
 
+showBluetoothAlertDialog(BuildContext context) {
+  Widget okButton = TextButton(
+    child: Text(AppLocalizations.of(context).bluetoothWarningBtn),
+    onPressed: () async {
+      Navigator.pop(context);
+      Navigator.popAndPushNamed(context, BleListDisplay.routeName);
+    },
+  );
+
+  AlertDialog alert = AlertDialog(
+    title: Text(AppLocalizations.of(context).bluetoothWarningTitle),
+    content: Text(AppLocalizations.of(context).bluetoothWarningBody),
+    actions: [
+      okButton,
+    ],
+  );
+
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
 class BleListDisplay extends StatefulWidget {
   static const routeName = '/ble-list';
 
@@ -43,6 +84,7 @@ class _BleDeviceList extends State<BleListDisplay> {
   @override
   void initState() {
     super.initState();
+
     Provider.of<BleConnection>(context, listen: false).scan();
     _wheelScanTimer =
         Timer.periodic(new Duration(seconds: 5), this._scanPeriodic);
