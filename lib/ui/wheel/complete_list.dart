@@ -1,5 +1,7 @@
 import 'package:curbwheel/database/database.dart';
 import 'package:curbwheel/database/models.dart';
+import 'package:curbwheel/ui/camera/gallery_screen.dart';
+import 'package:curbwheel/utils/survey_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:curbwheel/ui/shared/utils.dart';
 
@@ -10,9 +12,10 @@ import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CompleteList extends StatefulWidget {
+  final SurveyManager surveyManager;
   final Survey survey;
 
-  CompleteList(this.survey);
+  CompleteList(this.surveyManager, this.survey);
 
   @override
   _CompleteListState createState() => _CompleteListState();
@@ -21,6 +24,39 @@ class CompleteList extends StatefulWidget {
 class _CompleteListState extends State<CompleteList> {
   CurbWheelDatabase _database;
   Survey _survey;
+
+  Future<void> _showDeleteDialog(ListItem listItem) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(AppLocalizations.of(context).deleteWarningTitle),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(AppLocalizations.of(context).deleteWarningBody),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+                child: Text(AppLocalizations.of(context).cancel),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            TextButton(
+                child: Text(AppLocalizations.of(context).delete),
+                onPressed: () {
+                  widget.surveyManager
+                      .deleteSurveyItem(listItem.toSurveyItem());
+                  Navigator.pop(context);
+                }),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +67,24 @@ class _CompleteListState extends State<CompleteList> {
             stream: _database.getListItemBySurveyId(_survey.id, true),
             builder: (context, AsyncSnapshot<List<ListItem>> snapshot) {
               if (snapshot.hasData) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    return InactiveCard(snapshot.data[index], _survey);
-                  },
-                );
+                if (snapshot.data.length == 0) {
+                  return Center(
+                      child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Text(
+                              AppLocalizations.of(context).noCompleteItems,
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 20))));
+                } else {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return InactiveCard(
+                          snapshot.data[index], _survey, _showDeleteDialog);
+                    },
+                  );
+                }
               } else {
                 return Text(AppLocalizations.of(context).noCompleteItems);
               }
@@ -48,8 +95,9 @@ class _CompleteListState extends State<CompleteList> {
 class InactiveCard extends StatefulWidget {
   final ListItem listItem;
   final Survey survey;
+  final Function deleteCallback;
 
-  InactiveCard(this.listItem, this.survey);
+  InactiveCard(this.listItem, this.survey, this.deleteCallback);
 
   @override
   _InactiveCardState createState() => _InactiveCardState();
@@ -58,6 +106,7 @@ class InactiveCard extends StatefulWidget {
 class _InactiveCardState extends State<InactiveCard> {
   @override
   Widget build(BuildContext context) {
+    Function _deleteCallback = widget.deleteCallback;
     var _listItem = widget.listItem;
     var _max = widget.survey.mapLength;
     var _stop = _listItem.geometryType == 'line'
@@ -112,6 +161,94 @@ class _InactiveCardState extends State<InactiveCard> {
               Padding(
                   padding: EdgeInsets.fromLTRB(0, 8.0, 0, 0),
                   child: Text(positionString)),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                IconButton(
+                  icon: Icon(Icons.more_horiz),
+                  onPressed: () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) => Wrap(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      svgIcon,
+                                      Text(_listItem.name),
+                                    ],
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () => {
+                                    Navigator.pushNamed(
+                                        context, GalleryScreen.routeName,
+                                        arguments: GalleryScreenArguments(
+                                            surveyItemId:
+                                                _listItem.surveyItemId))
+                                  },
+                                  style: TextButton.styleFrom(
+                                    primary: Colors.black,
+                                    padding: EdgeInsets.all(10.0),
+                                  ),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Icon(Icons.image_sharp),
+                                      Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                              AppLocalizations.of(context)
+                                                  .viewPhotos))
+                                    ],
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    return _deleteCallback(_listItem);
+                                  },
+                                  style: TextButton.styleFrom(
+                                    primary: Colors.black,
+                                    padding: EdgeInsets.all(10.0),
+                                  ),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Icon(Icons.delete),
+                                      Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                              AppLocalizations.of(context)
+                                                  .delete))
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                      EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 0.0),
+                                  child: Divider(
+                                      thickness: 1.0, color: Colors.grey),
+                                ),
+                                TextButton(
+                                  onPressed: () => {Navigator.pop(context)},
+                                  style: TextButton.styleFrom(
+                                    primary: Colors.black,
+                                    padding: EdgeInsets.all(10.0),
+                                  ),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Icon(Icons.close),
+                                      Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                              AppLocalizations.of(context)
+                                                  .cancel))
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ));
+                  },
+                ),
+              ]),
             ],
           ),
         ),
