@@ -6,24 +6,60 @@ import 'package:provider/provider.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class BleStatusButton extends StatelessWidget {
-  static bool showModal = false;
+class BleStatusButton extends StatefulWidget {
+  final bool showModal;
 
-  BleStatusButton({showModal: false});
+  BleStatusButton(this.showModal) {
+    print(this.showModal);
+  }
+
+  @override
+  State createState() => new _BleStatusButtonState();
+}
+
+class _BleStatusButtonState extends State<BleStatusButton> {
+  bool _connected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (this.widget.showModal) {
+      if (Provider.of<BleConnection>(context, listen: false).currentWheel() !=
+              null &&
+          Provider.of<BleConnection>(context, listen: false)
+              .currentWheel()
+              .isConnected()) {
+        _connected = true;
+      }
+      Provider.of<BleConnection>(context, listen: false).addListener(() {
+        if (_connected) {
+          if (Provider.of<BleConnection>(context, listen: false)
+                      .currentWheel() ==
+                  null ||
+              !Provider.of<BleConnection>(context, listen: false)
+                  .currentWheel()
+                  .isConnected()) {
+            // show modal dialog
+            _connected = false;
+            Provider.of<BleConnection>(context, listen: false)
+                .showBluetoothAlertDialog(context);
+          }
+        } else {
+          if (Provider.of<BleConnection>(context, listen: false)
+                      .currentWheel() !=
+                  null &&
+              Provider.of<BleConnection>(context, listen: false)
+                  .currentWheel()
+                  .isConnected()) {
+            _connected = true;
+          }
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (showModal) {
-      if (Provider.of<BleConnection>(context, listen: false).currentWheel() !=
-              null &&
-          !Provider.of<BleConnection>(context, listen: false)
-              .currentWheel()
-              .isConnected()) {
-        // show modal dialog
-        showBluetoothAlertDialog(context);
-      }
-    }
-
     return Consumer<BleConnection>(builder: (context, connection, child) {
       return IconButton(
         icon: const Icon(Icons.bluetooth),
@@ -42,32 +78,6 @@ class BleStatusButton extends StatelessWidget {
       );
     });
   }
-}
-
-showBluetoothAlertDialog(BuildContext context) {
-  Widget okButton = TextButton(
-    child: Text(AppLocalizations.of(context).bluetoothWarningBtn),
-    onPressed: () async {
-      Navigator.pop(context);
-      Navigator.popAndPushNamed(context, BleListDisplay.routeName);
-    },
-  );
-
-  AlertDialog alert = AlertDialog(
-    title: Text(AppLocalizations.of(context).bluetoothWarningTitle),
-    content: Text(AppLocalizations.of(context).bluetoothWarningBody),
-    actions: [
-      okButton,
-    ],
-  );
-
-  showDialog(
-    barrierDismissible: false,
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
 }
 
 class BleListDisplay extends StatefulWidget {

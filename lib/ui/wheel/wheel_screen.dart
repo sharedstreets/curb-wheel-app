@@ -54,7 +54,8 @@ class _WheelScreenState extends State<WheelScreen>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _bleService = Provider.of<BleConnection>(context, listen: false);
       if (_bleService.currentWheel() == null) {
-        showBluetoothAlertDialog(context);
+        Provider.of<BleConnection>(context, listen: false)
+            .showBluetoothAlertDialog(context);
       }
     });
   }
@@ -106,7 +107,7 @@ class _WheelScreenState extends State<WheelScreen>
             title: Text(AppLocalizations.of(context).wheelScreenTitle,
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.white)),
-            actions: [BleStatusButton()]),
+            actions: [BleStatusButton(true)]),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           backgroundColor: Colors.black,

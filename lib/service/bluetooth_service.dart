@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:curbwheel/ui/ble/ble_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final WHEEL_SERVICE_UUID = new Guid("1381f6e7-12f9-4ad7-aa87-1c5d50fe03f9");
 final FORWARD_UUID = new Guid("4365ec89-253c-49f4-b8a4-3ffe6ad73673");
@@ -217,6 +220,9 @@ class BleConnection extends ChangeNotifier {
   List<BleWheel> _visbleWheels = [];
   BleWheel _currentWheel;
 
+  bool _inBleList = false;
+  bool _showBluetoothAlertDialog = false;
+
   StreamController<BleWheel> _wheelConnectionStreamController =
       new StreamController();
 
@@ -366,6 +372,39 @@ class BleConnection extends ChangeNotifier {
     }
     _currentWheel = null;
     notifyListeners();
+  }
+
+  showBluetoothAlertDialog(BuildContext context) async {
+    if (!_showBluetoothAlertDialog && !_inBleList) {
+      _showBluetoothAlertDialog = true;
+      Widget okButton = TextButton(
+        child: Text(AppLocalizations.of(context).bluetoothWarningBtn),
+        onPressed: () async {
+          //Navigator.pop(context);
+          _inBleList = true;
+          await Navigator.popAndPushNamed(context, BleListDisplay.routeName);
+          _inBleList = false;
+        },
+      );
+
+      AlertDialog alert = AlertDialog(
+        title: Text(AppLocalizations.of(context).bluetoothWarningTitle),
+        content: Text(AppLocalizations.of(context).bluetoothWarningBody),
+        actions: [
+          okButton,
+        ],
+      );
+
+      await showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      );
+
+      _showBluetoothAlertDialog = false;
+    }
   }
 }
 
