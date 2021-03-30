@@ -3,10 +3,13 @@ import 'package:curbwheel/ui/map/street_review_map_screen.dart';
 import 'package:curbwheel/ui/map/street_select_map_screen.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../database/database.dart';
 
@@ -51,10 +54,55 @@ class ProjectCard extends StatelessWidget {
                       builder: (BuildContext context) {
                         return Column(children: <Widget>[
                           ListTile(
+                              subtitle: Text("ID: " + project.projectId),
                               title: Text(
-                            project.name,
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          )),
+                                project.name,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              )),
+                          GestureDetector(
+                              child: ListTile(
+                                  leading: Icon(Icons.share),
+                                  title: Text(AppLocalizations.of(context)
+                                      .shareProject)),
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext contex) =>
+                                        AlertDialog(
+                                            title: Text(
+                                              AppLocalizations.of(context)
+                                                  .shareProject,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            content: Container(
+                                                height: 300,
+                                                width: 300,
+                                                child:
+                                                    Column(children: <Widget>[
+                                                  Expanded(
+                                                      child: QrImage(
+                                                    data: project
+                                                        .projectConfigUrl,
+                                                    version: QrVersions.auto,
+                                                    size: 300.0,
+                                                  )),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        Clipboard.setData(
+                                                            new ClipboardData(
+                                                                text: project
+                                                                    .projectConfigUrl));
+                                                      },
+                                                      child: Text(
+                                                          AppLocalizations.of(
+                                                                  context)
+                                                              .copyProjectUrl)),
+                                                  Text(AppLocalizations.of(
+                                                          context)
+                                                      .sharingInstructions),
+                                                ]))));
+                              }),
                           GestureDetector(
                               child: ListTile(
                                   leading: Icon(Icons.list_alt),
@@ -131,7 +179,9 @@ class ProjectCard extends StatelessWidget {
                               child: ListTile(
                                   leading: Icon(Icons.sync_alt),
                                   title: Text(
-                                      AppLocalizations.of(context).syncData))),
+                                      AppLocalizations.of(context).syncData),
+                                    ),
+                                ),
                           GestureDetector(
                               child: ListTile(
                                   leading: Icon(Icons.delete_forever),

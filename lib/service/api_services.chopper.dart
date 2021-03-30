@@ -15,7 +15,7 @@ class _$JsonService extends JsonService {
   final definitionType = JsonService;
 
   Future<Response> getJson(String url) {
-    final $url = url;
+    final $url = '${url}';
     final $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }
