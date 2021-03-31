@@ -261,6 +261,11 @@ class BleConnection extends ChangeNotifier {
               prefs.setString('previousWheelId', _previousWheelId);
 
               _wheelConnectionStreamController.add(wheel);
+            } else if (status == WheelStatus.CONNECTING) {
+              if (_currentWheel != null && _currentWheel != wheel)
+                _currentWheel.disconnect();
+              _currentWheel = wheel;
+              _wheelConnectionStreamController.add(wheel);
             } else if (status == WheelStatus.DISCONNECTED) {
               if (_currentWheel == wheel) _currentWheel = null;
               _startRescaning();
