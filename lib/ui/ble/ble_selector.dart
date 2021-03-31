@@ -104,7 +104,6 @@ class _BleDeviceList extends State<BleListDisplay> {
   void dispose() {
     super.dispose();
     if (_wheelScanTimer != null) _wheelScanTimer.cancel();
-    print("disposing of ble list...");
   }
 
   _scanPeriodic(Timer timer) {
