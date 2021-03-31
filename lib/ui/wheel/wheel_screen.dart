@@ -54,7 +54,7 @@ class _WheelScreenState extends State<WheelScreen>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _bleService = Provider.of<BleConnection>(context, listen: false);
       if (_bleService.currentWheel() == null) {
-        showBluetoothAlertDialog(context, _survey);
+        showBluetoothAlertDialog(context);
       }
     });
   }
@@ -199,32 +199,6 @@ Future<bool> showBackWarningDialog(
   );
 
   return showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
-}
-
-showBluetoothAlertDialog(BuildContext context, Survey survey) {
-  Widget okButton = TextButton(
-    child: Text(AppLocalizations.of(context).bluetoothWarningBtn),
-    onPressed: () async {
-      Navigator.pop(context);
-      Navigator.popAndPushNamed(context, BleListDisplay.routeName);
-    },
-  );
-
-  AlertDialog alert = AlertDialog(
-    title: Text(AppLocalizations.of(context).bluetoothWarningTitle),
-    content: Text(AppLocalizations.of(context).bluetoothWarningBody),
-    actions: [
-      okButton,
-    ],
-  );
-
-  showDialog(
-    barrierDismissible: false,
     context: context,
     builder: (BuildContext context) {
       return alert;

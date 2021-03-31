@@ -388,7 +388,7 @@ class _FullMapState extends State<FullMap> {
 
         if (_surveyedStreets.containsKey(f.properties['backReferenceId'])) {
           for (db.Survey s
-              in _surveyedStreets[f.properties['forwardReferenceId']]) {
+              in _surveyedStreets[f.properties['backReferenceId']]) {
             double offset = -4;
             _Line l = new _Line();
             if (s.side == SideOfStreet.Left.toString()) offset = 4;
