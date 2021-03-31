@@ -53,7 +53,7 @@ class _StreetSelectMapScreenState extends State<StreetSelectMapScreen> {
             title: Text(AppLocalizations.of(context).mapScreenTitle,
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.white)),
-            actions: [BleStatusButton()]),
+            actions: [BleStatusButton(false)]),
         body: FullMap(project));
   }
 }

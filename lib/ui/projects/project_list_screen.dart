@@ -105,7 +105,7 @@ class ProjectListScreenState extends State<ProjectListScreen> {
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
           actions: [
-            BleStatusButton(),
+            BleStatusButton(false),
             IconButton(
               icon: const Icon(Icons.settings),
               tooltip: 'preferences',
