@@ -209,10 +209,12 @@ class ProjectSyncService extends ChangeNotifier {
     status.totalFiles = 2 * projectPhotos.length;
     status.completeFiles = 0;
     status.currentStatus = "Uploading photos";
+    notifyListeners();
 
     for (Photo p in projectPhotos) {
       status.currentFile = p.id + '.png';
       notifyListeners();
+      try {
 
       String imagePath = imagesPath + p.id + '.png';
       String signedImageUrl = await getSignedUrl(imagePath);
@@ -232,7 +234,12 @@ class ProjectSyncService extends ChangeNotifier {
         // todo handle retrys
         status.failedFiles++;
         notifyListeners();
+      } }
+      catch(Exception e) {
+        throw e;  
       }
     }
+    status.currentStatus = "Sync complete";
+    notifyListeners();
   }
 }

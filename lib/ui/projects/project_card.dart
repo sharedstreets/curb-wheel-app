@@ -116,72 +116,64 @@ class ProjectCard extends StatelessWidget {
                                         project));
                               }),
                           GestureDetector(
-                              onTap: () async {
-                                Navigator.of(context).pop();
+                            onTap: () async {
+                              Navigator.of(context).pop();
 
-                                sync.syncProject(project);
+                              sync.syncProject(project);
 
-                                // showDialog<void>(
-                                //     context: context,
-                                //     barrierDismissible:
-                                //         false, // user must tap button!
-                                //     builder: (BuildContext context) {
-                                //       return AlertDialog(
-                                //         title: Text('Project Syncing...'),
-                                //         content: Consumer<ProjectSyncService>(
-                                //             builder:
-                                //                 (context, syncService, child) {
-                                //           return ListView(
-                                //             children: [
-                                //               Row(
-                                //                 children: [
-                                //                   CircularProgressIndicator(),
-                                //                   Text(
-                                //                       syncService.status != null
-                                //                           ? syncService.status
-                                //                               .currentStatus
-                                //                           : "")
-                                //                 ],
-                                //               ),
-                                //               Row(
-                                //                 children: [
-                                //                   Text(syncService.status !=
-                                //                               null &&
-                                //                           syncService.status
-                                //                                   .currentFile !=
-                                //                               null
-                                //                       ? syncService
-                                //                               .status.completeFiles
-                                //                               .toString() +
-                                //                           " / " +
-                                //                           syncService
-                                //                               .status.totalFiles
-                                //                               .toString() +
-                                //                           syncService.status
-                                //                               .currentFile
-                                //                       : "")
-                                //                 ],
-                                //               )
-                                //             ],
-                                //           );
-                                //         }),
-                                //         actions: <Widget>[
-                                //           TextButton(
-                                //             child: Text('Ok'),
-                                //             onPressed: () {
-                                //               Navigator.of(context).pop();
-                                //             },
-                                //           ),
-                                //         ],
-                                //       );
-                                //     });
-                              },
-                              child: ListTile(
-                                  leading: Icon(Icons.sync_alt),
-                                  title: Text(
-                                      AppLocalizations.of(context).syncData),
-                                    ),
-                                ),
+                              showDialog<void>(
+                                  context: context,
+                                  barrierDismissible:
+                                      false, // user must tap button!
+                                  builder: (BuildContext context) {
+                                    return StatefulBuilder(
+                                        builder: (context, setState) {
+                                      return AlertDialog(
+                                          actions: [
+                                            TextButton(
+                                              child: Text('Close'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            )
+                                          ],
+                                          title: Row(children: [
+                                            Icon(Icons.sync_alt),
+                                            Text('Project Syncing...')
+                                          ]),
+                                          content: Consumer<ProjectSyncService>(
+                                              builder: (context, syncService,
+                                                  child) {
+                                            if (syncService.status != null &&
+                                                syncService
+                                                        .status.currentStatus !=
+                                                    null) {
+                                              return IntrinsicHeight(
+                                                  child: Column(children: [
+                                                Text(syncService
+                                                    .status.currentStatus),
+                                                Text(syncService
+                                                        .status.totalFiles
+                                                        .toString() +
+                                                    "/" +
+                                                    syncService
+                                                        .status.completeFiles
+                                                        .toString() +
+                                                    " files uploaded")
+                                              ]));
+                                            } else {
+                                              return Text("starting upload...");
+                                            }
+                                          }));
+                                    });
+                                  });
+                            },
+                            child: ListTile(
+                              leading: Icon(Icons.sync_alt),
+                              title:
+                                  Text(AppLocalizations.of(context).syncData),
+                            ),
+                          ),
                           GestureDetector(
                               child: ListTile(
                                   leading: Icon(Icons.delete_forever),
