@@ -165,7 +165,7 @@ class _WheelScreenState extends State<WheelScreen>
                 children: [
                   IncompleteList(
                       _surveyManager, _survey, _currentWheelPosition),
-                  CompleteList(_survey),
+                  CompleteList(_surveyManager, _survey),
                 ],
               ),
             ),
