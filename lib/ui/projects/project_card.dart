@@ -153,11 +153,11 @@ class ProjectCard extends StatelessWidget {
                                                 Text(syncService
                                                     .status.currentStatus),
                                                 Text(syncService
-                                                        .status.totalFiles
+                                                        .status.completeFiles
                                                         .toString() +
                                                     "/" +
                                                     syncService
-                                                        .status.completeFiles
+                                                        .status.totalFiles
                                                         .toString() +
                                                     " files uploaded")
                                               ]));
