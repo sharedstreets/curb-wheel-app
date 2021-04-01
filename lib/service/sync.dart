@@ -67,6 +67,7 @@ class ProjectSyncService extends ChangeNotifier {
     status.syncInProgress = true;
     status.totalFiles = 2 * surveys.length;
     status.completeFiles = 0;
+    status.failedFiles = 0;
     status.currentStatus = "Uploading JSON";
     notifyListeners();
 
@@ -180,6 +181,9 @@ class ProjectSyncService extends ChangeNotifier {
           status.failedFiles++;
           notifyListeners();
         }
+      } else {
+        status.completeFiles++;
+        notifyListeners();
       }
 
       if (pointFeatures.length > 0) {
@@ -202,37 +206,46 @@ class ProjectSyncService extends ChangeNotifier {
           status.failedFiles++;
           notifyListeners();
         }
+      } else {
+        status.completeFiles++;
+        notifyListeners();
       }
-      status.syncInProgress = false;
     }
 
-    status.totalFiles = 2 * projectPhotos.length;
-    status.completeFiles = 0;
+    status.totalFiles = status.totalFiles + projectPhotos.length;
     status.currentStatus = "Uploading photos";
+    notifyListeners();
 
     for (Photo p in projectPhotos) {
       status.currentFile = p.id + '.png';
       notifyListeners();
+      try {
+        String imagePath = imagesPath + p.id + '.png';
+        String signedImageUrl = await getSignedUrl(imagePath);
 
-      String imagePath = imagesPath + p.id + '.png';
-      String signedImageUrl = await getSignedUrl(imagePath);
+        http.Response r = await http.put(
+          signedImageUrl,
+          headers: {
+            'Content-Type': 'image/png',
+          },
+          body: await File(p.file).readAsBytes(),
+        );
 
-      http.Response r = await http.put(
-        signedImageUrl,
-        headers: {
-          'Content-Type': 'image/png',
-        },
-        body: await File(p.file).readAsBytes(),
-      );
-
-      if (r.statusCode == 200) {
-        status.completeFiles++;
-        notifyListeners();
-      } else {
-        // todo handle retrys
+        if (r.statusCode == 200) {
+          status.completeFiles++;
+          notifyListeners();
+        } else {
+          // todo handle retrys
+          status.failedFiles++;
+          notifyListeners();
+        }
+      } catch (Exception) {
         status.failedFiles++;
         notifyListeners();
       }
     }
+    status.currentStatus = "Sync complete";
+    status.syncInProgress = false;
+    notifyListeners();
   }
 }
