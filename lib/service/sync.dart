@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:turf/helpers.dart';
 import 'package:curbwheel/database/database.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:http/http.dart' as http;
 
 const SIGNED_UPLOAD_URL =
@@ -42,7 +44,10 @@ class ProjectSyncService extends ChangeNotifier {
 
   ProjectSyncStatus status;
 
+  BuildContext _context;
+
   ProjectSyncService(BuildContext context) {
+    _context = context;
     _database = Provider.of<CurbWheelDatabase>(context, listen: false);
     _mapDatastore = Provider.of<ProjectMapDatastores>(context, listen: false);
   }
@@ -68,7 +73,7 @@ class ProjectSyncService extends ChangeNotifier {
     status.totalFiles = 2 * surveys.length;
     status.completeFiles = 0;
     status.failedFiles = 0;
-    status.currentStatus = "Uploading JSON";
+    status.currentStatus = AppLocalizations.of(_context).uploadingJSON;
     notifyListeners();
 
     for (Survey survey in surveys) {
@@ -213,7 +218,7 @@ class ProjectSyncService extends ChangeNotifier {
     }
 
     status.totalFiles = status.totalFiles + projectPhotos.length;
-    status.currentStatus = "Uploading photos";
+    status.currentStatus = AppLocalizations.of(_context).uploadingPhotos;
     notifyListeners();
 
     for (Photo p in projectPhotos) {
@@ -244,7 +249,7 @@ class ProjectSyncService extends ChangeNotifier {
         notifyListeners();
       }
     }
-    status.currentStatus = "Sync complete";
+    status.currentStatus = AppLocalizations.of(_context).syncComplete;
     status.syncInProgress = false;
     notifyListeners();
   }
