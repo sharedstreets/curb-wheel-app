@@ -36,6 +36,7 @@ class _CameraScreenState extends State<CameraScreen> {
   String imgPath;
   double _position;
   String _pointId;
+  bool awaitingCapture = false;
 
   Future initCamera(CameraDescription cameraDescription) async {
     if (cameraController != null) {
@@ -118,9 +119,7 @@ class _CameraScreenState extends State<CameraScreen> {
           color: Color.fromRGBO(0, 0, 0, 0.6),
         ),
         backgroundColor: Color.fromRGBO(255, 255, 255, 0.2),
-        onPressed: () {
-          onCapture(context);
-        },
+        onPressed: awaitingCapture ? null : () => onCapture(context),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
@@ -132,7 +131,9 @@ class _CameraScreenState extends State<CameraScreen> {
       final name = DateTime.now();
       final path = "${p.path}/$name.png";
       try {
+        awaitingCapture = true;
         XFile img = await cameraController.takePicture();
+        awaitingCapture = false;
         await img.saveTo(path);
         Navigator.pushNamed(context, PreviewScreen.routeName,
             arguments: PreviewScreenArguments(widget.surveyItemId, path,
