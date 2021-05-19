@@ -325,6 +325,17 @@
       "sharingInstructions":  "Scan project QR code another phone or copy and share the project URL.",
       "@sharingInstructions": {
         "description": ""
+      },
+      "uploadingJSON":  "Uploading JSON",
+      "@uploadingJSON": {
+        "description": ""
+      },
+      "uploadingPhotos":  "Uploading photos",
+      "@uploadingPhotos": {
+        "description": ""
+      },
+      "syncComplete":  "Sync complete",
+      "@syncComplete": {
+        "description": ""
       }
-
     }
